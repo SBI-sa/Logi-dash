@@ -7,7 +7,7 @@ import { KPICard } from '@/components/KPICard';
 import { ChartCard } from '@/components/ChartCard';
 import { SimpleBarChart } from '@/components/SimpleBarChart';
 import { VerticalBarChart } from '@/components/VerticalBarChart';
-import { ClusteredColumnChart } from '@/components/ClusteredColumnChart';
+import { YearOverYearChart } from '@/components/YearOverYearChart';
 import { ComboChart } from '@/components/ComboChart';
 import { SpeedometerChart } from '@/components/SpeedometerChart';
 import { EditModal } from '@/components/EditModal';
@@ -508,7 +508,7 @@ export default function SalesScreen() {
                 </TouchableOpacity>
               ))}
             </ScrollView>
-            <ClusteredColumnChart 
+            <YearOverYearChart 
               data={displayedSegments.map((s, i) => ({
                 label: s.segment,
                 thisYear: s.revenue,
