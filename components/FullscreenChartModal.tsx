@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Modal, View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
+import { Modal, View, Text, StyleSheet, TouchableOpacity, Dimensions, Platform } from 'react-native';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import { X, Maximize2 } from 'lucide-react-native';
 import { LogiPointColors } from '@/constants/colors';
@@ -20,14 +20,33 @@ export const FullscreenChartModal = React.memo(function FullscreenChartModal({
   onClose,
 }: FullscreenChartModalProps) {
   useEffect(() => {
-    if (visible) {
-      ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE);
-    } else {
-      ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
+    if (Platform.OS === 'web') {
+      return;
     }
 
+    const lockOrientation = async () => {
+      try {
+        if (visible) {
+          await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE);
+        } else {
+          await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
+        }
+      } catch (error) {
+        console.log('Screen orientation lock not supported:', error);
+      }
+    };
+
+    lockOrientation();
+
     return () => {
-      ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
+      const unlockOrientation = async () => {
+        try {
+          await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
+        } catch (error) {
+          console.log('Screen orientation unlock error:', error);
+        }
+      };
+      unlockOrientation();
     };
   }, [visible]);
 
