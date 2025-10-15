@@ -74,16 +74,33 @@ export default function SalesScreen() {
   const handleEditQuarter = (quarter: 'q1' | 'q2' | 'q3' | 'q4') => {
     setEditField(`quarter_${quarter}`);
     const qData = salesData.quarterlyTargets[quarter];
+    const currentInMillions = (qData.current / 1000000).toFixed(2);
+    const targetInMillions = (qData.target / 1000000).toFixed(2);
     const tempFields: { label: string; value: string; onChange: (text: string) => void; keyboardType?: 'default' | 'numeric' | 'decimal-pad' | 'email-address' }[] = [
-      { label: 'Current Revenue (in millions)', value: (qData.current / 1000000).toString(), onChange: (text) => {
-        setEditFields(prev => prev.map((f, i) => i === 0 ? { ...f, value: text } : f));
-      }, keyboardType: 'decimal-pad' },
-      { label: 'Target Revenue (in millions)', value: (qData.target / 1000000).toString(), onChange: (text) => {
-        setEditFields(prev => prev.map((f, i) => i === 1 ? { ...f, value: text } : f));
-      }, keyboardType: 'decimal-pad' },
-      { label: 'Gauge Color (hex)', value: qData.color || LogiPointColors.primary, onChange: (text) => {
-        setEditFields(prev => prev.map((f, i) => i === 2 ? { ...f, value: text } : f));
-      }, keyboardType: 'default' },
+      { 
+        label: 'Current Revenue (in millions)', 
+        value: currentInMillions, 
+        onChange: (text) => {
+          setEditFields(prev => prev.map((f, i) => i === 0 ? { ...f, value: text } : f));
+        }, 
+        keyboardType: 'decimal-pad' 
+      },
+      { 
+        label: 'Target Revenue (in millions)', 
+        value: targetInMillions, 
+        onChange: (text) => {
+          setEditFields(prev => prev.map((f, i) => i === 1 ? { ...f, value: text } : f));
+        }, 
+        keyboardType: 'decimal-pad' 
+      },
+      { 
+        label: 'Gauge Color (hex)', 
+        value: qData.color || LogiPointColors.primary, 
+        onChange: (text) => {
+          setEditFields(prev => prev.map((f, i) => i === 2 ? { ...f, value: text } : f));
+        }, 
+        keyboardType: 'default' 
+      },
     ];
     setEditFields(tempFields);
     setEditModalVisible(true);
@@ -268,11 +285,16 @@ export default function SalesScreen() {
       
       if (editField.startsWith('quarter_')) {
         const quarter = editField.split('_')[1] as 'q1' | 'q2' | 'q3' | 'q4';
+        const currentValue = editFields[0].value.trim();
+        const targetValue = editFields[1].value.trim();
+        const currentInMillions = currentValue === '' ? 0 : parseFloat(currentValue);
+        const targetInMillions = targetValue === '' ? 0 : parseFloat(targetValue);
+        
         updatedData.quarterlyTargets = {
           ...salesData.quarterlyTargets,
           [quarter]: {
-            current: (parseFloat(editFields[0].value) || 0) * 1000000,
-            target: (parseFloat(editFields[1].value) || 0) * 1000000,
+            current: currentInMillions * 1000000,
+            target: targetInMillions * 1000000,
             color: editFields[2].value,
           },
         };

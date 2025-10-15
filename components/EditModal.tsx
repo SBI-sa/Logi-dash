@@ -95,6 +95,7 @@ export function EditModal({
                       onChangeText={field.onChange}
                       keyboardType={field.keyboardType || 'default'}
                       placeholder={`Enter ${field.label.toLowerCase()}`}
+                      maxLength={undefined}
                     />
                   )}
                 </View>
