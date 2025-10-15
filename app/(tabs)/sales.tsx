@@ -1166,15 +1166,15 @@ const styles = StyleSheet.create({
     color: LogiPointColors.gray[700],
   },
   tableQuarterCol: {
-    width: '15%',
+    flex: 1,
     fontWeight: '600' as const,
   },
   tableValueCol: {
-    width: '18%',
+    flex: 1.2,
     textAlign: 'right' as const,
   },
   tableChangeCol: {
-    width: '16%',
+    flex: 1,
     textAlign: 'right' as const,
     fontWeight: '700' as const,
   },
