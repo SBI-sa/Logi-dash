@@ -16,10 +16,10 @@ export interface SalesData {
     q4: { current: number; target: number; lastYear?: number; color?: string };
   };
   quarterlyLabelling: {
-    q1: { current: number; lastYear: number; color?: string };
-    q2: { current: number; lastYear: number; color?: string };
-    q3: { current: number; lastYear: number; color?: string };
-    q4: { current: number; lastYear: number; color?: string };
+    q1: { current: number; lastYear: number; budget?: number; color?: string };
+    q2: { current: number; lastYear: number; budget?: number; color?: string };
+    q3: { current: number; lastYear: number; budget?: number; color?: string };
+    q4: { current: number; lastYear: number; budget?: number; color?: string };
   };
   topProducts: { name: string; sales: number }[];
   topCustomers: { name: string; sales: number; color: string }[];

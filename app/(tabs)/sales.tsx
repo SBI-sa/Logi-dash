@@ -87,8 +87,11 @@ export default function SalesScreen() {
         { label: '2024 Value', value: item.lastYear.toString(), onChange: (text) => {
           setEditFields(prev => prev.map((f, i) => i === 1 ? { ...f, value: text } : f));
         }, keyboardType: 'default' },
-        { label: 'Color (hex)', value: item.color || '#00617f', onChange: (text) => {
+        { label: 'Budget', value: (item.budget || item.current * 0.95).toString(), onChange: (text) => {
           setEditFields(prev => prev.map((f, i) => i === 2 ? { ...f, value: text } : f));
+        }, keyboardType: 'default' },
+        { label: 'Color (hex)', value: item.color || '#00617f', onChange: (text) => {
+          setEditFields(prev => prev.map((f, i) => i === 3 ? { ...f, value: text } : f));
         }, keyboardType: 'default' },
       ];
       setEditFields(tempFields);
@@ -201,7 +204,8 @@ export default function SalesScreen() {
           [quarter]: {
             current: parseFloat(editFields[0].value) || 0,
             lastYear: parseFloat(editFields[1].value) || 0,
-            color: editFields[2].value,
+            budget: parseFloat(editFields[2].value) || 0,
+            color: editFields[3].value,
           },
         };
       } else if (fieldName === 'quarterlyTargets') {
@@ -660,7 +664,7 @@ export default function SalesScreen() {
               </View>
               {(['q1', 'q2', 'q3', 'q4'] as const).map((quarter, index) => {
                 const data = salesData.quarterlyLabelling[quarter];
-                const budget = data.current * 0.95;
+                const budget = data.budget || data.current * 0.95;
                 const change = data.lastYear > 0 ? ((data.current - data.lastYear) / data.lastYear * 100).toFixed(1) : '0.0';
                 const isPositive = parseFloat(change) >= 0;
                 const variance = budget > 0 ? ((data.current - budget) / budget * 100).toFixed(1) : '0.0';

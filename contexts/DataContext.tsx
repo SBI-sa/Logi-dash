@@ -61,6 +61,12 @@ export const [DataProvider, useData] = createContextHook(() => {
           ...mockSalesData,
           ...parsedSales,
           quarterlyTargets: parsedSales.quarterlyTargets || mockSalesData.quarterlyTargets,
+          quarterlyLabelling: {
+            q1: { ...mockSalesData.quarterlyLabelling.q1, ...parsedSales.quarterlyLabelling?.q1 },
+            q2: { ...mockSalesData.quarterlyLabelling.q2, ...parsedSales.quarterlyLabelling?.q2 },
+            q3: { ...mockSalesData.quarterlyLabelling.q3, ...parsedSales.quarterlyLabelling?.q3 },
+            q4: { ...mockSalesData.quarterlyLabelling.q4, ...parsedSales.quarterlyLabelling?.q4 },
+          },
         });
       }
       if (risks) setRiskData(JSON.parse(risks));
