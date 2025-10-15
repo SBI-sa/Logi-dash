@@ -9,7 +9,7 @@ import { SimpleBarChart } from '@/components/SimpleBarChart';
 import { VerticalBarChart } from '@/components/VerticalBarChart';
 import { YearOverYearChart } from '@/components/YearOverYearChart';
 import { ComboChart } from '@/components/ComboChart';
-import { SimplePieChart, PieChartData } from '@/components/SimplePieChart';
+
 
 import { EditModal } from '@/components/EditModal';
 import { useAuth } from '@/contexts/AuthContext';
@@ -304,59 +304,7 @@ export default function SalesScreen() {
     setEditModalVisible(false);
   };
 
-  const handleEditQuarter = (quarter: 'q1' | 'q2' | 'q3' | 'q4') => {
-    setEditField(`quarterlyTargets_${quarter}`);
-    const qData = salesData.quarterlyTargets[quarter];
-    const tempFields: { label: string; value: string; onChange: (text: string) => void; keyboardType?: 'default' | 'default' | 'decimal-pad' | 'email-address' }[] = [
-      { label: '2025 Value', value: qData.current.toString(), onChange: (text) => {
-        setEditFields(prev => prev.map((f, i) => i === 0 ? { ...f, value: text } : f));
-      }, keyboardType: 'default' },
-      { label: 'Budget (Target)', value: qData.target.toString(), onChange: (text) => {
-        setEditFields(prev => prev.map((f, i) => i === 1 ? { ...f, value: text } : f));
-      }, keyboardType: 'default' },
-      { label: '2024 Value', value: (qData.lastYear ?? 0).toString(), onChange: (text) => {
-        setEditFields(prev => prev.map((f, i) => i === 2 ? { ...f, value: text } : f));
-      }, keyboardType: 'default' },
-      { label: 'Color (hex)', value: qData.color || LogiPointColors.primary, onChange: (text) => {
-        setEditFields(prev => prev.map((f, i) => i === 3 ? { ...f, value: text } : f));
-      }, keyboardType: 'default' },
-    ];
-    setEditFields(tempFields);
-    setEditModalVisible(true);
-  };
 
-  const renderQuarterlyRevenueComparison = () => {
-    const quarters: ('q1' | 'q2' | 'q3' | 'q4')[] = ['q1', 'q2', 'q3', 'q4'];
-    return (
-      <ChartCard title="Quarterly Revenue Comparison" subtitle="2025 vs 2024">
-        <View style={styles.quarterlyGrid} testID="quarterly-revenue-grid">
-          {quarters.map((q) => {
-            const qData = salesData.quarterlyTargets[q];
-            const pieData: PieChartData[] = [
-              { label: '2025', value: qData.current, color: qData.color || LogiPointColors.primary },
-              { label: '2024', value: qData.lastYear ?? 0, color: LogiPointColors.beige },
-            ];
-            return (
-              <View key={q} style={styles.quarterCard} testID={`quarter-card-${q}`}>
-                <Text style={styles.quarterTitle}>{q.toUpperCase()}</Text>
-                <SimplePieChart data={pieData} size={140} />
-                {isAdmin && (
-                  <TouchableOpacity
-                    style={styles.quarterEditButton}
-                    onPress={() => handleEditQuarter(q)}
-                    testID={`edit-quarter-${q}`}
-                  >
-                    <Edit2 size={12} color={LogiPointColors.primary} />
-                    <Text style={styles.quarterEditText}>Edit</Text>
-                  </TouchableOpacity>
-                )}
-              </View>
-            );
-          })}
-        </View>
-      </ChartCard>
-    );
-  };
 
   return (
     <>
@@ -472,41 +420,6 @@ export default function SalesScreen() {
 
           </ScrollView>
 
-
-          {renderQuarterlyRevenueComparison()}
-
-          <View style={styles.quarterlyTable}>
-            <Text style={styles.quarterlyTableTitle}>Quarterly Revenue Details</Text>
-            {(['q1', 'q2', 'q3', 'q4'] as const).map((q) => {
-              const qData = salesData.quarterlyTargets[q];
-              const lastYearValue = qData.lastYear ?? 0;
-              const growth = lastYearValue > 0 
-                ? ((qData.current - lastYearValue) / lastYearValue * 100).toFixed(1)
-                : '0.0';
-              const isPositive = parseFloat(growth) >= 0;
-              const budgetVariance = qData.target > 0
-                ? ((qData.current - qData.target) / qData.target * 100).toFixed(1)
-                : '0.0';
-              const isBudgetPositive = parseFloat(budgetVariance) >= 0;
-              
-              return (
-                <View key={q} style={styles.quarterlyTableRow}>
-                  <Text style={styles.quarterlyTableQuarter}>{q.toUpperCase()}</Text>
-                  <View style={styles.quarterlyTableValues}>
-                    <Text style={styles.quarterlyTableValue}>2025: {formatCurrency(qData.current)}</Text>
-                    <Text style={styles.quarterlyTableValue}>Budget: {formatCurrency(qData.target)}</Text>
-                    <Text style={styles.quarterlyTableValue}>2024: {formatCurrency(qData.lastYear ?? 0)}</Text>
-                    <Text style={[styles.quarterlyTableGrowth, isBudgetPositive ? styles.growthPositive : styles.growthNegative]}>
-                      vs Budget: {isBudgetPositive ? '+' : ''}{budgetVariance}%
-                    </Text>
-                    <Text style={[styles.quarterlyTableGrowth, isPositive ? styles.growthPositive : styles.growthNegative]}>
-                      YoY: {isPositive ? '+' : ''}{growth}%
-                    </Text>
-                  </View>
-                </View>
-              );
-            })}
-          </View>
 
           <ChartCard title="Revenue by Segment" subtitle={selectedMonth === 'All' ? 'Year-over-Year Comparison' : `${selectedMonth} Year-over-Year Comparison`}>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.monthFilter}>
@@ -1024,87 +937,5 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: LogiPointColors.primary,
   },
-  quarterlyGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 16,
-    justifyContent: 'space-between',
-  },
-  quarterCard: {
-    width: '48%',
-    padding: 12,
-    backgroundColor: LogiPointColors.gray[50],
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: LogiPointColors.gray[200],
-    gap: 12,
-  },
-  quarterTitle: {
-    fontSize: 16,
-    fontWeight: '700' as const,
-    color: LogiPointColors.midnight,
-    textAlign: 'center',
-  },
-  quarterEditButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 4,
-    paddingVertical: 6,
-    backgroundColor: LogiPointColors.gray[100],
-    borderRadius: 6,
-    borderWidth: 1,
-    borderColor: LogiPointColors.primary,
-  },
-  quarterEditText: {
-    fontSize: 11,
-    fontWeight: '600' as const,
-    color: LogiPointColors.primary,
-  },
-  quarterlyTable: {
-    marginTop: 20,
-    padding: 16,
-    backgroundColor: LogiPointColors.white,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: LogiPointColors.gray[200],
-  },
-  quarterlyTableTitle: {
-    fontSize: 16,
-    fontWeight: '700' as const,
-    color: LogiPointColors.midnight,
-    marginBottom: 12,
-  },
-  quarterlyTableRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 12,
-    paddingBottom: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: LogiPointColors.gray[200],
-  },
-  quarterlyTableQuarter: {
-    fontSize: 14,
-    fontWeight: '600' as const,
-    color: LogiPointColors.midnight,
-    width: 50,
-  },
-  quarterlyTableValues: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    flexWrap: 'wrap',
-    gap: 8,
-    marginHorizontal: 12,
-  },
-  quarterlyTableValue: {
-    fontSize: 12,
-    color: LogiPointColors.gray[600],
-  },
-  quarterlyTableGrowth: {
-    fontSize: 13,
-    fontWeight: '700' as const,
-  },
+
 });
