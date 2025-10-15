@@ -450,6 +450,90 @@ export default function SalesScreen() {
 
           </ScrollView>
 
+          <ChartCard title="Quarterly Revenue Comparison" subtitle="2025 vs 2024">
+            <View style={styles.quarterlyGrid}>
+              {(['q1', 'q2', 'q3', 'q4'] as const).map((quarter, index) => {
+                const data = salesData.quarterlyLabelling[quarter];
+                return (
+                  <View key={quarter} style={styles.quarterCard}>
+                    <Text style={styles.quarterTitle}>Q{index + 1}</Text>
+                    <DonutPieChart
+                      data={[
+                        { label: '2025', value: data.current, color: data.color || '#00617f' },
+                        { label: '2024', value: data.lastYear, color: '#a0a0a0' },
+                      ]}
+                      size={140}
+                      showLegend={false}
+                    />
+                    <View style={styles.quarterLegend}>
+                      <View style={styles.quarterLegendRow}>
+                        <View style={[styles.quarterLegendDot, { backgroundColor: data.color || '#00617f' }]} />
+                        <Text style={styles.quarterLegendLabel}>2025</Text>
+                        <Text style={styles.quarterLegendValue}>{data.current.toLocaleString()}</Text>
+                      </View>
+                      <View style={styles.quarterLegendRow}>
+                        <View style={[styles.quarterLegendDot, { backgroundColor: '#a0a0a0' }]} />
+                        <Text style={styles.quarterLegendLabel}>2024</Text>
+                        <Text style={styles.quarterLegendValue}>{data.lastYear.toLocaleString()}</Text>
+                      </View>
+                    </View>
+                    {isAdmin && (
+                      <TouchableOpacity
+                        style={styles.quarterEditButton}
+                        onPress={() => handleEditArray('quarterlyLabelling', index)}
+                      >
+                        <Edit2 size={14} color={LogiPointColors.white} />
+                        <Text style={styles.quarterEditText}>Edit</Text>
+                      </TouchableOpacity>
+                    )}
+                  </View>
+                );
+              })}
+            </View>
+            <View style={styles.quarterlyTable}>
+              <Text style={styles.quarterlyTableTitle}>Quarterly Breakdown</Text>
+              <View style={styles.tableHeader}>
+                <Text style={[styles.tableHeaderText, styles.tableQuarterCol]}>Quarter</Text>
+                <Text style={[styles.tableHeaderText, styles.tableValueCol]}>2025</Text>
+                <Text style={[styles.tableHeaderText, styles.tableValueCol]}>2024</Text>
+                <Text style={[styles.tableHeaderText, styles.tableValueCol]}>Budget</Text>
+                <Text style={[styles.tableHeaderText, styles.tableChangeCol]}>Change</Text>
+                <Text style={[styles.tableHeaderText, styles.tableChangeCol]}>Var %</Text>
+              </View>
+              {(['q1', 'q2', 'q3', 'q4'] as const).map((quarter, index) => {
+                const data = salesData.quarterlyLabelling[quarter];
+                const budget = data.budget || data.current * 0.95;
+                const change = data.lastYear > 0 ? ((data.current - data.lastYear) / data.lastYear * 100).toFixed(1) : '0.0';
+                const isPositive = parseFloat(change) >= 0;
+                const variance = budget > 0 ? ((data.current - budget) / budget * 100).toFixed(1) : '0.0';
+                const isVariancePositive = parseFloat(variance) >= 0;
+                return (
+                  <View key={quarter} style={styles.tableRowWithEdit}>
+                    <View style={styles.tableRow}>
+                      <Text style={[styles.tableCell, styles.tableQuarterCol]}>Q{index + 1}</Text>
+                      <Text style={[styles.tableCell, styles.tableValueCol]}>{data.current.toLocaleString()}</Text>
+                      <Text style={[styles.tableCell, styles.tableValueCol]}>{data.lastYear.toLocaleString()}</Text>
+                      <Text style={[styles.tableCell, styles.tableValueCol]}>{budget.toLocaleString()}</Text>
+                      <Text style={[styles.tableCell, styles.tableChangeCol, isPositive ? styles.changePositive : styles.changeNegative]}>
+                        {isPositive ? '+' : ''}{change}%
+                      </Text>
+                      <Text style={[styles.tableCell, styles.tableChangeCol, isVariancePositive ? styles.changePositive : styles.changeNegative]}>
+                        {isVariancePositive ? '+' : ''}{variance}%
+                      </Text>
+                    </View>
+                    {isAdmin && (
+                      <TouchableOpacity
+                        style={styles.quarterlyTableEditButton}
+                        onPress={() => handleEditArray('quarterlyLabelling', index)}
+                      >
+                        <Edit2 size={12} color={LogiPointColors.primary} />
+                      </TouchableOpacity>
+                    )}
+                  </View>
+                );
+              })}
+            </View>
+          </ChartCard>
 
           <ChartCard title="Revenue by Segment" subtitle={selectedMonth === 'All' ? 'Year-over-Year Comparison' : `${selectedMonth} Year-over-Year Comparison`}>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.monthFilter}>
@@ -602,91 +686,6 @@ export default function SalesScreen() {
                       <TouchableOpacity
                         style={styles.varianceEditButton}
                         onPress={() => handleEditArray('monthlyRevenue', index)}
-                      >
-                        <Edit2 size={12} color={LogiPointColors.primary} />
-                      </TouchableOpacity>
-                    )}
-                  </View>
-                );
-              })}
-            </View>
-          </ChartCard>
-
-          <ChartCard title="Quarterly Revenue Comparison" subtitle="2025 vs 2024">
-            <View style={styles.quarterlyGrid}>
-              {(['q1', 'q2', 'q3', 'q4'] as const).map((quarter, index) => {
-                const data = salesData.quarterlyLabelling[quarter];
-                return (
-                  <View key={quarter} style={styles.quarterCard}>
-                    <Text style={styles.quarterTitle}>Q{index + 1}</Text>
-                    <DonutPieChart
-                      data={[
-                        { label: '2025', value: data.current, color: data.color || '#00617f' },
-                        { label: '2024', value: data.lastYear, color: '#a0a0a0' },
-                      ]}
-                      size={140}
-                      showLegend={false}
-                    />
-                    <View style={styles.quarterLegend}>
-                      <View style={styles.quarterLegendRow}>
-                        <View style={[styles.quarterLegendDot, { backgroundColor: data.color || '#00617f' }]} />
-                        <Text style={styles.quarterLegendLabel}>2025</Text>
-                        <Text style={styles.quarterLegendValue}>{data.current.toLocaleString()}</Text>
-                      </View>
-                      <View style={styles.quarterLegendRow}>
-                        <View style={[styles.quarterLegendDot, { backgroundColor: '#a0a0a0' }]} />
-                        <Text style={styles.quarterLegendLabel}>2024</Text>
-                        <Text style={styles.quarterLegendValue}>{data.lastYear.toLocaleString()}</Text>
-                      </View>
-                    </View>
-                    {isAdmin && (
-                      <TouchableOpacity
-                        style={styles.quarterEditButton}
-                        onPress={() => handleEditArray('quarterlyLabelling', index)}
-                      >
-                        <Edit2 size={14} color={LogiPointColors.white} />
-                        <Text style={styles.quarterEditText}>Edit</Text>
-                      </TouchableOpacity>
-                    )}
-                  </View>
-                );
-              })}
-            </View>
-            <View style={styles.quarterlyTable}>
-              <Text style={styles.quarterlyTableTitle}>Quarterly Breakdown</Text>
-              <View style={styles.tableHeader}>
-                <Text style={[styles.tableHeaderText, styles.tableQuarterCol]}>Quarter</Text>
-                <Text style={[styles.tableHeaderText, styles.tableValueCol]}>2025</Text>
-                <Text style={[styles.tableHeaderText, styles.tableValueCol]}>2024</Text>
-                <Text style={[styles.tableHeaderText, styles.tableValueCol]}>Budget</Text>
-                <Text style={[styles.tableHeaderText, styles.tableChangeCol]}>Change</Text>
-                <Text style={[styles.tableHeaderText, styles.tableChangeCol]}>Var %</Text>
-              </View>
-              {(['q1', 'q2', 'q3', 'q4'] as const).map((quarter, index) => {
-                const data = salesData.quarterlyLabelling[quarter];
-                const budget = data.budget || data.current * 0.95;
-                const change = data.lastYear > 0 ? ((data.current - data.lastYear) / data.lastYear * 100).toFixed(1) : '0.0';
-                const isPositive = parseFloat(change) >= 0;
-                const variance = budget > 0 ? ((data.current - budget) / budget * 100).toFixed(1) : '0.0';
-                const isVariancePositive = parseFloat(variance) >= 0;
-                return (
-                  <View key={quarter} style={styles.tableRowWithEdit}>
-                    <View style={styles.tableRow}>
-                      <Text style={[styles.tableCell, styles.tableQuarterCol]}>Q{index + 1}</Text>
-                      <Text style={[styles.tableCell, styles.tableValueCol]}>{data.current.toLocaleString()}</Text>
-                      <Text style={[styles.tableCell, styles.tableValueCol]}>{data.lastYear.toLocaleString()}</Text>
-                      <Text style={[styles.tableCell, styles.tableValueCol]}>{budget.toLocaleString()}</Text>
-                      <Text style={[styles.tableCell, styles.tableChangeCol, isPositive ? styles.changePositive : styles.changeNegative]}>
-                        {isPositive ? '+' : ''}{change}%
-                      </Text>
-                      <Text style={[styles.tableCell, styles.tableChangeCol, isVariancePositive ? styles.changePositive : styles.changeNegative]}>
-                        {isVariancePositive ? '+' : ''}{variance}%
-                      </Text>
-                    </View>
-                    {isAdmin && (
-                      <TouchableOpacity
-                        style={styles.quarterlyTableEditButton}
-                        onPress={() => handleEditArray('quarterlyLabelling', index)}
                       >
                         <Edit2 size={12} color={LogiPointColors.primary} />
                       </TouchableOpacity>
