@@ -608,7 +608,7 @@ export default function SalesScreen() {
             </View>
           </ChartCard>
 
-          <ChartCard title="Quarterly Labelling Comparison" subtitle="2025 vs 2024">
+          <ChartCard title="Quarterly Revenue Comparison" subtitle="2025 vs 2024">
             <View style={styles.quarterlyGrid}>
               {(['q1', 'q2', 'q3', 'q4'] as const).map((quarter, index) => {
                 const data = salesData.quarterlyLabelling[quarter];
@@ -654,19 +654,28 @@ export default function SalesScreen() {
                 <Text style={[styles.tableHeaderText, styles.tableQuarterCol]}>Quarter</Text>
                 <Text style={[styles.tableHeaderText, styles.tableValueCol]}>2025</Text>
                 <Text style={[styles.tableHeaderText, styles.tableValueCol]}>2024</Text>
+                <Text style={[styles.tableHeaderText, styles.tableValueCol]}>Budget</Text>
                 <Text style={[styles.tableHeaderText, styles.tableChangeCol]}>Change</Text>
+                <Text style={[styles.tableHeaderText, styles.tableChangeCol]}>Var %</Text>
               </View>
               {(['q1', 'q2', 'q3', 'q4'] as const).map((quarter, index) => {
                 const data = salesData.quarterlyLabelling[quarter];
+                const budget = data.current * 0.95;
                 const change = data.lastYear > 0 ? ((data.current - data.lastYear) / data.lastYear * 100).toFixed(1) : '0.0';
                 const isPositive = parseFloat(change) >= 0;
+                const variance = budget > 0 ? ((data.current - budget) / budget * 100).toFixed(1) : '0.0';
+                const isVariancePositive = parseFloat(variance) >= 0;
                 return (
                   <View key={quarter} style={styles.tableRow}>
                     <Text style={[styles.tableCell, styles.tableQuarterCol]}>Q{index + 1}</Text>
                     <Text style={[styles.tableCell, styles.tableValueCol]}>{data.current.toLocaleString()}</Text>
                     <Text style={[styles.tableCell, styles.tableValueCol]}>{data.lastYear.toLocaleString()}</Text>
+                    <Text style={[styles.tableCell, styles.tableValueCol]}>{budget.toLocaleString()}</Text>
                     <Text style={[styles.tableCell, styles.tableChangeCol, isPositive ? styles.changePositive : styles.changeNegative]}>
                       {isPositive ? '+' : ''}{change}%
+                    </Text>
+                    <Text style={[styles.tableCell, styles.tableChangeCol, isVariancePositive ? styles.changePositive : styles.changeNegative]}>
+                      {isVariancePositive ? '+' : ''}{variance}%
                     </Text>
                   </View>
                 );
@@ -1131,15 +1140,15 @@ const styles = StyleSheet.create({
     color: LogiPointColors.gray[700],
   },
   tableQuarterCol: {
-    width: '20%',
+    width: '15%',
     fontWeight: '600' as const,
   },
   tableValueCol: {
-    width: '27%',
+    width: '18%',
     textAlign: 'right' as const,
   },
   tableChangeCol: {
-    width: '26%',
+    width: '16%',
     textAlign: 'right' as const,
     fontWeight: '700' as const,
   },
