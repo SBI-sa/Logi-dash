@@ -13,6 +13,10 @@ export const ProgressGauge = React.memo(function ProgressGauge({ current, target
   const percentage = Math.min((current / target) * 100, 100);
   const isOverTarget = current >= target;
   
+  const formatValue = (value: number) => {
+    return `${(value / 1000000).toFixed(2)}M`;
+  };
+  
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -26,15 +30,15 @@ export const ProgressGauge = React.memo(function ProgressGauge({ current, target
             styles.gaugeFill, 
             { 
               width: `${percentage}%`,
-              backgroundColor: isOverTarget ? LogiPointColors.success : color,
+              backgroundColor: isOverTarget ? LogiPointColors.chart.green : color,
             }
           ]} 
         />
       </View>
       
       <View style={styles.footer}>
-        <Text style={styles.value}>{current.toLocaleString()}</Text>
-        <Text style={styles.target}>Target: {target.toLocaleString()}</Text>
+        <Text style={styles.value}>{formatValue(current)}</Text>
+        <Text style={styles.target}>Target: {formatValue(target)}</Text>
       </View>
     </View>
   );

@@ -9,7 +9,7 @@ import { SimpleBarChart } from '@/components/SimpleBarChart';
 import { VerticalBarChart } from '@/components/VerticalBarChart';
 import { YearOverYearChart } from '@/components/YearOverYearChart';
 import { ComboChart } from '@/components/ComboChart';
-import { SpeedometerChart } from '@/components/SpeedometerChart';
+import { ProgressGauge } from '@/components/ProgressGauge';
 import { EditModal } from '@/components/EditModal';
 import { useAuth } from '@/contexts/AuthContext';
 import { useData } from '@/contexts/DataContext';
@@ -430,83 +430,79 @@ export default function SalesScreen() {
 
           </ScrollView>
 
-          <ChartCard title="Revenue Target Progress" subtitle="Quarterly Performance">
+          <ChartCard title="Revenue Target Progress" subtitle="Quarterly Performance (in millions)">
             <View style={styles.quarterlyContainer}>
-              <View style={styles.quarterRow}>
-                <View style={styles.quarterItem}>
-                  <Text style={styles.quarterLabel}>Q1</Text>
-                  <SpeedometerChart
-                    current={salesData.quarterlyTargets.q1.current}
-                    target={salesData.quarterlyTargets.q1.target}
-                    label="Q1 Target"
-                    color={salesData.quarterlyTargets.q1.color || LogiPointColors.primary}
-                  />
-                  {isAdmin && (
-                    <TouchableOpacity
-                      style={styles.quarterEditButton}
-                      onPress={() => handleEditQuarter('q1')}
-                    >
-                      <Edit2 size={14} color={LogiPointColors.primary} />
-                      <Text style={styles.chartEditText}>Edit Q1</Text>
-                    </TouchableOpacity>
-                  )}
-                </View>
-                <View style={styles.quarterItem}>
-                  <Text style={styles.quarterLabel}>Q2</Text>
-                  <SpeedometerChart
-                    current={salesData.quarterlyTargets.q2.current}
-                    target={salesData.quarterlyTargets.q2.target}
-                    label="Q2 Target"
-                    color={salesData.quarterlyTargets.q2.color || LogiPointColors.accent}
-                  />
-                  {isAdmin && (
-                    <TouchableOpacity
-                      style={styles.quarterEditButton}
-                      onPress={() => handleEditQuarter('q2')}
-                    >
-                      <Edit2 size={14} color={LogiPointColors.primary} />
-                      <Text style={styles.chartEditText}>Edit Q2</Text>
-                    </TouchableOpacity>
-                  )}
-                </View>
+              <View style={styles.quarterItem}>
+                <Text style={styles.quarterLabel}>Q1</Text>
+                <ProgressGauge
+                  current={salesData.quarterlyTargets.q1.current}
+                  target={salesData.quarterlyTargets.q1.target}
+                  label="Q1 Target"
+                  color={salesData.quarterlyTargets.q1.color || LogiPointColors.primary}
+                />
+                {isAdmin && (
+                  <TouchableOpacity
+                    style={styles.quarterEditButton}
+                    onPress={() => handleEditQuarter('q1')}
+                  >
+                    <Edit2 size={14} color={LogiPointColors.primary} />
+                    <Text style={styles.chartEditText}>Edit Q1</Text>
+                  </TouchableOpacity>
+                )}
               </View>
-              <View style={styles.quarterRow}>
-                <View style={styles.quarterItem}>
-                  <Text style={styles.quarterLabel}>Q3</Text>
-                  <SpeedometerChart
-                    current={salesData.quarterlyTargets.q3.current}
-                    target={salesData.quarterlyTargets.q3.target}
-                    label="Q3 Target"
-                    color={salesData.quarterlyTargets.q3.color || LogiPointColors.chart.green}
-                  />
-                  {isAdmin && (
-                    <TouchableOpacity
-                      style={styles.quarterEditButton}
-                      onPress={() => handleEditQuarter('q3')}
-                    >
-                      <Edit2 size={14} color={LogiPointColors.primary} />
-                      <Text style={styles.chartEditText}>Edit Q3</Text>
-                    </TouchableOpacity>
-                  )}
-                </View>
-                <View style={styles.quarterItem}>
-                  <Text style={styles.quarterLabel}>Q4</Text>
-                  <SpeedometerChart
-                    current={salesData.quarterlyTargets.q4.current}
-                    target={salesData.quarterlyTargets.q4.target}
-                    label="Q4 Target"
-                    color={salesData.quarterlyTargets.q4.color || LogiPointColors.chart.blue}
-                  />
-                  {isAdmin && (
-                    <TouchableOpacity
-                      style={styles.quarterEditButton}
-                      onPress={() => handleEditQuarter('q4')}
-                    >
-                      <Edit2 size={14} color={LogiPointColors.primary} />
-                      <Text style={styles.chartEditText}>Edit Q4</Text>
-                    </TouchableOpacity>
-                  )}
-                </View>
+              <View style={styles.quarterItem}>
+                <Text style={styles.quarterLabel}>Q2</Text>
+                <ProgressGauge
+                  current={salesData.quarterlyTargets.q2.current}
+                  target={salesData.quarterlyTargets.q2.target}
+                  label="Q2 Target"
+                  color={salesData.quarterlyTargets.q2.color || LogiPointColors.accent}
+                />
+                {isAdmin && (
+                  <TouchableOpacity
+                    style={styles.quarterEditButton}
+                    onPress={() => handleEditQuarter('q2')}
+                  >
+                    <Edit2 size={14} color={LogiPointColors.primary} />
+                    <Text style={styles.chartEditText}>Edit Q2</Text>
+                  </TouchableOpacity>
+                )}
+              </View>
+              <View style={styles.quarterItem}>
+                <Text style={styles.quarterLabel}>Q3</Text>
+                <ProgressGauge
+                  current={salesData.quarterlyTargets.q3.current}
+                  target={salesData.quarterlyTargets.q3.target}
+                  label="Q3 Target"
+                  color={salesData.quarterlyTargets.q3.color || LogiPointColors.chart.green}
+                />
+                {isAdmin && (
+                  <TouchableOpacity
+                    style={styles.quarterEditButton}
+                    onPress={() => handleEditQuarter('q3')}
+                  >
+                    <Edit2 size={14} color={LogiPointColors.primary} />
+                    <Text style={styles.chartEditText}>Edit Q3</Text>
+                  </TouchableOpacity>
+                )}
+              </View>
+              <View style={styles.quarterItem}>
+                <Text style={styles.quarterLabel}>Q4</Text>
+                <ProgressGauge
+                  current={salesData.quarterlyTargets.q4.current}
+                  target={salesData.quarterlyTargets.q4.target}
+                  label="Q4 Target"
+                  color={salesData.quarterlyTargets.q4.color || LogiPointColors.chart.blue}
+                />
+                {isAdmin && (
+                  <TouchableOpacity
+                    style={styles.quarterEditButton}
+                    onPress={() => handleEditQuarter('q4')}
+                  >
+                    <Edit2 size={14} color={LogiPointColors.primary} />
+                    <Text style={styles.chartEditText}>Edit Q4</Text>
+                  </TouchableOpacity>
+                )}
               </View>
             </View>
           </ChartCard>
@@ -969,16 +965,10 @@ const styles = StyleSheet.create({
     borderColor: LogiPointColors.chart.green,
   },
   quarterlyContainer: {
-    gap: 16,
-  },
-  quarterRow: {
-    flexDirection: 'row',
-    gap: 16,
-    justifyContent: 'space-between',
+    gap: 20,
   },
   quarterItem: {
-    flex: 1,
-    alignItems: 'center',
+    width: '100%',
   },
   quarterLabel: {
     fontSize: 18,
