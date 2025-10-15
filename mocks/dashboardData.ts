@@ -24,8 +24,8 @@ export interface SalesData {
   topProducts: { name: string; sales: number }[];
   topCustomers: { name: string; sales: number; color: string }[];
   topCustomersMonthly: { [month: string]: { name: string; sales: number; color: string }[] };
-  revenueBySegment: { segment: string; revenue: number; lastYearRevenue?: number; color?: string }[];
-  revenueBySegmentMonthly: { [month: string]: { segment: string; revenue: number; lastYearRevenue?: number; color?: string }[] };
+  revenueBySegment: { segment: string; revenue: number; budget?: number; lastYearRevenue?: number; color?: string }[];
+  revenueBySegmentMonthly: { [month: string]: { segment: string; revenue: number; budget?: number; lastYearRevenue?: number; color?: string }[] };
   monthlyTrend: { month: string; revenue: number }[];
   monthlyRevenue: { month: string; revenue: number; budget: number; lastYearRevenue?: number; revenueColor?: string; budgetColor?: string; lastYearColor?: string }[];
   accountManagers: { name: string; revenue: number; budget: number; color?: string }[];
@@ -301,70 +301,70 @@ export const mockSalesData: SalesData = {
     ],
   },
   revenueBySegment: [
-    { segment: 'Logistics', revenue: 5200000, lastYearRevenue: 4800000 },
-    { segment: 'Warehousing', revenue: 3800000, lastYearRevenue: 3500000 },
-    { segment: 'Transportation', revenue: 3450000, lastYearRevenue: 3200000 },
+    { segment: 'Logistics', revenue: 5200000, budget: 5000000, lastYearRevenue: 4800000 },
+    { segment: 'Warehousing', revenue: 3800000, budget: 3900000, lastYearRevenue: 3500000 },
+    { segment: 'Transportation', revenue: 3450000, budget: 3600000, lastYearRevenue: 3200000 },
   ],
   revenueBySegmentMonthly: {
     'January': [
-      { segment: 'Logistics', revenue: 420000, lastYearRevenue: 380000 },
-      { segment: 'Warehousing', revenue: 310000, lastYearRevenue: 280000 },
-      { segment: 'Transportation', revenue: 280000, lastYearRevenue: 260000 },
+      { segment: 'Logistics', revenue: 420000, budget: 400000, lastYearRevenue: 380000 },
+      { segment: 'Warehousing', revenue: 310000, budget: 320000, lastYearRevenue: 280000 },
+      { segment: 'Transportation', revenue: 280000, budget: 290000, lastYearRevenue: 260000 },
     ],
     'February': [
-      { segment: 'Logistics', revenue: 430000, lastYearRevenue: 390000 },
-      { segment: 'Warehousing', revenue: 320000, lastYearRevenue: 290000 },
-      { segment: 'Transportation', revenue: 290000, lastYearRevenue: 270000 },
+      { segment: 'Logistics', revenue: 430000, budget: 410000, lastYearRevenue: 390000 },
+      { segment: 'Warehousing', revenue: 320000, budget: 325000, lastYearRevenue: 290000 },
+      { segment: 'Transportation', revenue: 290000, budget: 295000, lastYearRevenue: 270000 },
     ],
     'March': [
-      { segment: 'Logistics', revenue: 440000, lastYearRevenue: 400000 },
-      { segment: 'Warehousing', revenue: 330000, lastYearRevenue: 300000 },
-      { segment: 'Transportation', revenue: 300000, lastYearRevenue: 280000 },
+      { segment: 'Logistics', revenue: 440000, budget: 420000, lastYearRevenue: 400000 },
+      { segment: 'Warehousing', revenue: 330000, budget: 330000, lastYearRevenue: 300000 },
+      { segment: 'Transportation', revenue: 300000, budget: 300000, lastYearRevenue: 280000 },
     ],
     'April': [
-      { segment: 'Logistics', revenue: 435000, lastYearRevenue: 395000 },
-      { segment: 'Warehousing', revenue: 315000, lastYearRevenue: 285000 },
-      { segment: 'Transportation', revenue: 285000, lastYearRevenue: 265000 },
+      { segment: 'Logistics', revenue: 435000, budget: 415000, lastYearRevenue: 395000 },
+      { segment: 'Warehousing', revenue: 315000, budget: 320000, lastYearRevenue: 285000 },
+      { segment: 'Transportation', revenue: 285000, budget: 295000, lastYearRevenue: 265000 },
     ],
     'May': [
-      { segment: 'Logistics', revenue: 450000, lastYearRevenue: 410000 },
-      { segment: 'Warehousing', revenue: 340000, lastYearRevenue: 310000 },
-      { segment: 'Transportation', revenue: 310000, lastYearRevenue: 290000 },
+      { segment: 'Logistics', revenue: 450000, budget: 430000, lastYearRevenue: 410000 },
+      { segment: 'Warehousing', revenue: 340000, budget: 340000, lastYearRevenue: 310000 },
+      { segment: 'Transportation', revenue: 310000, budget: 310000, lastYearRevenue: 290000 },
     ],
     'June': [
-      { segment: 'Logistics', revenue: 470000, lastYearRevenue: 430000 },
-      { segment: 'Warehousing', revenue: 360000, lastYearRevenue: 330000 },
-      { segment: 'Transportation', revenue: 330000, lastYearRevenue: 310000 },
+      { segment: 'Logistics', revenue: 470000, budget: 450000, lastYearRevenue: 430000 },
+      { segment: 'Warehousing', revenue: 360000, budget: 360000, lastYearRevenue: 330000 },
+      { segment: 'Transportation', revenue: 330000, budget: 330000, lastYearRevenue: 310000 },
     ],
     'July': [
-      { segment: 'Logistics', revenue: 480000, lastYearRevenue: 440000 },
-      { segment: 'Warehousing', revenue: 370000, lastYearRevenue: 340000 },
-      { segment: 'Transportation', revenue: 340000, lastYearRevenue: 320000 },
+      { segment: 'Logistics', revenue: 480000, budget: 460000, lastYearRevenue: 440000 },
+      { segment: 'Warehousing', revenue: 370000, budget: 370000, lastYearRevenue: 340000 },
+      { segment: 'Transportation', revenue: 340000, budget: 340000, lastYearRevenue: 320000 },
     ],
     'August': [
-      { segment: 'Logistics', revenue: 475000, lastYearRevenue: 435000 },
-      { segment: 'Warehousing', revenue: 365000, lastYearRevenue: 335000 },
-      { segment: 'Transportation', revenue: 335000, lastYearRevenue: 315000 },
+      { segment: 'Logistics', revenue: 475000, budget: 455000, lastYearRevenue: 435000 },
+      { segment: 'Warehousing', revenue: 365000, budget: 365000, lastYearRevenue: 335000 },
+      { segment: 'Transportation', revenue: 335000, budget: 340000, lastYearRevenue: 315000 },
     ],
     'September': [
-      { segment: 'Logistics', revenue: 490000, lastYearRevenue: 450000 },
-      { segment: 'Warehousing', revenue: 380000, lastYearRevenue: 350000 },
-      { segment: 'Transportation', revenue: 350000, lastYearRevenue: 330000 },
+      { segment: 'Logistics', revenue: 490000, budget: 470000, lastYearRevenue: 450000 },
+      { segment: 'Warehousing', revenue: 380000, budget: 380000, lastYearRevenue: 350000 },
+      { segment: 'Transportation', revenue: 350000, budget: 350000, lastYearRevenue: 330000 },
     ],
     'October': [
-      { segment: 'Logistics', revenue: 510000, lastYearRevenue: 470000 },
-      { segment: 'Warehousing', revenue: 400000, lastYearRevenue: 370000 },
-      { segment: 'Transportation', revenue: 370000, lastYearRevenue: 350000 },
+      { segment: 'Logistics', revenue: 510000, budget: 490000, lastYearRevenue: 470000 },
+      { segment: 'Warehousing', revenue: 400000, budget: 400000, lastYearRevenue: 370000 },
+      { segment: 'Transportation', revenue: 370000, budget: 370000, lastYearRevenue: 350000 },
     ],
     'November': [
-      { segment: 'Logistics', revenue: 0, lastYearRevenue: 460000 },
-      { segment: 'Warehousing', revenue: 0, lastYearRevenue: 360000 },
-      { segment: 'Transportation', revenue: 0, lastYearRevenue: 340000 },
+      { segment: 'Logistics', revenue: 0, budget: 500000, lastYearRevenue: 460000 },
+      { segment: 'Warehousing', revenue: 0, budget: 410000, lastYearRevenue: 360000 },
+      { segment: 'Transportation', revenue: 0, budget: 380000, lastYearRevenue: 340000 },
     ],
     'December': [
-      { segment: 'Logistics', revenue: 0, lastYearRevenue: 480000 },
-      { segment: 'Warehousing', revenue: 0, lastYearRevenue: 380000 },
-      { segment: 'Transportation', revenue: 0, lastYearRevenue: 360000 },
+      { segment: 'Logistics', revenue: 0, budget: 520000, lastYearRevenue: 480000 },
+      { segment: 'Warehousing', revenue: 0, budget: 420000, lastYearRevenue: 380000 },
+      { segment: 'Transportation', revenue: 0, budget: 390000, lastYearRevenue: 360000 },
     ],
   },
   monthlyTrend: [

@@ -30,17 +30,19 @@ export default function SalesScreen() {
 
   const displayedSegments = useMemo(() => {
     if (selectedMonth === 'All') {
-      const segmentTotals = new Map<string, { revenue: number; lastYearRevenue: number; color?: string }>();
+      const segmentTotals = new Map<string, { revenue: number; budget: number; lastYearRevenue: number; color?: string }>();
       
       Object.values(salesData.revenueBySegmentMonthly).forEach(monthSegments => {
         monthSegments.forEach(segment => {
           const existing = segmentTotals.get(segment.segment);
           if (existing) {
             existing.revenue += segment.revenue;
+            existing.budget += segment.budget || 0;
             existing.lastYearRevenue += segment.lastYearRevenue || 0;
           } else {
             segmentTotals.set(segment.segment, {
               revenue: segment.revenue,
+              budget: segment.budget || 0,
               lastYearRevenue: segment.lastYearRevenue || 0,
               color: segment.color,
             });
@@ -51,6 +53,7 @@ export default function SalesScreen() {
       return Array.from(segmentTotals.entries()).map(([segment, data]) => ({
         segment,
         revenue: data.revenue,
+        budget: data.budget,
         lastYearRevenue: data.lastYearRevenue,
         color: data.color,
       }));
@@ -120,11 +123,14 @@ export default function SalesScreen() {
         { label: 'Revenue', value: item.revenue.toString(), onChange: (text) => {
           setEditFields(prev => prev.map((f, i) => i === 1 ? { ...f, value: text } : f));
         }, keyboardType: 'default' },
-        { label: 'Last Year Revenue', value: (item.lastYearRevenue || 0).toString(), onChange: (text) => {
+        { label: 'Budget', value: (item.budget || 0).toString(), onChange: (text) => {
           setEditFields(prev => prev.map((f, i) => i === 2 ? { ...f, value: text } : f));
         }, keyboardType: 'default' },
-        { label: 'Bar Color (hex)', value: item.color || LogiPointColors.primary, onChange: (text) => {
+        { label: 'Last Year Revenue', value: (item.lastYearRevenue || 0).toString(), onChange: (text) => {
           setEditFields(prev => prev.map((f, i) => i === 3 ? { ...f, value: text } : f));
+        }, keyboardType: 'default' },
+        { label: 'Bar Color (hex)', value: item.color || LogiPointColors.primary, onChange: (text) => {
+          setEditFields(prev => prev.map((f, i) => i === 4 ? { ...f, value: text } : f));
         }, keyboardType: 'default' },
       ];
       setEditFields(tempFields);
@@ -245,8 +251,9 @@ export default function SalesScreen() {
           newSegments[index] = {
             segment: editFields[0].value,
             revenue: parseFloat(editFields[1].value) || 0,
-            lastYearRevenue: parseFloat(editFields[2].value) || 0,
-            color: editFields[3].value,
+            budget: parseFloat(editFields[2].value) || 0,
+            lastYearRevenue: parseFloat(editFields[3].value) || 0,
+            color: editFields[4].value,
           };
           updatedData.revenueBySegment = newSegments;
         } else {
@@ -255,8 +262,9 @@ export default function SalesScreen() {
           monthSegments[index] = {
             segment: editFields[0].value,
             revenue: parseFloat(editFields[1].value) || 0,
-            lastYearRevenue: parseFloat(editFields[2].value) || 0,
-            color: editFields[3].value,
+            budget: parseFloat(editFields[2].value) || 0,
+            lastYearRevenue: parseFloat(editFields[3].value) || 0,
+            color: editFields[4].value,
           };
           newMonthlySegments[selectedMonth] = monthSegments;
           updatedData.revenueBySegmentMonthly = newMonthlySegments;
@@ -555,15 +563,26 @@ export default function SalesScreen() {
                   if (!s.lastYearRevenue) return null;
                   const growth = ((s.revenue - s.lastYearRevenue) / s.lastYearRevenue * 100).toFixed(1);
                   const isPositive = parseFloat(growth) >= 0;
+                  const budget = s.budget || 0;
+                  const variance = budget > 0 ? ((s.revenue - budget) / budget * 100).toFixed(1) : '0.0';
+                  const isVariancePositive = parseFloat(variance) >= 0;
                   return (
                     <View key={i} style={styles.comparisonRow}>
                       <Text style={styles.comparisonSegment}>{s.segment}</Text>
                       <View style={styles.comparisonValues}>
                         <Text style={styles.comparisonValue}>This Year: {s.revenue.toLocaleString()}</Text>
+                        {budget > 0 && (
+                          <Text style={styles.comparisonValue}>Budget: {budget.toLocaleString()}</Text>
+                        )}
                         <Text style={styles.comparisonValue}>Last Year: {s.lastYearRevenue.toLocaleString()}</Text>
                         <Text style={[styles.comparisonGrowth, isPositive ? styles.growthPositive : styles.growthNegative]}>
-                          {isPositive ? '+' : ''}{growth}%
+                          YoY: {isPositive ? '+' : ''}{growth}%
                         </Text>
+                        {budget > 0 && (
+                          <Text style={[styles.comparisonGrowth, isVariancePositive ? styles.growthPositive : styles.growthNegative]}>
+                            Var: {isVariancePositive ? '+' : ''}{variance}%
+                          </Text>
+                        )}
                       </View>
                     </View>
                   );
@@ -589,6 +608,7 @@ export default function SalesScreen() {
                     const newSegment = {
                       segment: 'New Segment',
                       revenue: 0,
+                      budget: 0,
                       lastYearRevenue: 0,
                       color: LogiPointColors.chart.blue,
                     };
