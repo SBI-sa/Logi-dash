@@ -670,17 +670,27 @@ export default function SalesScreen() {
                 const variance = budget > 0 ? ((data.current - budget) / budget * 100).toFixed(1) : '0.0';
                 const isVariancePositive = parseFloat(variance) >= 0;
                 return (
-                  <View key={quarter} style={styles.tableRow}>
-                    <Text style={[styles.tableCell, styles.tableQuarterCol]}>Q{index + 1}</Text>
-                    <Text style={[styles.tableCell, styles.tableValueCol]}>{data.current.toLocaleString()}</Text>
-                    <Text style={[styles.tableCell, styles.tableValueCol]}>{data.lastYear.toLocaleString()}</Text>
-                    <Text style={[styles.tableCell, styles.tableValueCol]}>{budget.toLocaleString()}</Text>
-                    <Text style={[styles.tableCell, styles.tableChangeCol, isPositive ? styles.changePositive : styles.changeNegative]}>
-                      {isPositive ? '+' : ''}{change}%
-                    </Text>
-                    <Text style={[styles.tableCell, styles.tableChangeCol, isVariancePositive ? styles.changePositive : styles.changeNegative]}>
-                      {isVariancePositive ? '+' : ''}{variance}%
-                    </Text>
+                  <View key={quarter} style={styles.tableRowWithEdit}>
+                    <View style={styles.tableRow}>
+                      <Text style={[styles.tableCell, styles.tableQuarterCol]}>Q{index + 1}</Text>
+                      <Text style={[styles.tableCell, styles.tableValueCol]}>{data.current.toLocaleString()}</Text>
+                      <Text style={[styles.tableCell, styles.tableValueCol]}>{data.lastYear.toLocaleString()}</Text>
+                      <Text style={[styles.tableCell, styles.tableValueCol]}>{budget.toLocaleString()}</Text>
+                      <Text style={[styles.tableCell, styles.tableChangeCol, isPositive ? styles.changePositive : styles.changeNegative]}>
+                        {isPositive ? '+' : ''}{change}%
+                      </Text>
+                      <Text style={[styles.tableCell, styles.tableChangeCol, isVariancePositive ? styles.changePositive : styles.changeNegative]}>
+                        {isVariancePositive ? '+' : ''}{variance}%
+                      </Text>
+                    </View>
+                    {isAdmin && (
+                      <TouchableOpacity
+                        style={styles.quarterlyTableEditButton}
+                        onPress={() => handleEditArray('quarterlyLabelling', index)}
+                      >
+                        <Edit2 size={12} color={LogiPointColors.primary} />
+                      </TouchableOpacity>
+                    )}
                   </View>
                 );
               })}
@@ -1138,6 +1148,19 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderBottomWidth: 1,
     borderBottomColor: LogiPointColors.gray[200],
+  },
+  tableRowWithEdit: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  quarterlyTableEditButton: {
+    padding: 6,
+    backgroundColor: LogiPointColors.gray[100],
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: LogiPointColors.primary,
+    marginLeft: 8,
   },
   tableCell: {
     fontSize: 13,
