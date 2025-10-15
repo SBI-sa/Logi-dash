@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Alert, TextInput } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Alert, TextInput, Platform } from 'react-native';
 import { Stack } from 'expo-router';
 import { Building2, TrendingUp, MapPin, Edit2, Plus, Calendar, Car, Upload, X, Image as ImageIcon } from 'lucide-react-native';
 import * as ImagePicker from 'expo-image-picker';
@@ -282,12 +282,26 @@ export default function RealEstateScreen() {
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
-        quality: 1,
+        quality: Platform.OS === 'web' ? 0.3 : 0.7,
+        base64: false,
       });
 
       if (!result.canceled && result.assets[0]) {
-        const updatedData = { ...realEstateData, landImageUri: result.assets[0].uri };
-        updateRealEstateData(updatedData);
+        try {
+          const updatedData = { ...realEstateData, landImageUri: result.assets[0].uri };
+          await updateRealEstateData(updatedData);
+        } catch (storageError: any) {
+          console.error('Storage error:', storageError);
+          if (storageError?.message?.includes('quota') || storageError?.message?.includes('Storage quota exceeded')) {
+            Alert.alert(
+              'Storage Full',
+              'The image is too large to save. Please try a smaller image or remove some existing images first.',
+              [{ text: 'OK' }]
+            );
+          } else {
+            Alert.alert('Error', 'Failed to save image');
+          }
+        }
       }
     } catch (error) {
       console.error('Error picking image:', error);
@@ -307,12 +321,26 @@ export default function RealEstateScreen() {
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
-        quality: 1,
+        quality: Platform.OS === 'web' ? 0.3 : 0.7,
+        base64: false,
       });
 
       if (!result.canceled && result.assets[0]) {
-        const updatedData = { ...realEstateData, jlhImageUri: result.assets[0].uri };
-        updateRealEstateData(updatedData);
+        try {
+          const updatedData = { ...realEstateData, jlhImageUri: result.assets[0].uri };
+          await updateRealEstateData(updatedData);
+        } catch (storageError: any) {
+          console.error('Storage error:', storageError);
+          if (storageError?.message?.includes('quota') || storageError?.message?.includes('Storage quota exceeded')) {
+            Alert.alert(
+              'Storage Full',
+              'The image is too large to save. Please try a smaller image or remove some existing images first.',
+              [{ text: 'OK' }]
+            );
+          } else {
+            Alert.alert('Error', 'Failed to save image');
+          }
+        }
       }
     } catch (error) {
       console.error('Error picking image:', error);
@@ -337,22 +365,36 @@ export default function RealEstateScreen() {
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
-        quality: 1,
+        quality: Platform.OS === 'web' ? 0.3 : 0.7,
+        base64: false,
       });
 
       if (!result.canceled && result.assets[0]) {
-        const newImage = {
-          id: `IMG${Date.now()}`,
-          uri: result.assets[0].uri,
-          label: newImageLabel,
-        };
-        const updatedData = {
-          ...realEstateData,
-          additionalImages: [...(realEstateData.additionalImages || []), newImage],
-        };
-        updateRealEstateData(updatedData);
-        setNewImageLabel('');
-        setShowAddImageModal(false);
+        try {
+          const newImage = {
+            id: `IMG${Date.now()}`,
+            uri: result.assets[0].uri,
+            label: newImageLabel,
+          };
+          const updatedData = {
+            ...realEstateData,
+            additionalImages: [...(realEstateData.additionalImages || []), newImage],
+          };
+          await updateRealEstateData(updatedData);
+          setNewImageLabel('');
+          setShowAddImageModal(false);
+        } catch (storageError: any) {
+          console.error('Storage error:', storageError);
+          if (storageError?.message?.includes('quota') || storageError?.message?.includes('Storage quota exceeded')) {
+            Alert.alert(
+              'Storage Full',
+              'The image is too large to save. Please try a smaller image or remove some existing images first.',
+              [{ text: 'OK' }]
+            );
+          } else {
+            Alert.alert('Error', 'Failed to save image');
+          }
+        }
       }
     } catch (error) {
       console.error('Error picking image:', error);
