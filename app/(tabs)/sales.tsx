@@ -9,6 +9,7 @@ import { SimpleBarChart } from '@/components/SimpleBarChart';
 import { VerticalBarChart } from '@/components/VerticalBarChart';
 import { YearOverYearChart } from '@/components/YearOverYearChart';
 import { ComboChart } from '@/components/ComboChart';
+import { GroupedBarChart } from '@/components/GroupedBarChart';
 
 import { EditModal } from '@/components/EditModal';
 import { useAuth } from '@/contexts/AuthContext';
@@ -250,29 +251,42 @@ export default function SalesScreen() {
 
       const updatedData = { ...salesData };
       
-      switch (editField) {
-          case 'totalRevenue':
-            updatedData.totalRevenue = numValue;
-            break;
-          case 'lastYearYtdRevenue':
-            updatedData.lastYearYtdRevenue = numValue;
-            break;
-          case 'mtdRevenue':
-            updatedData.mtdRevenue = numValue;
-            break;
-          case 'ytdRevenue':
-            updatedData.ytdRevenue = numValue;
-            break;
-          case 'mtdBudget':
-            updatedData.mtdBudget = numValue;
-            break;
-          case 'ytdBudget':
-            updatedData.ytdBudget = numValue;
-            break;
-          case 'totalRevenueColor':
-            updatedData.totalRevenueColor = editFields[0].value;
-            break;
-        }
+      if (editField.startsWith('quarterlyTargets_')) {
+        const quarter = editField.split('_')[1] as 'q1' | 'q2' | 'q3' | 'q4';
+        updatedData.quarterlyTargets = {
+          ...salesData.quarterlyTargets,
+          [quarter]: {
+            current: parseFloat(editFields[0].value) || 0,
+            target: parseFloat(editFields[1].value) || 0,
+            lastYear: parseFloat(editFields[2].value) || 0,
+            color: editFields[3].value,
+          },
+        };
+      } else {
+        switch (editField) {
+            case 'totalRevenue':
+              updatedData.totalRevenue = numValue;
+              break;
+            case 'lastYearYtdRevenue':
+              updatedData.lastYearYtdRevenue = numValue;
+              break;
+            case 'mtdRevenue':
+              updatedData.mtdRevenue = numValue;
+              break;
+            case 'ytdRevenue':
+              updatedData.ytdRevenue = numValue;
+              break;
+            case 'mtdBudget':
+              updatedData.mtdBudget = numValue;
+              break;
+            case 'ytdBudget':
+              updatedData.ytdBudget = numValue;
+              break;
+            case 'totalRevenueColor':
+              updatedData.totalRevenueColor = editFields[0].value;
+              break;
+          }
+      }
 
       updateSalesData(updatedData);
     }
@@ -323,7 +337,8 @@ export default function SalesScreen() {
                   subtitle={`Budget: ${(salesData.ytdBudget / 1000000).toFixed(2)}M`}
                   trend={{ 
                     value: parseFloat(ytdBudgetVariance), 
-                    isPositive: parseFloat(ytdBudgetVariance) >= 0 
+                    isPositive: parseFloat(ytdBudgetVariance) >= 0,
+                    label: 'vs Budget'
                   }}
                   icon={TrendingUp}
                   color={parseFloat(ytdBudgetVariance) >= 0 ? LogiPointColors.chart.green : LogiPointColors.accent}
@@ -392,6 +407,77 @@ export default function SalesScreen() {
             </View>
 
           </ScrollView>
+
+          <ChartCard title="Quarterly Revenue Tracker" subtitle="Current vs Budget vs Last Year">
+            <GroupedBarChart 
+              data={[
+                {
+                  label: 'Q1',
+                  values: [
+                    { label: 'Current', value: salesData.quarterlyTargets.q1.current, color: salesData.quarterlyTargets.q1.color || LogiPointColors.primary },
+                    { label: 'Budget', value: salesData.quarterlyTargets.q1.target, color: LogiPointColors.accent },
+                    { label: 'Last Year', value: salesData.quarterlyTargets.q1.lastYear || 0, color: LogiPointColors.beige },
+                  ],
+                },
+                {
+                  label: 'Q2',
+                  values: [
+                    { label: 'Current', value: salesData.quarterlyTargets.q2.current, color: salesData.quarterlyTargets.q2.color || LogiPointColors.primary },
+                    { label: 'Budget', value: salesData.quarterlyTargets.q2.target, color: LogiPointColors.accent },
+                    { label: 'Last Year', value: salesData.quarterlyTargets.q2.lastYear || 0, color: LogiPointColors.beige },
+                  ],
+                },
+                {
+                  label: 'Q3',
+                  values: [
+                    { label: 'Current', value: salesData.quarterlyTargets.q3.current, color: salesData.quarterlyTargets.q3.color || LogiPointColors.primary },
+                    { label: 'Budget', value: salesData.quarterlyTargets.q3.target, color: LogiPointColors.accent },
+                    { label: 'Last Year', value: salesData.quarterlyTargets.q3.lastYear || 0, color: LogiPointColors.beige },
+                  ],
+                },
+                {
+                  label: 'Q4',
+                  values: [
+                    { label: 'Current', value: salesData.quarterlyTargets.q4.current, color: salesData.quarterlyTargets.q4.color || LogiPointColors.primary },
+                    { label: 'Budget', value: salesData.quarterlyTargets.q4.target, color: LogiPointColors.accent },
+                    { label: 'Last Year', value: salesData.quarterlyTargets.q4.lastYear || 0, color: LogiPointColors.beige },
+                  ],
+                },
+              ]}
+            />
+            {isAdmin && (
+              <View style={styles.chartEditButtons}>
+                {['q1', 'q2', 'q3', 'q4'].map((quarter, index) => (
+                  <TouchableOpacity
+                    key={quarter}
+                    style={styles.chartEditButton}
+                    onPress={() => {
+                      const q = salesData.quarterlyTargets[quarter as keyof typeof salesData.quarterlyTargets];
+                      setEditField(`quarterlyTargets_${quarter}`);
+                      setEditFields([
+                        { label: 'Current Revenue', value: q.current.toString(), onChange: (text) => {
+                          setEditFields(prev => prev.map((f, i) => i === 0 ? { ...f, value: text } : f));
+                        }, keyboardType: 'numeric' },
+                        { label: 'Budget', value: q.target.toString(), onChange: (text) => {
+                          setEditFields(prev => prev.map((f, i) => i === 1 ? { ...f, value: text } : f));
+                        }, keyboardType: 'numeric' },
+                        { label: 'Last Year Revenue', value: (q.lastYear || 0).toString(), onChange: (text) => {
+                          setEditFields(prev => prev.map((f, i) => i === 2 ? { ...f, value: text } : f));
+                        }, keyboardType: 'numeric' },
+                        { label: 'Bar Color (hex)', value: q.color || LogiPointColors.primary, onChange: (text) => {
+                          setEditFields(prev => prev.map((f, i) => i === 3 ? { ...f, value: text } : f));
+                        }, keyboardType: 'default' },
+                      ]);
+                      setEditModalVisible(true);
+                    }}
+                  >
+                    <Edit2 size={14} color={LogiPointColors.primary} />
+                    <Text style={styles.chartEditText}>Edit {quarter.toUpperCase()}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            )}
+          </ChartCard>
 
           <ChartCard title="Revenue by Segment" subtitle={selectedMonth === 'All' ? 'Year-over-Year Comparison' : `${selectedMonth} Year-over-Year Comparison`}>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.monthFilter}>

@@ -10,10 +10,10 @@ export interface SalesData {
   totalRevenueColor?: string;
   revenueTargetColor?: string;
   quarterlyTargets: {
-    q1: { current: number; target: number; color?: string };
-    q2: { current: number; target: number; color?: string };
-    q3: { current: number; target: number; color?: string };
-    q4: { current: number; target: number; color?: string };
+    q1: { current: number; target: number; lastYear?: number; color?: string };
+    q2: { current: number; target: number; lastYear?: number; color?: string };
+    q3: { current: number; target: number; lastYear?: number; color?: string };
+    q4: { current: number; target: number; lastYear?: number; color?: string };
   };
   topProducts: { name: string; sales: number }[];
   topCustomers: { name: string; sales: number; color: string }[];
@@ -183,10 +183,10 @@ export const mockSalesData: SalesData = {
   revenueTarget: 15000000,
   growthPercentage: 18.5,
   quarterlyTargets: {
-    q1: { current: 3150000, target: 3500000 },
-    q2: { current: 3700000, target: 3750000 },
-    q3: { current: 3000000, target: 3750000 },
-    q4: { current: 0, target: 4000000 },
+    q1: { current: 3150000, target: 3500000, lastYear: 2900000 },
+    q2: { current: 3700000, target: 3750000, lastYear: 3400000 },
+    q3: { current: 3000000, target: 3750000, lastYear: 2800000 },
+    q4: { current: 0, target: 4000000, lastYear: 3400000 },
   },
   topProducts: [
     { name: 'Product A', sales: 2500000 },

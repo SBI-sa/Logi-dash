@@ -11,6 +11,7 @@ interface KPICardProps {
   trend?: {
     value: number;
     isPositive: boolean;
+    label?: string;
   };
   icon?: LucideIcon;
   color?: string;
@@ -33,7 +34,7 @@ export const KPICard = React.memo(function KPICard({ title, value, subtitle, tre
           <Text style={[styles.trend, { color: trend.isPositive ? LogiPointColors.success : LogiPointColors.error }]}>
             {trend.isPositive ? '↑' : '↓'} {Math.abs(trend.value)}%
           </Text>
-          <Text style={styles.trendLabel}>vs previous period</Text>
+          <Text style={styles.trendLabel}>{trend.label || 'vs previous period'}</Text>
         </View>
       )}
     </Card>
