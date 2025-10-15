@@ -1,7 +1,9 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { Maximize2 } from 'lucide-react-native';
 import { LogiPointColors } from '@/constants/colors';
 import { Card } from './Card';
+import { FullscreenChartModal } from './FullscreenChartModal';
 
 interface ChartCardProps {
   title: string;
@@ -10,16 +12,37 @@ interface ChartCardProps {
 }
 
 export const ChartCard = React.memo(function ChartCard({ title, children, subtitle }: ChartCardProps) {
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
   return (
-    <Card style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>{title}</Text>
-        {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
-      </View>
-      <View style={styles.chartContainer}>
+    <>
+      <Card style={styles.container}>
+        <View style={styles.header}>
+          <View style={styles.headerText}>
+            <Text style={styles.title}>{title}</Text>
+            {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
+          </View>
+          <TouchableOpacity
+            style={styles.fullscreenButton}
+            onPress={() => setIsFullscreen(true)}
+          >
+            <Maximize2 size={20} color={LogiPointColors.primary} />
+          </TouchableOpacity>
+        </View>
+        <View style={styles.chartContainer}>
+          {children}
+        </View>
+      </Card>
+
+      <FullscreenChartModal
+        visible={isFullscreen}
+        title={title}
+        subtitle={subtitle}
+        onClose={() => setIsFullscreen(false)}
+      >
         {children}
-      </View>
-    </Card>
+      </FullscreenChartModal>
+    </>
   );
 });
 
@@ -28,7 +51,19 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
     marginBottom: 16,
+  },
+  headerText: {
+    flex: 1,
+  },
+  fullscreenButton: {
+    padding: 8,
+    borderRadius: 8,
+    backgroundColor: LogiPointColors.gray[100],
+    marginLeft: 12,
   },
   title: {
     fontSize: 18,
