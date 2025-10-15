@@ -63,10 +63,24 @@ export default function SalesScreen() {
 
   const displayedCustomers = useMemo(() => {
     if (selectedCustomerMonth === 'All') {
-      return salesData.topCustomers;
+      const totals = new Map<string, { sales: number; color: string }>();
+      Object.values(salesData.topCustomersMonthly).forEach((arr) => {
+        arr.forEach((c) => {
+          const prev = totals.get(c.name);
+          if (prev) {
+            prev.sales += c.sales;
+          } else {
+            totals.set(c.name, { sales: c.sales, color: c.color });
+          }
+        });
+      });
+      return Array.from(totals.entries())
+        .map(([name, v]) => ({ name, sales: v.sales, color: v.color }))
+        .sort((a, b) => b.sales - a.sales)
+        .slice(0, 5);
     }
     return salesData.topCustomersMonthly[selectedCustomerMonth] || [];
-  }, [selectedCustomerMonth, salesData.topCustomers, salesData.topCustomersMonthly]);
+  }, [selectedCustomerMonth, salesData.topCustomersMonthly]);
 
   const handleEdit = (field: string, currentValue: number) => {
     setEditField(field);
@@ -758,7 +772,7 @@ export default function SalesScreen() {
                 color: c.color,
               }))}
             />
-            {isAdmin && (
+            {isAdmin && selectedCustomerMonth !== 'All' && (
               <View style={styles.chartEditButtons}>
                 {displayedCustomers.map((c, index) => (
                   <TouchableOpacity
@@ -779,15 +793,9 @@ export default function SalesScreen() {
                       sales: 0,
                       color: '#00617f',
                     };
-                    
-                    if (selectedCustomerMonth === 'All') {
-                      updatedData.topCustomers = [...salesData.topCustomers, newCustomer];
-                    } else {
-                      const newMonthlyCustomers = { ...salesData.topCustomersMonthly };
-                      newMonthlyCustomers[selectedCustomerMonth] = [...(newMonthlyCustomers[selectedCustomerMonth] || []), newCustomer];
-                      updatedData.topCustomersMonthly = newMonthlyCustomers;
-                    }
-                    
+                    const newMonthlyCustomers = { ...salesData.topCustomersMonthly };
+                    newMonthlyCustomers[selectedCustomerMonth] = [...(newMonthlyCustomers[selectedCustomerMonth] || []), newCustomer];
+                    updatedData.topCustomersMonthly = newMonthlyCustomers;
                     updateSalesData(updatedData);
                   }}
                 >
