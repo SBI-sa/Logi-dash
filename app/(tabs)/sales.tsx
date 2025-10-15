@@ -450,6 +450,75 @@ export default function SalesScreen() {
 
           </ScrollView>
 
+          <ChartCard title="Monthly Revenue Performance" subtitle="Actual vs Budget vs Last Year Revenue">
+            <ComboChart 
+              data={salesData.monthlyRevenue.map(m => ({
+                label: m.month,
+                actual: m.revenue,
+                budget: m.budget,
+                lastYear: m.lastYearRevenue,
+                barColor: m.revenueColor || LogiPointColors.primary,
+                lineColor: m.budgetColor || LogiPointColors.accent,
+                lastYearColor: m.lastYearColor || LogiPointColors.beige,
+              }))}
+            />
+            <View style={styles.legend}>
+              <View style={styles.legendItem}>
+                <View style={[styles.legendColor, { backgroundColor: salesData.monthlyRevenue[0]?.revenueColor || LogiPointColors.primary }]} />
+                <Text style={styles.legendText}>Actual Revenue</Text>
+              </View>
+              <View style={styles.legendItem}>
+                <View style={[styles.legendColor, { backgroundColor: salesData.monthlyRevenue[0]?.lastYearColor || LogiPointColors.beige }]} />
+                <Text style={styles.legendText}>Last Year Revenue</Text>
+              </View>
+              <View style={styles.legendItem}>
+                <View style={[styles.legendColor, { backgroundColor: salesData.monthlyRevenue[0]?.budgetColor || LogiPointColors.accent, borderRadius: 8 }]} />
+                <Text style={styles.legendText}>Budget Revenue (Line)</Text>
+              </View>
+            </View>
+            <View style={styles.varianceTable}>
+              <Text style={styles.varianceTitle}>Variance Analysis</Text>
+              {salesData.monthlyRevenue.map((m, index) => {
+                const variance = m.revenue - m.budget;
+                const variancePercent = m.budget > 0 ? ((variance / m.budget) * 100).toFixed(1) : '0.0';
+                const isPositive = variance >= 0;
+                
+                const lastYearGrowth = m.lastYearRevenue && m.lastYearRevenue > 0 
+                  ? ((m.revenue - m.lastYearRevenue) / m.lastYearRevenue * 100).toFixed(1)
+                  : null;
+                const isGrowthPositive = lastYearGrowth ? parseFloat(lastYearGrowth) >= 0 : false;
+                
+                return (
+                  <View key={index} style={styles.varianceRow}>
+                    <Text style={styles.varianceMonth}>{m.month}</Text>
+                    <View style={styles.varianceValues}>
+                      <Text style={styles.varianceValue}>Actual: {formatCurrency(m.revenue)}</Text>
+                      <Text style={styles.varianceValue}>Budget: {formatCurrency(m.budget)}</Text>
+                      {m.lastYearRevenue && m.lastYearRevenue > 0 && (
+                        <Text style={styles.varianceValue}>Last Year: {formatCurrency(m.lastYearRevenue)}</Text>
+                      )}
+                      <Text style={[styles.variancePercent, isPositive ? styles.variancePositive : styles.varianceNegative]}>
+                        Var: {isPositive ? '+' : ''}{variancePercent}%
+                      </Text>
+                      {lastYearGrowth && (
+                        <Text style={[styles.variancePercent, isGrowthPositive ? styles.variancePositive : styles.varianceNegative]}>
+                          YoY: {isGrowthPositive ? '+' : ''}{lastYearGrowth}%
+                        </Text>
+                      )}
+                    </View>
+                    {isAdmin && (
+                      <TouchableOpacity
+                        style={styles.varianceEditButton}
+                        onPress={() => handleEditArray('monthlyRevenue', index)}
+                      >
+                        <Edit2 size={12} color={LogiPointColors.primary} />
+                      </TouchableOpacity>
+                    )}
+                  </View>
+                );
+              })}
+            </View>
+          </ChartCard>
 
           <ChartCard title="Revenue by Segment" subtitle={selectedMonth === 'All' ? 'Year-over-Year Comparison' : `${selectedMonth} Year-over-Year Comparison`}>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.monthFilter}>
@@ -540,76 +609,6 @@ export default function SalesScreen() {
                 </TouchableOpacity>
               </View>
             )}
-          </ChartCard>
-
-          <ChartCard title="Monthly Revenue Performance" subtitle="Actual vs Budget vs Last Year Revenue">
-            <ComboChart 
-              data={salesData.monthlyRevenue.map(m => ({
-                label: m.month,
-                actual: m.revenue,
-                budget: m.budget,
-                lastYear: m.lastYearRevenue,
-                barColor: m.revenueColor || LogiPointColors.primary,
-                lineColor: m.budgetColor || LogiPointColors.accent,
-                lastYearColor: m.lastYearColor || LogiPointColors.beige,
-              }))}
-            />
-            <View style={styles.legend}>
-              <View style={styles.legendItem}>
-                <View style={[styles.legendColor, { backgroundColor: salesData.monthlyRevenue[0]?.revenueColor || LogiPointColors.primary }]} />
-                <Text style={styles.legendText}>Actual Revenue</Text>
-              </View>
-              <View style={styles.legendItem}>
-                <View style={[styles.legendColor, { backgroundColor: salesData.monthlyRevenue[0]?.lastYearColor || LogiPointColors.beige }]} />
-                <Text style={styles.legendText}>Last Year Revenue</Text>
-              </View>
-              <View style={styles.legendItem}>
-                <View style={[styles.legendColor, { backgroundColor: salesData.monthlyRevenue[0]?.budgetColor || LogiPointColors.accent, borderRadius: 8 }]} />
-                <Text style={styles.legendText}>Budget Revenue (Line)</Text>
-              </View>
-            </View>
-            <View style={styles.varianceTable}>
-              <Text style={styles.varianceTitle}>Variance Analysis</Text>
-              {salesData.monthlyRevenue.map((m, index) => {
-                const variance = m.revenue - m.budget;
-                const variancePercent = m.budget > 0 ? ((variance / m.budget) * 100).toFixed(1) : '0.0';
-                const isPositive = variance >= 0;
-                
-                const lastYearGrowth = m.lastYearRevenue && m.lastYearRevenue > 0 
-                  ? ((m.revenue - m.lastYearRevenue) / m.lastYearRevenue * 100).toFixed(1)
-                  : null;
-                const isGrowthPositive = lastYearGrowth ? parseFloat(lastYearGrowth) >= 0 : false;
-                
-                return (
-                  <View key={index} style={styles.varianceRow}>
-                    <Text style={styles.varianceMonth}>{m.month}</Text>
-                    <View style={styles.varianceValues}>
-                      <Text style={styles.varianceValue}>Actual: {formatCurrency(m.revenue)}</Text>
-                      <Text style={styles.varianceValue}>Budget: {formatCurrency(m.budget)}</Text>
-                      {m.lastYearRevenue && m.lastYearRevenue > 0 && (
-                        <Text style={styles.varianceValue}>Last Year: {formatCurrency(m.lastYearRevenue)}</Text>
-                      )}
-                      <Text style={[styles.variancePercent, isPositive ? styles.variancePositive : styles.varianceNegative]}>
-                        Var: {isPositive ? '+' : ''}{variancePercent}%
-                      </Text>
-                      {lastYearGrowth && (
-                        <Text style={[styles.variancePercent, isGrowthPositive ? styles.variancePositive : styles.varianceNegative]}>
-                          YoY: {isGrowthPositive ? '+' : ''}{lastYearGrowth}%
-                        </Text>
-                      )}
-                    </View>
-                    {isAdmin && (
-                      <TouchableOpacity
-                        style={styles.varianceEditButton}
-                        onPress={() => handleEditArray('monthlyRevenue', index)}
-                      >
-                        <Edit2 size={12} color={LogiPointColors.primary} />
-                      </TouchableOpacity>
-                    )}
-                  </View>
-                );
-              })}
-            </View>
           </ChartCard>
 
           <ChartCard title="Quarterly Revenue Comparison" subtitle="2025 vs 2024">
