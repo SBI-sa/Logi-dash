@@ -429,80 +429,6 @@ export default function LogisticsScreen() {
             </View>
           </ScrollView>
 
-          <ChartCard title="Delivery Performance Trend" subtitle="On-time delivery rate by month">
-            <LineChart 
-              data={logisticsData.deliveryPerformance.filter(d => d.onTimeRate > 0).map(d => ({
-                label: d.month,
-                value: d.onTimeRate,
-                color: d.onTimeRate >= logisticsData.thresholds.green ? LogiPointColors.success : d.onTimeRate >= logisticsData.thresholds.yellow ? LogiPointColors.warning : LogiPointColors.error,
-              }))}
-              maxValue={100}
-              thresholds={logisticsData.thresholds}
-            />
-            {isAdmin && (
-              <View style={styles.chartEditButtons}>
-                {logisticsData.deliveryPerformance.map((perf, index) => (
-                  <TouchableOpacity
-                    key={index}
-                    style={styles.chartEditButton}
-                    onPress={() => handleEditArray('deliveryPerformance', index)}
-                  >
-                    <Edit2 size={14} color={LogiPointColors.primary} />
-                    <Text style={styles.chartEditText}>Edit {perf.month}</Text>
-                  </TouchableOpacity>
-                ))}
-                <TouchableOpacity
-                  style={[styles.chartEditButton, styles.thresholdButton]}
-                  onPress={handleEditThresholds}
-                >
-                  <Edit2 size={14} color={LogiPointColors.chart.blue} />
-                  <Text style={styles.thresholdButtonText}>Edit Thresholds</Text>
-                </TouchableOpacity>
-              </View>
-            )}
-          </ChartCard>
-
-          <ChartCard title="Delays by Route" subtitle="Number of delayed shipments and total trips">
-            <GroupedBarChart 
-              data={logisticsData.delaysByRoute.map(d => ({
-                label: d.route,
-                values: [
-                  {
-                    label: 'Delays',
-                    value: d.delays,
-                    color: LogiPointColors.error,
-                  },
-                  {
-                    label: 'Trips',
-                    value: d.trips,
-                    color: LogiPointColors.primary,
-                  },
-                ],
-              }))}
-            />
-            {isAdmin && (
-              <View style={styles.chartEditButtons}>
-                {logisticsData.delaysByRoute.map((route, index) => (
-                  <TouchableOpacity
-                    key={index}
-                    style={styles.chartEditButton}
-                    onPress={() => handleEditArray('delaysByRoute', index)}
-                  >
-                    <Edit2 size={14} color={LogiPointColors.primary} />
-                    <Text style={styles.chartEditText}>Edit {route.route}</Text>
-                  </TouchableOpacity>
-                ))}
-                <TouchableOpacity
-                  style={[styles.chartEditButton, styles.addButton]}
-                  onPress={handleAddRoute}
-                >
-                  <Plus size={14} color={LogiPointColors.white} />
-                  <Text style={styles.addButtonText}>Add Route</Text>
-                </TouchableOpacity>
-              </View>
-            )}
-          </ChartCard>
-
           <ChartCard title="Trip Categories" subtitle="Distribution by location and status">
             <View style={styles.filterContainer}>
               <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterScroll}>
@@ -633,6 +559,80 @@ export default function LogisticsScreen() {
                 }));
               })()}
             />
+          </ChartCard>
+
+          <ChartCard title="Delivery Performance Trend" subtitle="On-time delivery rate by month">
+            <LineChart 
+              data={logisticsData.deliveryPerformance.filter(d => d.onTimeRate > 0).map(d => ({
+                label: d.month,
+                value: d.onTimeRate,
+                color: d.onTimeRate >= logisticsData.thresholds.green ? LogiPointColors.success : d.onTimeRate >= logisticsData.thresholds.yellow ? LogiPointColors.warning : LogiPointColors.error,
+              }))}
+              maxValue={100}
+              thresholds={logisticsData.thresholds}
+            />
+            {isAdmin && (
+              <View style={styles.chartEditButtons}>
+                {logisticsData.deliveryPerformance.map((perf, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    style={styles.chartEditButton}
+                    onPress={() => handleEditArray('deliveryPerformance', index)}
+                  >
+                    <Edit2 size={14} color={LogiPointColors.primary} />
+                    <Text style={styles.chartEditText}>Edit {perf.month}</Text>
+                  </TouchableOpacity>
+                ))}
+                <TouchableOpacity
+                  style={[styles.chartEditButton, styles.thresholdButton]}
+                  onPress={handleEditThresholds}
+                >
+                  <Edit2 size={14} color={LogiPointColors.chart.blue} />
+                  <Text style={styles.thresholdButtonText}>Edit Thresholds</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+          </ChartCard>
+
+          <ChartCard title="Delays by Route" subtitle="Number of delayed shipments and total trips">
+            <GroupedBarChart 
+              data={logisticsData.delaysByRoute.map(d => ({
+                label: d.route,
+                values: [
+                  {
+                    label: 'Delays',
+                    value: d.delays,
+                    color: LogiPointColors.error,
+                  },
+                  {
+                    label: 'Trips',
+                    value: d.trips,
+                    color: LogiPointColors.primary,
+                  },
+                ],
+              }))}
+            />
+            {isAdmin && (
+              <View style={styles.chartEditButtons}>
+                {logisticsData.delaysByRoute.map((route, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    style={styles.chartEditButton}
+                    onPress={() => handleEditArray('delaysByRoute', index)}
+                  >
+                    <Edit2 size={14} color={LogiPointColors.primary} />
+                    <Text style={styles.chartEditText}>Edit {route.route}</Text>
+                  </TouchableOpacity>
+                ))}
+                <TouchableOpacity
+                  style={[styles.chartEditButton, styles.addButton]}
+                  onPress={handleAddRoute}
+                >
+                  <Plus size={14} color={LogiPointColors.white} />
+                  <Text style={styles.addButtonText}>Add Route</Text>
+                </TouchableOpacity>
+              </View>
+            )}
           </ChartCard>
         </ScrollView>
       </View>
