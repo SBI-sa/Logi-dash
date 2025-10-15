@@ -63,15 +63,18 @@ export default function SalesScreen() {
 
   const displayedCustomers = useMemo(() => {
     console.log('Recalculating displayedCustomers for month:', selectedCustomerMonth);
-    console.log('topCustomersMonthly data:', salesData.topCustomersMonthly);
+    console.log('topCustomersMonthly data:', JSON.stringify(salesData.topCustomersMonthly));
     if (selectedCustomerMonth === 'All') {
       const totals = new Map<string, { sales: number; color: string }>();
-      Object.values(salesData.topCustomersMonthly).forEach((arr) => {
+      Object.entries(salesData.topCustomersMonthly).forEach(([month, arr]) => {
+        console.log(`Processing month ${month}:`, arr);
         arr.forEach((c) => {
           const prev = totals.get(c.name);
           if (prev) {
+            console.log(`Adding ${c.sales} to existing ${prev.sales} for ${c.name}`);
             prev.sales += c.sales;
           } else {
+            console.log(`Creating new entry for ${c.name} with ${c.sales}`);
             totals.set(c.name, { sales: c.sales, color: c.color });
           }
         });
@@ -83,7 +86,9 @@ export default function SalesScreen() {
       console.log('All view calculated result:', result);
       return result;
     }
-    return salesData.topCustomersMonthly[selectedCustomerMonth] || [];
+    const monthResult = salesData.topCustomersMonthly[selectedCustomerMonth] || [];
+    console.log(`Returning month ${selectedCustomerMonth} data:`, monthResult);
+    return monthResult;
   }, [selectedCustomerMonth, salesData.topCustomersMonthly]);
 
   const handleEdit = (field: string, currentValue: number) => {
