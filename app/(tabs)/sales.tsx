@@ -9,7 +9,7 @@ import { SimpleBarChart } from '@/components/SimpleBarChart';
 import { VerticalBarChart } from '@/components/VerticalBarChart';
 import { YearOverYearChart } from '@/components/YearOverYearChart';
 import { ComboChart } from '@/components/ComboChart';
-import { ProgressGauge } from '@/components/ProgressGauge';
+
 import { EditModal } from '@/components/EditModal';
 import { useAuth } from '@/contexts/AuthContext';
 import { useData } from '@/contexts/DataContext';
@@ -71,40 +71,7 @@ export default function SalesScreen() {
     setEditModalVisible(true);
   };
 
-  const handleEditQuarter = (quarter: 'q1' | 'q2' | 'q3' | 'q4') => {
-    setEditField(`quarter_${quarter}`);
-    const qData = salesData.quarterlyTargets[quarter];
-    const currentInMillions = (qData.current / 1000000).toFixed(2);
-    const targetInMillions = (qData.target / 1000000).toFixed(2);
-    const tempFields: { label: string; value: string; onChange: (text: string) => void; keyboardType?: 'default' | 'numeric' | 'decimal-pad' | 'email-address' }[] = [
-      { 
-        label: 'Current Revenue (in millions)', 
-        value: currentInMillions, 
-        onChange: (text) => {
-          setEditFields(prev => prev.map((f, i) => i === 0 ? { ...f, value: text } : f));
-        }, 
-        keyboardType: 'decimal-pad' 
-      },
-      { 
-        label: 'Target Revenue (in millions)', 
-        value: targetInMillions, 
-        onChange: (text) => {
-          setEditFields(prev => prev.map((f, i) => i === 1 ? { ...f, value: text } : f));
-        }, 
-        keyboardType: 'decimal-pad' 
-      },
-      { 
-        label: 'Gauge Color (hex)', 
-        value: qData.color || LogiPointColors.primary, 
-        onChange: (text) => {
-          setEditFields(prev => prev.map((f, i) => i === 2 ? { ...f, value: text } : f));
-        }, 
-        keyboardType: 'default' 
-      },
-    ];
-    setEditFields(tempFields);
-    setEditModalVisible(true);
-  };
+
 
   const handleEditArray = (field: string, index: number) => {
     setEditField(`${field}_${index}`);
@@ -283,23 +250,7 @@ export default function SalesScreen() {
 
       const updatedData = { ...salesData };
       
-      if (editField.startsWith('quarter_')) {
-        const quarter = editField.split('_')[1] as 'q1' | 'q2' | 'q3' | 'q4';
-        const currentValue = editFields[0].value.trim();
-        const targetValue = editFields[1].value.trim();
-        const currentInMillions = currentValue === '' ? 0 : parseFloat(currentValue);
-        const targetInMillions = targetValue === '' ? 0 : parseFloat(targetValue);
-        
-        updatedData.quarterlyTargets = {
-          ...salesData.quarterlyTargets,
-          [quarter]: {
-            current: currentInMillions * 1000000,
-            target: targetInMillions * 1000000,
-            color: editFields[2].value,
-          },
-        };
-      } else {
-        switch (editField) {
+      switch (editField) {
           case 'totalRevenue':
             updatedData.totalRevenue = numValue;
             break;
@@ -318,20 +269,10 @@ export default function SalesScreen() {
           case 'ytdBudget':
             updatedData.ytdBudget = numValue;
             break;
-          case 'revenueTarget':
-            updatedData.revenueTarget = numValue;
-            break;
-          case 'growthPercentage':
-            updatedData.growthPercentage = numValue;
-            break;
           case 'totalRevenueColor':
             updatedData.totalRevenueColor = editFields[0].value;
             break;
-          case 'revenueTargetColor':
-            updatedData.revenueTargetColor = editFields[0].value;
-            break;
         }
-      }
 
       updateSalesData(updatedData);
     }
@@ -451,83 +392,6 @@ export default function SalesScreen() {
             </View>
 
           </ScrollView>
-
-          <ChartCard title="Revenue Target Progress" subtitle="Quarterly Performance (in millions)">
-            <View style={styles.quarterlyContainer}>
-              <View style={styles.quarterItem}>
-                <Text style={styles.quarterLabel}>Q1</Text>
-                <ProgressGauge
-                  current={salesData.quarterlyTargets.q1.current}
-                  target={salesData.quarterlyTargets.q1.target}
-                  label="Q1 Target"
-                  color={salesData.quarterlyTargets.q1.color || LogiPointColors.primary}
-                />
-                {isAdmin && (
-                  <TouchableOpacity
-                    style={styles.quarterEditButton}
-                    onPress={() => handleEditQuarter('q1')}
-                  >
-                    <Edit2 size={14} color={LogiPointColors.primary} />
-                    <Text style={styles.chartEditText}>Edit Q1</Text>
-                  </TouchableOpacity>
-                )}
-              </View>
-              <View style={styles.quarterItem}>
-                <Text style={styles.quarterLabel}>Q2</Text>
-                <ProgressGauge
-                  current={salesData.quarterlyTargets.q2.current}
-                  target={salesData.quarterlyTargets.q2.target}
-                  label="Q2 Target"
-                  color={salesData.quarterlyTargets.q2.color || LogiPointColors.accent}
-                />
-                {isAdmin && (
-                  <TouchableOpacity
-                    style={styles.quarterEditButton}
-                    onPress={() => handleEditQuarter('q2')}
-                  >
-                    <Edit2 size={14} color={LogiPointColors.primary} />
-                    <Text style={styles.chartEditText}>Edit Q2</Text>
-                  </TouchableOpacity>
-                )}
-              </View>
-              <View style={styles.quarterItem}>
-                <Text style={styles.quarterLabel}>Q3</Text>
-                <ProgressGauge
-                  current={salesData.quarterlyTargets.q3.current}
-                  target={salesData.quarterlyTargets.q3.target}
-                  label="Q3 Target"
-                  color={salesData.quarterlyTargets.q3.color || LogiPointColors.chart.green}
-                />
-                {isAdmin && (
-                  <TouchableOpacity
-                    style={styles.quarterEditButton}
-                    onPress={() => handleEditQuarter('q3')}
-                  >
-                    <Edit2 size={14} color={LogiPointColors.primary} />
-                    <Text style={styles.chartEditText}>Edit Q3</Text>
-                  </TouchableOpacity>
-                )}
-              </View>
-              <View style={styles.quarterItem}>
-                <Text style={styles.quarterLabel}>Q4</Text>
-                <ProgressGauge
-                  current={salesData.quarterlyTargets.q4.current}
-                  target={salesData.quarterlyTargets.q4.target}
-                  label="Q4 Target"
-                  color={salesData.quarterlyTargets.q4.color || LogiPointColors.chart.blue}
-                />
-                {isAdmin && (
-                  <TouchableOpacity
-                    style={styles.quarterEditButton}
-                    onPress={() => handleEditQuarter('q4')}
-                  >
-                    <Edit2 size={14} color={LogiPointColors.primary} />
-                    <Text style={styles.chartEditText}>Edit Q4</Text>
-                  </TouchableOpacity>
-                )}
-              </View>
-            </View>
-          </ChartCard>
 
           <ChartCard title="Revenue by Segment" subtitle={selectedMonth === 'All' ? 'Year-over-Year Comparison' : `${selectedMonth} Year-over-Year Comparison`}>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.monthFilter}>
@@ -985,30 +849,6 @@ const styles = StyleSheet.create({
   },
   addButton: {
     borderColor: LogiPointColors.chart.green,
-  },
-  quarterlyContainer: {
-    gap: 20,
-  },
-  quarterItem: {
-    width: '100%',
-  },
-  quarterLabel: {
-    fontSize: 18,
-    fontWeight: '700' as const,
-    color: LogiPointColors.midnight,
-    marginBottom: 8,
-  },
-  quarterEditButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    backgroundColor: LogiPointColors.gray[100],
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: LogiPointColors.primary,
-    marginTop: 8,
   },
   varianceTable: {
     marginTop: 20,
