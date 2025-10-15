@@ -20,7 +20,7 @@ export default function SalesScreen() {
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [editField, setEditField] = useState<string>('');
   const [editValue, setEditValue] = useState<string>('');
-  const [editFields, setEditFields] = useState<{ label: string; value: string; onChange: (text: string) => void; keyboardType?: 'default' | 'numeric' | 'decimal-pad' | 'email-address' }[]>([]);
+  const [editFields, setEditFields] = useState<{ label: string; value: string; onChange: (text: string) => void; keyboardType?: 'default' | 'default' | 'decimal-pad' | 'email-address' }[]>([]);
   const [selectedMonth, setSelectedMonth] = useState<string>('All');
   const [selectedCustomerMonth, setSelectedCustomerMonth] = useState<string>('All');
 
@@ -79,13 +79,13 @@ export default function SalesScreen() {
     if (field === 'topCustomers') {
       const customers = selectedCustomerMonth === 'All' ? salesData.topCustomers : salesData.topCustomersMonthly[selectedCustomerMonth];
       const item = customers[index];
-      const tempFields: { label: string; value: string; onChange: (text: string) => void; keyboardType?: 'default' | 'numeric' | 'decimal-pad' | 'email-address' }[] = [
+      const tempFields: { label: string; value: string; onChange: (text: string) => void; keyboardType?: 'default' | 'default' | 'decimal-pad' | 'email-address' }[] = [
         { label: 'Customer Name', value: item.name, onChange: (text) => {
           setEditFields(prev => prev.map((f, i) => i === 0 ? { ...f, value: text } : f));
         }, keyboardType: 'default' },
         { label: 'Sales', value: item.sales.toString(), onChange: (text) => {
           setEditFields(prev => prev.map((f, i) => i === 1 ? { ...f, value: text } : f));
-        }, keyboardType: 'numeric' },
+        }, keyboardType: 'default' },
         { label: 'Bar Color (hex)', value: item.color, onChange: (text) => {
           setEditFields(prev => prev.map((f, i) => i === 2 ? { ...f, value: text } : f));
         }, keyboardType: 'default' },
@@ -94,16 +94,16 @@ export default function SalesScreen() {
     } else if (field === 'revenueBySegment') {
       const segments = selectedMonth === 'All' ? salesData.revenueBySegment : salesData.revenueBySegmentMonthly[selectedMonth];
       const item = segments[index];
-      const tempFields: { label: string; value: string; onChange: (text: string) => void; keyboardType?: 'default' | 'numeric' | 'decimal-pad' | 'email-address' }[] = [
+      const tempFields: { label: string; value: string; onChange: (text: string) => void; keyboardType?: 'default' | 'default' | 'decimal-pad' | 'email-address' }[] = [
         { label: 'Segment Name', value: item.segment, onChange: (text) => {
           setEditFields(prev => prev.map((f, i) => i === 0 ? { ...f, value: text } : f));
         }, keyboardType: 'default' },
         { label: 'Revenue', value: item.revenue.toString(), onChange: (text) => {
           setEditFields(prev => prev.map((f, i) => i === 1 ? { ...f, value: text } : f));
-        }, keyboardType: 'numeric' },
+        }, keyboardType: 'default' },
         { label: 'Last Year Revenue', value: (item.lastYearRevenue || 0).toString(), onChange: (text) => {
           setEditFields(prev => prev.map((f, i) => i === 2 ? { ...f, value: text } : f));
-        }, keyboardType: 'numeric' },
+        }, keyboardType: 'default' },
         { label: 'Bar Color (hex)', value: item.color || LogiPointColors.primary, onChange: (text) => {
           setEditFields(prev => prev.map((f, i) => i === 3 ? { ...f, value: text } : f));
         }, keyboardType: 'default' },
@@ -111,19 +111,19 @@ export default function SalesScreen() {
       setEditFields(tempFields);
     } else if (field === 'monthlyRevenue') {
       const item = salesData.monthlyRevenue[index];
-      const tempFields: { label: string; value: string; onChange: (text: string) => void; keyboardType?: 'default' | 'numeric' | 'decimal-pad' | 'email-address' }[] = [
+      const tempFields: { label: string; value: string; onChange: (text: string) => void; keyboardType?: 'default' | 'default' | 'decimal-pad' | 'email-address' }[] = [
         { label: 'Month', value: item.month, onChange: (text) => {
           setEditFields(prev => prev.map((f, i) => i === 0 ? { ...f, value: text } : f));
         }, keyboardType: 'default' },
         { label: 'Revenue', value: item.revenue.toString(), onChange: (text) => {
           setEditFields(prev => prev.map((f, i) => i === 1 ? { ...f, value: text } : f));
-        }, keyboardType: 'numeric' },
+        }, keyboardType: 'default' },
         { label: 'Budget', value: item.budget.toString(), onChange: (text) => {
           setEditFields(prev => prev.map((f, i) => i === 2 ? { ...f, value: text } : f));
-        }, keyboardType: 'numeric' },
+        }, keyboardType: 'default' },
         { label: 'Last Year Revenue', value: (item.lastYearRevenue || 0).toString(), onChange: (text) => {
           setEditFields(prev => prev.map((f, i) => i === 3 ? { ...f, value: text } : f));
-        }, keyboardType: 'numeric' },
+        }, keyboardType: 'default' },
         { label: 'Revenue Bar Color (hex)', value: item.revenueColor || LogiPointColors.primary, onChange: (text) => {
           setEditFields(prev => prev.map((f, i) => i === 4 ? { ...f, value: text } : f));
         }, keyboardType: 'default' },
@@ -137,16 +137,16 @@ export default function SalesScreen() {
       setEditFields(tempFields);
     } else if (field === 'accountManagers') {
       const item = salesData.accountManagers[index];
-      const tempFields: { label: string; value: string; onChange: (text: string) => void; keyboardType?: 'default' | 'numeric' | 'decimal-pad' | 'email-address' }[] = [
+      const tempFields: { label: string; value: string; onChange: (text: string) => void; keyboardType?: 'default' | 'default' | 'decimal-pad' | 'email-address' }[] = [
         { label: 'Manager Name', value: item.name, onChange: (text) => {
           setEditFields(prev => prev.map((f, i) => i === 0 ? { ...f, value: text } : f));
         }, keyboardType: 'default' },
         { label: 'Revenue Generated', value: item.revenue.toString(), onChange: (text) => {
           setEditFields(prev => prev.map((f, i) => i === 1 ? { ...f, value: text } : f));
-        }, keyboardType: 'numeric' },
+        }, keyboardType: 'default' },
         { label: 'Budget', value: item.budget.toString(), onChange: (text) => {
           setEditFields(prev => prev.map((f, i) => i === 2 ? { ...f, value: text } : f));
-        }, keyboardType: 'numeric' },
+        }, keyboardType: 'default' },
         { label: 'Bar Color (hex)', value: item.color || LogiPointColors.chart.green, onChange: (text) => {
           setEditFields(prev => prev.map((f, i) => i === 3 ? { ...f, value: text } : f));
         }, keyboardType: 'default' },
@@ -474,13 +474,13 @@ export default function SalesScreen() {
                       setEditFields([
                         { label: 'Current Revenue', value: q.current.toString(), onChange: (text) => {
                           setEditFields(prev => prev.map((f, i) => i === 0 ? { ...f, value: text } : f));
-                        }, keyboardType: 'numeric' },
+                        }, keyboardType: 'default' },
                         { label: 'Budget', value: q.target.toString(), onChange: (text) => {
                           setEditFields(prev => prev.map((f, i) => i === 1 ? { ...f, value: text } : f));
-                        }, keyboardType: 'numeric' },
+                        }, keyboardType: 'default' },
                         { label: 'Last Year Revenue', value: (q.lastYear || 0).toString(), onChange: (text) => {
                           setEditFields(prev => prev.map((f, i) => i === 2 ? { ...f, value: text } : f));
-                        }, keyboardType: 'numeric' },
+                        }, keyboardType: 'default' },
                         { label: 'Bar Color (hex)', value: q.color || LogiPointColors.primary, onChange: (text) => {
                           setEditFields(prev => prev.map((f, i) => i === 3 ? { ...f, value: text } : f));
                         }, keyboardType: 'default' },
