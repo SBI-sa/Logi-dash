@@ -62,6 +62,8 @@ export default function SalesScreen() {
   }, [selectedMonth, salesData.revenueBySegmentMonthly]);
 
   const displayedCustomers = useMemo(() => {
+    console.log('Recalculating displayedCustomers for month:', selectedCustomerMonth);
+    console.log('topCustomersMonthly data:', salesData.topCustomersMonthly);
     if (selectedCustomerMonth === 'All') {
       const totals = new Map<string, { sales: number; color: string }>();
       Object.values(salesData.topCustomersMonthly).forEach((arr) => {
@@ -74,10 +76,12 @@ export default function SalesScreen() {
           }
         });
       });
-      return Array.from(totals.entries())
+      const result = Array.from(totals.entries())
         .map(([name, v]) => ({ name, sales: v.sales, color: v.color }))
         .sort((a, b) => b.sales - a.sales)
         .slice(0, 5);
+      console.log('All view calculated result:', result);
+      return result;
     }
     return salesData.topCustomersMonthly[selectedCustomerMonth] || [];
   }, [selectedCustomerMonth, salesData.topCustomersMonthly]);
