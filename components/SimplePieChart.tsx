@@ -23,7 +23,7 @@ export const SimplePieChart = React.memo(function SimplePieChart({
   centerValue 
 }: SimplePieChartProps) {
   const total = data.reduce((sum, item) => sum + item.value, 0);
-  const radius = size / 2 - 10;
+  const radius = size / 2 - 25;
   const circumference = 2 * Math.PI * radius;
   
   let currentAngle = -90;
@@ -57,7 +57,7 @@ export const SimplePieChart = React.memo(function SimplePieChart({
                 cy={size / 2}
                 r={radius}
                 stroke={segment.color}
-                strokeWidth={20}
+                strokeWidth={40}
                 fill="none"
                 strokeDasharray={segment.strokeDasharray}
                 strokeDashoffset={0}
@@ -76,13 +76,19 @@ export const SimplePieChart = React.memo(function SimplePieChart({
       </View>
       
       <View style={styles.legend}>
-        {data.map((item, index) => (
-          <View key={index} style={styles.legendItem}>
-            <View style={[styles.legendColor, { backgroundColor: item.color }]} />
-            <Text style={styles.legendLabel}>{item.label}</Text>
-            <Text style={styles.legendValue}>{item.value.toLocaleString()}</Text>
-          </View>
-        ))}
+        {data.map((item, index) => {
+          const percentage = ((item.value / total) * 100).toFixed(1);
+          return (
+            <View key={index} style={styles.legendItem}>
+              <View style={[styles.legendColor, { backgroundColor: item.color }]} />
+              <Text style={styles.legendLabel}>{item.label}</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Text style={styles.legendValue}>{item.value.toLocaleString()}</Text>
+                <Text style={styles.legendPercentage}>({percentage}%)</Text>
+              </View>
+            </View>
+          );
+        })}
       </View>
     </View>
   );
@@ -137,5 +143,11 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '600' as const,
     color: LogiPointColors.midnight,
+  },
+  legendPercentage: {
+    fontSize: 12,
+    fontWeight: '500' as const,
+    color: LogiPointColors.gray[600],
+    marginLeft: 4,
   },
 });
