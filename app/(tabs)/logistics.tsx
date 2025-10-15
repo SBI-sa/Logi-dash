@@ -7,7 +7,7 @@ import { KPICard } from '@/components/KPICard';
 import { ChartCard } from '@/components/ChartCard';
 import { GroupedBarChart } from '@/components/GroupedBarChart';
 import { LineChart } from '@/components/LineChart';
-import { SimpleBarChart } from '@/components/SimpleBarChart';
+import { SimplePieChart } from '@/components/SimplePieChart';
 import { EditModal } from '@/components/EditModal';
 import { useAuth } from '@/contexts/AuthContext';
 import { useData } from '@/contexts/DataContext';
@@ -517,7 +517,7 @@ export default function LogisticsScreen() {
               </TouchableOpacity>
             )}
             <View style={styles.chartDivider} />
-            <SimpleBarChart
+            <SimplePieChart
               data={(() => {
                 let displayCategories;
                 
@@ -558,6 +558,7 @@ export default function LogisticsScreen() {
                          LogiPointColors.accent,
                 }));
               })()}
+              size={200}
             />
           </ChartCard>
 
