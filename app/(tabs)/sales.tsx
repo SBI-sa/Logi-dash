@@ -28,10 +28,33 @@ export default function SalesScreen() {
 
   const displayedSegments = useMemo(() => {
     if (selectedMonth === 'All') {
-      return salesData.revenueBySegment;
+      const segmentTotals = new Map<string, { revenue: number; lastYearRevenue: number; color?: string }>();
+      
+      Object.values(salesData.revenueBySegmentMonthly).forEach(monthSegments => {
+        monthSegments.forEach(segment => {
+          const existing = segmentTotals.get(segment.segment);
+          if (existing) {
+            existing.revenue += segment.revenue;
+            existing.lastYearRevenue += segment.lastYearRevenue || 0;
+          } else {
+            segmentTotals.set(segment.segment, {
+              revenue: segment.revenue,
+              lastYearRevenue: segment.lastYearRevenue || 0,
+              color: segment.color,
+            });
+          }
+        });
+      });
+      
+      return Array.from(segmentTotals.entries()).map(([segment, data]) => ({
+        segment,
+        revenue: data.revenue,
+        lastYearRevenue: data.lastYearRevenue,
+        color: data.color,
+      }));
     }
     return salesData.revenueBySegmentMonthly[selectedMonth] || [];
-  }, [selectedMonth, salesData.revenueBySegment, salesData.revenueBySegmentMonthly]);
+  }, [selectedMonth, salesData.revenueBySegmentMonthly]);
 
   const displayedCustomers = useMemo(() => {
     if (selectedCustomerMonth === 'All') {
