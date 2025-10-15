@@ -10,12 +10,12 @@ interface EditModalProps {
   onChangeText: (text: string) => void;
   onSave: () => void;
   onCancel: () => void;
-  keyboardType?: 'default' | 'numeric' | 'email-address';
+  keyboardType?: 'default' | 'numeric' | 'email-address' | 'decimal-pad';
   fields?: { 
     label: string; 
     value: string; 
     onChange: (text: string) => void; 
-    keyboardType?: 'default' | 'numeric' | 'email-address';
+    keyboardType?: 'default' | 'numeric' | 'email-address' | 'decimal-pad';
     type?: 'text' | 'dropdown';
     options?: string[];
   }[];

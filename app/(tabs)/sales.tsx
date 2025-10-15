@@ -20,7 +20,7 @@ export default function SalesScreen() {
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [editField, setEditField] = useState<string>('');
   const [editValue, setEditValue] = useState<string>('');
-  const [editFields, setEditFields] = useState<{ label: string; value: string; onChange: (text: string) => void; keyboardType?: 'default' | 'numeric' }[]>([]);
+  const [editFields, setEditFields] = useState<{ label: string; value: string; onChange: (text: string) => void; keyboardType?: 'default' | 'numeric' | 'decimal-pad' | 'email-address' }[]>([]);
   const [selectedMonth, setSelectedMonth] = useState<string>('All');
   const [selectedCustomerMonth, setSelectedCustomerMonth] = useState<string>('All');
 
@@ -74,13 +74,13 @@ export default function SalesScreen() {
   const handleEditQuarter = (quarter: 'q1' | 'q2' | 'q3' | 'q4') => {
     setEditField(`quarter_${quarter}`);
     const qData = salesData.quarterlyTargets[quarter];
-    const tempFields: { label: string; value: string; onChange: (text: string) => void; keyboardType?: 'default' | 'numeric' }[] = [
+    const tempFields: { label: string; value: string; onChange: (text: string) => void; keyboardType?: 'default' | 'numeric' | 'decimal-pad' | 'email-address' }[] = [
       { label: 'Current Revenue (in millions)', value: (qData.current / 1000000).toString(), onChange: (text) => {
         setEditFields(prev => prev.map((f, i) => i === 0 ? { ...f, value: text } : f));
-      }, keyboardType: 'numeric' },
+      }, keyboardType: 'decimal-pad' },
       { label: 'Target Revenue (in millions)', value: (qData.target / 1000000).toString(), onChange: (text) => {
         setEditFields(prev => prev.map((f, i) => i === 1 ? { ...f, value: text } : f));
-      }, keyboardType: 'numeric' },
+      }, keyboardType: 'decimal-pad' },
       { label: 'Gauge Color (hex)', value: qData.color || LogiPointColors.primary, onChange: (text) => {
         setEditFields(prev => prev.map((f, i) => i === 2 ? { ...f, value: text } : f));
       }, keyboardType: 'default' },
@@ -95,7 +95,7 @@ export default function SalesScreen() {
     if (field === 'topCustomers') {
       const customers = selectedCustomerMonth === 'All' ? salesData.topCustomers : salesData.topCustomersMonthly[selectedCustomerMonth];
       const item = customers[index];
-      const tempFields: { label: string; value: string; onChange: (text: string) => void; keyboardType?: 'default' | 'numeric' }[] = [
+      const tempFields: { label: string; value: string; onChange: (text: string) => void; keyboardType?: 'default' | 'numeric' | 'decimal-pad' | 'email-address' }[] = [
         { label: 'Customer Name', value: item.name, onChange: (text) => {
           setEditFields(prev => prev.map((f, i) => i === 0 ? { ...f, value: text } : f));
         }, keyboardType: 'default' },
@@ -110,7 +110,7 @@ export default function SalesScreen() {
     } else if (field === 'revenueBySegment') {
       const segments = selectedMonth === 'All' ? salesData.revenueBySegment : salesData.revenueBySegmentMonthly[selectedMonth];
       const item = segments[index];
-      const tempFields: { label: string; value: string; onChange: (text: string) => void; keyboardType?: 'default' | 'numeric' }[] = [
+      const tempFields: { label: string; value: string; onChange: (text: string) => void; keyboardType?: 'default' | 'numeric' | 'decimal-pad' | 'email-address' }[] = [
         { label: 'Segment Name', value: item.segment, onChange: (text) => {
           setEditFields(prev => prev.map((f, i) => i === 0 ? { ...f, value: text } : f));
         }, keyboardType: 'default' },
@@ -127,7 +127,7 @@ export default function SalesScreen() {
       setEditFields(tempFields);
     } else if (field === 'monthlyRevenue') {
       const item = salesData.monthlyRevenue[index];
-      const tempFields: { label: string; value: string; onChange: (text: string) => void; keyboardType?: 'default' | 'numeric' }[] = [
+      const tempFields: { label: string; value: string; onChange: (text: string) => void; keyboardType?: 'default' | 'numeric' | 'decimal-pad' | 'email-address' }[] = [
         { label: 'Month', value: item.month, onChange: (text) => {
           setEditFields(prev => prev.map((f, i) => i === 0 ? { ...f, value: text } : f));
         }, keyboardType: 'default' },
@@ -153,7 +153,7 @@ export default function SalesScreen() {
       setEditFields(tempFields);
     } else if (field === 'accountManagers') {
       const item = salesData.accountManagers[index];
-      const tempFields: { label: string; value: string; onChange: (text: string) => void; keyboardType?: 'default' | 'numeric' }[] = [
+      const tempFields: { label: string; value: string; onChange: (text: string) => void; keyboardType?: 'default' | 'numeric' | 'decimal-pad' | 'email-address' }[] = [
         { label: 'Manager Name', value: item.name, onChange: (text) => {
           setEditFields(prev => prev.map((f, i) => i === 0 ? { ...f, value: text } : f));
         }, keyboardType: 'default' },
