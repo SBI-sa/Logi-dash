@@ -75,10 +75,10 @@ export default function SalesScreen() {
     setEditField(`quarter_${quarter}`);
     const qData = salesData.quarterlyTargets[quarter];
     const tempFields: { label: string; value: string; onChange: (text: string) => void; keyboardType?: 'default' | 'numeric' }[] = [
-      { label: 'Current Revenue', value: qData.current.toString(), onChange: (text) => {
+      { label: 'Current Revenue (in millions)', value: (qData.current / 1000000).toString(), onChange: (text) => {
         setEditFields(prev => prev.map((f, i) => i === 0 ? { ...f, value: text } : f));
       }, keyboardType: 'numeric' },
-      { label: 'Target Revenue', value: qData.target.toString(), onChange: (text) => {
+      { label: 'Target Revenue (in millions)', value: (qData.target / 1000000).toString(), onChange: (text) => {
         setEditFields(prev => prev.map((f, i) => i === 1 ? { ...f, value: text } : f));
       }, keyboardType: 'numeric' },
       { label: 'Gauge Color (hex)', value: qData.color || LogiPointColors.primary, onChange: (text) => {
@@ -271,8 +271,8 @@ export default function SalesScreen() {
         updatedData.quarterlyTargets = {
           ...salesData.quarterlyTargets,
           [quarter]: {
-            current: parseFloat(editFields[0].value) || 0,
-            target: parseFloat(editFields[1].value) || 0,
+            current: (parseFloat(editFields[0].value) || 0) * 1000000,
+            target: (parseFloat(editFields[1].value) || 0) * 1000000,
             color: editFields[2].value,
           },
         };
