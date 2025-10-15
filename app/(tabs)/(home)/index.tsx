@@ -63,11 +63,7 @@ export default function HomeScreen() {
         <View style={[styles.topBar, { paddingTop: insets.top + 12 }]}>
           <View style={styles.topBarContent}>
             <View style={styles.spacer} />
-            <Image 
-              source={{ uri: 'https://pub-e001eb4506b145aa938b5d3badbff6a5.r2.dev/attachments/6i63r3f3g5rj13mpkqly7' }}
-              style={styles.headerLogoImage}
-              resizeMode="contain"
-            />
+            <Text style={styles.dashboardTitle}>Logipoint Management Reporting Dashboard</Text>
             <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
               <LogOut size={20} color={LogiPointColors.white} />
               <Text style={styles.logoutText}>Logout</Text>
@@ -159,10 +155,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700' as const,
     textAlign: 'center',
-  },
-  headerLogoImage: {
-    flex: 1,
-    height: 40,
   },
   scrollView: {
     flex: 1,
