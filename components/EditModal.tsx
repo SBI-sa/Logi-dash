@@ -95,7 +95,6 @@ export function EditModal({
                       onChangeText={field.onChange}
                       keyboardType={field.keyboardType || 'default'}
                       placeholder={`Enter ${field.label.toLowerCase()}`}
-                      maxLength={1000}
                     />
                   )}
                 </View>
@@ -107,7 +106,6 @@ export function EditModal({
                 onChangeText={onChangeText}
                 keyboardType={keyboardType}
                 placeholder="Enter value"
-                maxLength={1000}
               />
             )}
           </ScrollView>
