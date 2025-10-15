@@ -475,6 +475,39 @@ export default function SalesScreen() {
 
           {renderQuarterlyRevenueComparison()}
 
+          <View style={styles.quarterlyTable}>
+            <Text style={styles.quarterlyTableTitle}>Quarterly Revenue Details</Text>
+            {(['q1', 'q2', 'q3', 'q4'] as const).map((q) => {
+              const qData = salesData.quarterlyTargets[q];
+              const lastYearValue = qData.lastYear ?? 0;
+              const growth = lastYearValue > 0 
+                ? ((qData.current - lastYearValue) / lastYearValue * 100).toFixed(1)
+                : '0.0';
+              const isPositive = parseFloat(growth) >= 0;
+              const budgetVariance = qData.target > 0
+                ? ((qData.current - qData.target) / qData.target * 100).toFixed(1)
+                : '0.0';
+              const isBudgetPositive = parseFloat(budgetVariance) >= 0;
+              
+              return (
+                <View key={q} style={styles.quarterlyTableRow}>
+                  <Text style={styles.quarterlyTableQuarter}>{q.toUpperCase()}</Text>
+                  <View style={styles.quarterlyTableValues}>
+                    <Text style={styles.quarterlyTableValue}>2025: {formatCurrency(qData.current)}</Text>
+                    <Text style={styles.quarterlyTableValue}>Budget: {formatCurrency(qData.target)}</Text>
+                    <Text style={styles.quarterlyTableValue}>2024: {formatCurrency(qData.lastYear ?? 0)}</Text>
+                    <Text style={[styles.quarterlyTableGrowth, isBudgetPositive ? styles.growthPositive : styles.growthNegative]}>
+                      vs Budget: {isBudgetPositive ? '+' : ''}{budgetVariance}%
+                    </Text>
+                    <Text style={[styles.quarterlyTableGrowth, isPositive ? styles.growthPositive : styles.growthNegative]}>
+                      YoY: {isPositive ? '+' : ''}{growth}%
+                    </Text>
+                  </View>
+                </View>
+              );
+            })}
+          </View>
+
           <ChartCard title="Revenue by Segment" subtitle={selectedMonth === 'All' ? 'Year-over-Year Comparison' : `${selectedMonth} Year-over-Year Comparison`}>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.monthFilter}>
               {months.map((month) => (
@@ -1027,5 +1060,51 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '600' as const,
     color: LogiPointColors.primary,
+  },
+  quarterlyTable: {
+    marginTop: 20,
+    padding: 16,
+    backgroundColor: LogiPointColors.white,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: LogiPointColors.gray[200],
+  },
+  quarterlyTableTitle: {
+    fontSize: 16,
+    fontWeight: '700' as const,
+    color: LogiPointColors.midnight,
+    marginBottom: 12,
+  },
+  quarterlyTableRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 12,
+    paddingBottom: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: LogiPointColors.gray[200],
+  },
+  quarterlyTableQuarter: {
+    fontSize: 14,
+    fontWeight: '600' as const,
+    color: LogiPointColors.midnight,
+    width: 50,
+  },
+  quarterlyTableValues: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: 8,
+    marginHorizontal: 12,
+  },
+  quarterlyTableValue: {
+    fontSize: 12,
+    color: LogiPointColors.gray[600],
+  },
+  quarterlyTableGrowth: {
+    fontSize: 13,
+    fontWeight: '700' as const,
   },
 });
