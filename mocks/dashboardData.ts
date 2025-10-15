@@ -15,6 +15,12 @@ export interface SalesData {
     q3: { current: number; target: number; lastYear?: number; color?: string };
     q4: { current: number; target: number; lastYear?: number; color?: string };
   };
+  quarterlyLabelling: {
+    q1: { current: number; lastYear: number; color?: string };
+    q2: { current: number; lastYear: number; color?: string };
+    q3: { current: number; lastYear: number; color?: string };
+    q4: { current: number; lastYear: number; color?: string };
+  };
   topProducts: { name: string; sales: number }[];
   topCustomers: { name: string; sales: number; color: string }[];
   topCustomersMonthly: { [month: string]: { name: string; sales: number; color: string }[] };
@@ -187,6 +193,12 @@ export const mockSalesData: SalesData = {
     q2: { current: 3700000, target: 3750000, lastYear: 3400000 },
     q3: { current: 3000000, target: 3750000, lastYear: 2800000 },
     q4: { current: 0, target: 4000000, lastYear: 3400000 },
+  },
+  quarterlyLabelling: {
+    q1: { current: 12500, lastYear: 11200, color: '#00617f' },
+    q2: { current: 13800, lastYear: 12500, color: '#00617f' },
+    q3: { current: 14200, lastYear: 13100, color: '#00617f' },
+    q4: { current: 15000, lastYear: 13800, color: '#00617f' },
   },
   topProducts: [
     { name: 'Product A', sales: 2500000 },

@@ -9,6 +9,7 @@ import { SimpleBarChart } from '@/components/SimpleBarChart';
 import { VerticalBarChart } from '@/components/VerticalBarChart';
 import { YearOverYearChart } from '@/components/YearOverYearChart';
 import { ComboChart } from '@/components/ComboChart';
+import { DonutPieChart } from '@/components/DonutPieChart';
 
 
 import { EditModal } from '@/components/EditModal';
@@ -76,7 +77,22 @@ export default function SalesScreen() {
   const handleEditArray = (field: string, index: number) => {
     setEditField(`${field}_${index}`);
     
-    if (field === 'topCustomers') {
+    if (field === 'quarterlyLabelling') {
+      const quarter = (['q1', 'q2', 'q3', 'q4'][index]) as 'q1' | 'q2' | 'q3' | 'q4';
+      const item = salesData.quarterlyLabelling[quarter];
+      const tempFields: { label: string; value: string; onChange: (text: string) => void; keyboardType?: 'default' | 'default' | 'decimal-pad' | 'email-address' }[] = [
+        { label: '2025 Value', value: item.current.toString(), onChange: (text) => {
+          setEditFields(prev => prev.map((f, i) => i === 0 ? { ...f, value: text } : f));
+        }, keyboardType: 'default' },
+        { label: '2024 Value', value: item.lastYear.toString(), onChange: (text) => {
+          setEditFields(prev => prev.map((f, i) => i === 1 ? { ...f, value: text } : f));
+        }, keyboardType: 'default' },
+        { label: 'Color (hex)', value: item.color || '#00617f', onChange: (text) => {
+          setEditFields(prev => prev.map((f, i) => i === 2 ? { ...f, value: text } : f));
+        }, keyboardType: 'default' },
+      ];
+      setEditFields(tempFields);
+    } else if (field === 'topCustomers') {
       const customers = selectedCustomerMonth === 'All' ? salesData.topCustomers : salesData.topCustomersMonthly[selectedCustomerMonth];
       const item = customers[index];
       const tempFields: { label: string; value: string; onChange: (text: string) => void; keyboardType?: 'default' | 'default' | 'decimal-pad' | 'email-address' }[] = [
@@ -178,7 +194,17 @@ export default function SalesScreen() {
       
       const updatedData = { ...salesData };
       
-      if (fieldName === 'quarterlyTargets') {
+      if (fieldName === 'quarterlyLabelling') {
+        const quarter = (['q1', 'q2', 'q3', 'q4'][parseInt(indexStr)]) as 'q1' | 'q2' | 'q3' | 'q4';
+        updatedData.quarterlyLabelling = {
+          ...salesData.quarterlyLabelling,
+          [quarter]: {
+            current: parseFloat(editFields[0].value) || 0,
+            lastYear: parseFloat(editFields[1].value) || 0,
+            color: editFields[2].value,
+          },
+        };
+      } else if (fieldName === 'quarterlyTargets') {
         const quarter = (indexStr as 'q1' | 'q2' | 'q3' | 'q4');
         updatedData.quarterlyTargets = {
           ...salesData.quarterlyTargets,
@@ -582,6 +608,72 @@ export default function SalesScreen() {
             </View>
           </ChartCard>
 
+          <ChartCard title="Quarterly Labelling Comparison" subtitle="2025 vs 2024">
+            <View style={styles.quarterlyGrid}>
+              {(['q1', 'q2', 'q3', 'q4'] as const).map((quarter, index) => {
+                const data = salesData.quarterlyLabelling[quarter];
+                return (
+                  <View key={quarter} style={styles.quarterCard}>
+                    <Text style={styles.quarterTitle}>Q{index + 1}</Text>
+                    <DonutPieChart
+                      data={[
+                        { label: '2025', value: data.current, color: data.color || '#00617f' },
+                        { label: '2024', value: data.lastYear, color: '#a0a0a0' },
+                      ]}
+                      size={140}
+                      showLegend={false}
+                    />
+                    <View style={styles.quarterLegend}>
+                      <View style={styles.quarterLegendRow}>
+                        <View style={[styles.quarterLegendDot, { backgroundColor: data.color || '#00617f' }]} />
+                        <Text style={styles.quarterLegendLabel}>2025</Text>
+                        <Text style={styles.quarterLegendValue}>{data.current.toLocaleString()}</Text>
+                      </View>
+                      <View style={styles.quarterLegendRow}>
+                        <View style={[styles.quarterLegendDot, { backgroundColor: '#a0a0a0' }]} />
+                        <Text style={styles.quarterLegendLabel}>2024</Text>
+                        <Text style={styles.quarterLegendValue}>{data.lastYear.toLocaleString()}</Text>
+                      </View>
+                    </View>
+                    {isAdmin && (
+                      <TouchableOpacity
+                        style={styles.quarterEditButton}
+                        onPress={() => handleEditArray('quarterlyLabelling', index)}
+                      >
+                        <Edit2 size={14} color={LogiPointColors.white} />
+                        <Text style={styles.quarterEditText}>Edit</Text>
+                      </TouchableOpacity>
+                    )}
+                  </View>
+                );
+              })}
+            </View>
+            <View style={styles.quarterlyTable}>
+              <Text style={styles.quarterlyTableTitle}>Quarterly Breakdown</Text>
+              <View style={styles.tableHeader}>
+                <Text style={[styles.tableHeaderText, styles.tableQuarterCol]}>Quarter</Text>
+                <Text style={[styles.tableHeaderText, styles.tableValueCol]}>2025</Text>
+                <Text style={[styles.tableHeaderText, styles.tableValueCol]}>2024</Text>
+                <Text style={[styles.tableHeaderText, styles.tableChangeCol]}>Change</Text>
+              </View>
+              {(['q1', 'q2', 'q3', 'q4'] as const).map((quarter, index) => {
+                const data = salesData.quarterlyLabelling[quarter];
+                const change = data.lastYear > 0 ? ((data.current - data.lastYear) / data.lastYear * 100).toFixed(1) : '0.0';
+                const isPositive = parseFloat(change) >= 0;
+                return (
+                  <View key={quarter} style={styles.tableRow}>
+                    <Text style={[styles.tableCell, styles.tableQuarterCol]}>Q{index + 1}</Text>
+                    <Text style={[styles.tableCell, styles.tableValueCol]}>{data.current.toLocaleString()}</Text>
+                    <Text style={[styles.tableCell, styles.tableValueCol]}>{data.lastYear.toLocaleString()}</Text>
+                    <Text style={[styles.tableCell, styles.tableChangeCol, isPositive ? styles.changePositive : styles.changeNegative]}>
+                      {isPositive ? '+' : ''}{change}%
+                    </Text>
+                  </View>
+                );
+              })}
+            </View>
+          </ChartCard>
+
           <ChartCard title="Account Manager Performance" subtitle="Revenue vs Budget in SAR">
             <VerticalBarChart 
               data={salesData.accountManagers.map(am => ({
@@ -937,5 +1029,124 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: LogiPointColors.primary,
   },
-
+  quarterlyGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 16,
+    justifyContent: 'space-between',
+  },
+  quarterCard: {
+    width: '48%',
+    backgroundColor: LogiPointColors.gray[50],
+    borderRadius: 12,
+    padding: 16,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: LogiPointColors.gray[200],
+    position: 'relative',
+  },
+  quarterTitle: {
+    fontSize: 18,
+    fontWeight: '700' as const,
+    color: LogiPointColors.midnight,
+    marginBottom: 12,
+  },
+  quarterLegend: {
+    marginTop: 12,
+    width: '100%',
+    gap: 8,
+  },
+  quarterLegendRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  quarterLegendDot: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+  },
+  quarterLegendLabel: {
+    flex: 1,
+    fontSize: 13,
+    fontWeight: '600' as const,
+    color: LogiPointColors.gray[700],
+  },
+  quarterLegendValue: {
+    fontSize: 13,
+    fontWeight: '700' as const,
+    color: LogiPointColors.midnight,
+  },
+  quarterEditButton: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: LogiPointColors.primary,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  quarterEditText: {
+    fontSize: 11,
+    fontWeight: '600' as const,
+    color: LogiPointColors.white,
+  },
+  quarterlyTable: {
+    marginTop: 20,
+    backgroundColor: LogiPointColors.gray[50],
+    borderRadius: 12,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: LogiPointColors.gray[200],
+  },
+  quarterlyTableTitle: {
+    fontSize: 16,
+    fontWeight: '700' as const,
+    color: LogiPointColors.midnight,
+    marginBottom: 12,
+  },
+  tableHeader: {
+    flexDirection: 'row',
+    paddingBottom: 12,
+    borderBottomWidth: 2,
+    borderBottomColor: LogiPointColors.gray[300],
+    marginBottom: 8,
+  },
+  tableHeaderText: {
+    fontSize: 13,
+    fontWeight: '700' as const,
+    color: LogiPointColors.midnight,
+  },
+  tableRow: {
+    flexDirection: 'row',
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: LogiPointColors.gray[200],
+  },
+  tableCell: {
+    fontSize: 13,
+    color: LogiPointColors.gray[700],
+  },
+  tableQuarterCol: {
+    width: '20%',
+    fontWeight: '600' as const,
+  },
+  tableValueCol: {
+    width: '27%',
+    textAlign: 'right' as const,
+  },
+  tableChangeCol: {
+    width: '26%',
+    textAlign: 'right' as const,
+    fontWeight: '700' as const,
+  },
+  changePositive: {
+    color: LogiPointColors.chart.green,
+  },
+  changeNegative: {
+    color: LogiPointColors.accent,
+  },
 });
