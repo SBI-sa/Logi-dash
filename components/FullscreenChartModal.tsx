@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Modal, View, Text, StyleSheet, TouchableOpacity, Dimensions, Platform } from 'react-native';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import { X, Maximize2 } from 'lucide-react-native';
@@ -19,34 +19,77 @@ export const FullscreenChartModal = React.memo(function FullscreenChartModal({
   children,
   onClose,
 }: FullscreenChartModalProps) {
+  const opInFlight = useRef<Promise<void> | null>(null);
+  const lastLocked = useRef<'portrait' | 'landscape' | null>(null);
+
   useEffect(() => {
     if (Platform.OS === 'web') {
       return;
     }
 
-    const lockOrientation = async () => {
+    let cancelled = false;
+
+    const runSerial = async (fn: () => Promise<void>) => {
+      const prev = opInFlight.current;
       try {
-        if (visible) {
-          await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE);
-        } else {
-          await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
+        if (prev) {
+          await prev.catch(() => undefined);
         }
-      } catch (error) {
-        console.log('Screen orientation lock not supported:', error);
+      } finally {
+        if (!cancelled) {
+          const p = fn().catch((e) => {
+            console.log('[orientation] lock error', e);
+          });
+          opInFlight.current = p;
+          await p;
+        }
       }
     };
 
-    lockOrientation();
+    const applyOrientation = async () => {
+      try {
+        const desired = visible ? 'landscape' : 'portrait';
+        if (lastLocked.current === desired) {
+          return;
+        }
+
+        const lock = visible
+          ? ScreenOrientation.OrientationLock.LANDSCAPE
+          : ScreenOrientation.OrientationLock.PORTRAIT_UP;
+
+        const isSupported = await ScreenOrientation.supportsOrientationLockAsync(lock).catch(() => false);
+        if (!isSupported) {
+          console.log('[orientation] desired lock not supported on this device');
+          lastLocked.current = desired;
+          return;
+        }
+
+        await ScreenOrientation.lockAsync(lock);
+        lastLocked.current = desired;
+      } catch (error) {
+        console.log('[orientation] lockAsync failed', error);
+      }
+    };
+
+    runSerial(applyOrientation);
 
     return () => {
-      const unlockOrientation = async () => {
-        try {
-          await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
-        } catch (error) {
-          console.log('Screen orientation unlock error:', error);
-        }
-      };
-      unlockOrientation();
+      cancelled = true;
+      if (Platform.OS !== 'web') {
+        runSerial(async () => {
+          try {
+            const isSupported = await ScreenOrientation.supportsOrientationLockAsync(
+              ScreenOrientation.OrientationLock.PORTRAIT_UP,
+            ).catch(() => false);
+            if (isSupported) {
+              await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
+              lastLocked.current = 'portrait';
+            }
+          } catch (e) {
+            console.log('[orientation] restore portrait failed', e);
+          }
+        });
+      }
     };
   }, [visible]);
 
