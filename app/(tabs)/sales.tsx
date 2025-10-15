@@ -9,7 +9,6 @@ import { SimpleBarChart } from '@/components/SimpleBarChart';
 import { VerticalBarChart } from '@/components/VerticalBarChart';
 import { YearOverYearChart } from '@/components/YearOverYearChart';
 import { ComboChart } from '@/components/ComboChart';
-import { GroupedBarChart } from '@/components/GroupedBarChart';
 
 import { EditModal } from '@/components/EditModal';
 import { useAuth } from '@/contexts/AuthContext';
@@ -409,42 +408,60 @@ export default function SalesScreen() {
           </ScrollView>
 
           <ChartCard title="Quarterly Revenue Tracker" subtitle="Current vs Budget vs Last Year">
-            <GroupedBarChart 
+            <ComboChart 
               data={[
                 {
                   label: 'Q1',
-                  values: [
-                    { label: 'Current', value: salesData.quarterlyTargets.q1.current, color: salesData.quarterlyTargets.q1.color || LogiPointColors.primary },
-                    { label: 'Budget', value: salesData.quarterlyTargets.q1.target, color: LogiPointColors.accent },
-                    { label: 'Last Year', value: salesData.quarterlyTargets.q1.lastYear || 0, color: LogiPointColors.beige },
-                  ],
+                  actual: salesData.quarterlyTargets.q1.current,
+                  budget: salesData.quarterlyTargets.q1.target,
+                  lastYear: salesData.quarterlyTargets.q1.lastYear || 0,
+                  barColor: salesData.quarterlyTargets.q1.color || LogiPointColors.primary,
+                  lineColor: LogiPointColors.accent,
+                  lastYearColor: LogiPointColors.beige,
                 },
                 {
                   label: 'Q2',
-                  values: [
-                    { label: 'Current', value: salesData.quarterlyTargets.q2.current, color: salesData.quarterlyTargets.q2.color || LogiPointColors.primary },
-                    { label: 'Budget', value: salesData.quarterlyTargets.q2.target, color: LogiPointColors.accent },
-                    { label: 'Last Year', value: salesData.quarterlyTargets.q2.lastYear || 0, color: LogiPointColors.beige },
-                  ],
+                  actual: salesData.quarterlyTargets.q2.current,
+                  budget: salesData.quarterlyTargets.q2.target,
+                  lastYear: salesData.quarterlyTargets.q2.lastYear || 0,
+                  barColor: salesData.quarterlyTargets.q2.color || LogiPointColors.primary,
+                  lineColor: LogiPointColors.accent,
+                  lastYearColor: LogiPointColors.beige,
                 },
                 {
                   label: 'Q3',
-                  values: [
-                    { label: 'Current', value: salesData.quarterlyTargets.q3.current, color: salesData.quarterlyTargets.q3.color || LogiPointColors.primary },
-                    { label: 'Budget', value: salesData.quarterlyTargets.q3.target, color: LogiPointColors.accent },
-                    { label: 'Last Year', value: salesData.quarterlyTargets.q3.lastYear || 0, color: LogiPointColors.beige },
-                  ],
+                  actual: salesData.quarterlyTargets.q3.current,
+                  budget: salesData.quarterlyTargets.q3.target,
+                  lastYear: salesData.quarterlyTargets.q3.lastYear || 0,
+                  barColor: salesData.quarterlyTargets.q3.color || LogiPointColors.primary,
+                  lineColor: LogiPointColors.accent,
+                  lastYearColor: LogiPointColors.beige,
                 },
                 {
                   label: 'Q4',
-                  values: [
-                    { label: 'Current', value: salesData.quarterlyTargets.q4.current, color: salesData.quarterlyTargets.q4.color || LogiPointColors.primary },
-                    { label: 'Budget', value: salesData.quarterlyTargets.q4.target, color: LogiPointColors.accent },
-                    { label: 'Last Year', value: salesData.quarterlyTargets.q4.lastYear || 0, color: LogiPointColors.beige },
-                  ],
+                  actual: salesData.quarterlyTargets.q4.current,
+                  budget: salesData.quarterlyTargets.q4.target,
+                  lastYear: salesData.quarterlyTargets.q4.lastYear || 0,
+                  barColor: salesData.quarterlyTargets.q4.color || LogiPointColors.primary,
+                  lineColor: LogiPointColors.accent,
+                  lastYearColor: LogiPointColors.beige,
                 },
               ]}
             />
+            <View style={styles.legend}>
+              <View style={styles.legendItem}>
+                <View style={[styles.legendColor, { backgroundColor: LogiPointColors.primary }]} />
+                <Text style={styles.legendText}>Current Revenue</Text>
+              </View>
+              <View style={styles.legendItem}>
+                <View style={[styles.legendColor, { backgroundColor: LogiPointColors.beige }]} />
+                <Text style={styles.legendText}>Last Year Revenue</Text>
+              </View>
+              <View style={styles.legendItem}>
+                <View style={[styles.legendColor, { backgroundColor: LogiPointColors.accent, borderRadius: 8 }]} />
+                <Text style={styles.legendText}>Budget (Line)</Text>
+              </View>
+            </View>
             {isAdmin && (
               <View style={styles.chartEditButtons}>
                 {['q1', 'q2', 'q3', 'q4'].map((quarter, index) => (
