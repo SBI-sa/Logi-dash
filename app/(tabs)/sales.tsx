@@ -690,7 +690,7 @@ export default function SalesScreen() {
                   style={styles.syncButton}
                   onPress={syncSegmentsFromJanuary}
                 >
-                  <Text style={styles.syncButtonText}>Copy January segments to all months</Text>
+                  <Text style={styles.syncButtonText}>📋 Copy January Segments to All Months</Text>
                 </TouchableOpacity>
               </View>
             )}
@@ -1366,20 +1366,31 @@ const styles = StyleSheet.create({
     color: LogiPointColors.accent,
   },
   syncRow: {
-    marginBottom: 12,
+    marginBottom: 16,
+    marginTop: 8,
     alignItems: 'center',
+    backgroundColor: LogiPointColors.gray[50],
+    padding: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: LogiPointColors.primary,
   },
   syncButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 10,
+    paddingHorizontal: 20,
+    paddingVertical: 12,
     backgroundColor: LogiPointColors.primary,
     borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 3,
   },
   syncButtonText: {
-    fontSize: 14,
-    fontWeight: '600' as const,
+    fontSize: 15,
+    fontWeight: '700' as const,
     color: LogiPointColors.white,
   },
 });
