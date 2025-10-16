@@ -24,9 +24,10 @@ export function ComboChart({ data, height = 300 }: ComboChartProps) {
   const barWidth = 20;
   const spacing = 80;
 
-  const maxValue = Math.max(
+  const rawMax = Math.max(
     ...data.map(d => Math.max(d.actual, d.budget, d.lastYear || 0))
   );
+  const maxValue = rawMax > 0 ? rawMax * 1.15 : 1;
 
   const getBarHeight = (value: number) => {
     return (value / maxValue) * chartHeight;
@@ -56,8 +57,8 @@ export function ComboChart({ data, height = 300 }: ComboChartProps) {
             const lineY = getYPosition(item.budget);
             
             const hasLastYear = item.lastYear !== undefined && item.lastYear > 0;
-            const lastYearBarHeight = hasLastYear ? getBarHeight(item.lastYear) : 0;
-            const lastYearBarY = hasLastYear ? getYPosition(item.lastYear) : 0;
+            const lastYearBarHeight = hasLastYear ? getBarHeight(item.lastYear as number) : 0;
+            const lastYearBarY = hasLastYear ? getYPosition(item.lastYear as number) : 0;
             
             const barOffset = hasLastYear ? barWidth + 2 : 0;
 
@@ -81,7 +82,7 @@ export function ComboChart({ data, height = 300 }: ComboChartProps) {
                       textAnchor="middle"
                       fontWeight="600"
                     >
-                      {formatValue(item.lastYear)}
+                      {formatValue(item.lastYear as number)}
                     </SvgText>
                   </>
                 )}
