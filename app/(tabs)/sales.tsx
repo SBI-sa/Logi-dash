@@ -647,6 +647,17 @@ export default function SalesScreen() {
                 </TouchableOpacity>
               ))}
             </ScrollView>
+            {isAdmin && (
+              <View style={styles.syncRow}>
+                <TouchableOpacity
+                  testID="sync-jan-segments"
+                  style={styles.syncButton}
+                  onPress={syncSegmentsFromJanuary}
+                >
+                  <Text style={styles.syncButtonText}>Copy January segments to all months</Text>
+                </TouchableOpacity>
+              </View>
+            )}
             <YearOverYearChart 
               data={displayedSegments.map((s, i) => ({
                 label: s.segment,
