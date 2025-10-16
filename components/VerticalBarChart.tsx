@@ -73,7 +73,7 @@ export const VerticalBarChart = React.memo(function VerticalBarChart({ data, max
       </View>
       <View style={styles.legend}>
         <View style={styles.legendItem}>
-          <View style={[styles.legendColor, { backgroundColor: LogiPointColors.chart.green }]} />
+          <View style={[styles.legendColor, { backgroundColor: '#00617f' }]} />
           <Text style={styles.legendText}>Actual Revenue</Text>
         </View>
         <View style={styles.legendItem}>
