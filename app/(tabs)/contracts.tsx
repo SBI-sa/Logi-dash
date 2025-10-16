@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Alert, TextInput, Platform, Modal } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Alert, TextInput, Modal } from 'react-native';
 import { Stack } from 'expo-router';
 import { Building2, TrendingUp, MapPin, Edit2, Plus, Calendar, Car, Upload, X, Image as ImageIcon } from 'lucide-react-native';
 import * as ImagePicker from 'expo-image-picker';
+import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
 import { LogiPointColors } from '@/constants/colors';
 import { Card } from '@/components/Card';
 import { EditModal } from '@/components/EditModal';
@@ -271,6 +272,20 @@ export default function RealEstateScreen() {
     setEditModalVisible(false);
   };
 
+  const compressImage = async (uri: string): Promise<string> => {
+    try {
+      const manipResult = await manipulateAsync(
+        uri,
+        [{ resize: { width: 800 } }],
+        { compress: 0.2, format: SaveFormat.JPEG }
+      );
+      return manipResult.uri;
+    } catch (error) {
+      console.error('Error compressing image:', error);
+      return uri;
+    }
+  };
+
   const handleUploadLandImage = async () => {
     try {
       const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -283,13 +298,14 @@ export default function RealEstateScreen() {
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
-        quality: Platform.OS === 'web' ? 0.3 : 0.7,
+        quality: 0.2,
         base64: false,
       });
 
       if (!result.canceled && result.assets[0]) {
         try {
-          const updatedData = { ...realEstateData, landImageUri: result.assets[0].uri };
+          const compressedUri = await compressImage(result.assets[0].uri);
+          const updatedData = { ...realEstateData, landImageUri: compressedUri };
           await updateRealEstateData(updatedData);
         } catch (storageError: any) {
           console.error('Storage error:', storageError);
@@ -322,13 +338,14 @@ export default function RealEstateScreen() {
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
-        quality: Platform.OS === 'web' ? 0.3 : 0.7,
+        quality: 0.2,
         base64: false,
       });
 
       if (!result.canceled && result.assets[0]) {
         try {
-          const updatedData = { ...realEstateData, jlhImageUri: result.assets[0].uri };
+          const compressedUri = await compressImage(result.assets[0].uri);
+          const updatedData = { ...realEstateData, jlhImageUri: compressedUri };
           await updateRealEstateData(updatedData);
         } catch (storageError: any) {
           console.error('Storage error:', storageError);
@@ -366,15 +383,16 @@ export default function RealEstateScreen() {
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
-        quality: Platform.OS === 'web' ? 0.3 : 0.7,
+        quality: 0.2,
         base64: false,
       });
 
       if (!result.canceled && result.assets[0]) {
         try {
+          const compressedUri = await compressImage(result.assets[0].uri);
           const newImage = {
             id: `IMG${Date.now()}`,
-            uri: result.assets[0].uri,
+            uri: compressedUri,
             label: newImageLabel,
           };
           const updatedData = {
