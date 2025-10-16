@@ -938,69 +938,7 @@ export default function SalesScreen() {
             )}
           </ChartCard>
 
-          <ChartCard title="Top 5 Customers by Sales" subtitle={selectedCustomerMonth === 'All' ? 'Total revenue in SAR' : `${selectedCustomerMonth} revenue in SAR`}>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.monthFilter}>
-              {months.map((month) => (
-                <TouchableOpacity
-                  key={month}
-                  style={[
-                    styles.monthButton,
-                    selectedCustomerMonth === month && styles.monthButtonActive,
-                  ]}
-                  onPress={() => setSelectedCustomerMonth(month)}
-                >
-                  <Text style={[
-                    styles.monthButtonText,
-                    selectedCustomerMonth === month && styles.monthButtonTextActive,
-                  ]}>
-                    {month}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
-            <SimpleBarChart 
-              data={displayedCustomers.map(c => ({
-                label: c.name,
-                value: c.sales,
-                color: c.color,
-              }))}
-              formatInMillions={selectedCustomerMonth === 'All'}
-            />
-            {isAdmin && (
-              <View style={styles.chartEditButtons}>
-                {displayedCustomers.map((c, index) => (
-                  <TouchableOpacity
-                    key={index}
-                    style={styles.chartEditButton}
-                    onPress={() => handleEditArray('topCustomers', index)}
-                  >
-                    <Edit2 size={14} color={LogiPointColors.primary} />
-                    <Text style={styles.chartEditText}>Edit {c.name}</Text>
-                  </TouchableOpacity>
-                ))}
-                {selectedCustomerMonth !== 'All' && (
-                  <TouchableOpacity
-                    style={[styles.chartEditButton, styles.addButton]}
-                    onPress={() => {
-                      const updatedData = { ...salesData };
-                      const newCustomer = {
-                        name: 'New Customer',
-                        sales: 0,
-                        color: '#00617f',
-                      };
-                      const newMonthlyCustomers = { ...salesData.topCustomersMonthly };
-                      newMonthlyCustomers[selectedCustomerMonth] = [...(newMonthlyCustomers[selectedCustomerMonth] || []), newCustomer];
-                      updatedData.topCustomersMonthly = newMonthlyCustomers;
-                      updateSalesData(updatedData);
-                    }}
-                  >
-                    <Plus size={14} color={LogiPointColors.chart.green} />
-                    <Text style={[styles.chartEditText, { color: LogiPointColors.chart.green }]}>Add Customer</Text>
-                  </TouchableOpacity>
-                )}
-              </View>
-            )}
-          </ChartCard>
+
         </ScrollView>
       </View>
     </>
