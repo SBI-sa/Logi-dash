@@ -964,6 +964,7 @@ export default function SalesScreen() {
                 value: c.sales,
                 color: c.color,
               }))}
+              formatInMillions={selectedCustomerMonth === 'All'}
             />
             {isAdmin && (
               <View style={styles.chartEditButtons}>

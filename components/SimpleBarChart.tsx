@@ -11,9 +11,10 @@ export interface BarChartData {
 interface SimpleBarChartProps {
   data: BarChartData[];
   maxValue?: number;
+  formatInMillions?: boolean;
 }
 
-export const SimpleBarChart = React.memo(function SimpleBarChart({ data, maxValue }: SimpleBarChartProps) {
+export const SimpleBarChart = React.memo(function SimpleBarChart({ data, maxValue, formatInMillions = false }: SimpleBarChartProps) {
   const max = maxValue || Math.max(...data.map(d => d.value));
   
   return (
@@ -35,7 +36,11 @@ export const SimpleBarChart = React.memo(function SimpleBarChart({ data, maxValu
                   }
                 ]} 
               />
-              <Text style={styles.value}>{item.value.toLocaleString()}</Text>
+              <Text style={styles.value}>
+                {formatInMillions 
+                  ? `${(item.value / 1000000).toFixed(2)}M`
+                  : item.value.toLocaleString()}
+              </Text>
             </View>
           </View>
         );
