@@ -24,6 +24,7 @@ export default function SalesScreen() {
   const [editFields, setEditFields] = useState<{ label: string; value: string; onChange: (text: string) => void; keyboardType?: 'default' | 'decimal-pad' | 'email-address' }[]>([]);
   const [selectedMonth, setSelectedMonth] = useState<string>('All');
   const [selectedCustomerMonth, setSelectedCustomerMonth] = useState<string>('All');
+  const [currentEditIndex, setCurrentEditIndex] = useState<number | null>(null);
 
   const months = ['All', 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
@@ -101,6 +102,7 @@ export default function SalesScreen() {
 
   const handleEditArray = (field: string, index: number) => {
     setEditField(`${field}_${index}`);
+    setCurrentEditIndex(index);
     
     if (field === 'quarterlyLabelling') {
       const quarter = (['q1', 'q2', 'q3', 'q4'][index]) as 'q1' | 'q2' | 'q3' | 'q4';
@@ -438,7 +440,17 @@ export default function SalesScreen() {
         value={editValue}
         onChangeText={setEditValue}
         onSave={handleSave}
-        onCancel={() => setEditModalVisible(false)}
+        onCancel={() => {
+          setEditModalVisible(false);
+          setCurrentEditIndex(null);
+        }}
+        onDelete={editField.startsWith('revenueBySegment_') ? () => {
+          if (currentEditIndex !== null) {
+            handleDeleteSegment(currentEditIndex);
+            setEditModalVisible(false);
+            setCurrentEditIndex(null);
+          }
+        } : undefined}
         fields={editFields.length > 0 ? editFields : undefined}
       />
       

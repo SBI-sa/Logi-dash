@@ -10,6 +10,7 @@ interface EditModalProps {
   onChangeText: (text: string) => void;
   onSave: () => void;
   onCancel: () => void;
+  onDelete?: () => void;
   keyboardType?: 'default' | 'numeric' | 'email-address' | 'decimal-pad';
   fields?: { 
     label: string; 
@@ -28,6 +29,7 @@ export function EditModal({
   onChangeText,
   onSave,
   onCancel,
+  onDelete,
   keyboardType = 'numeric',
   fields,
 }: EditModalProps) {
@@ -111,6 +113,14 @@ export function EditModal({
           </ScrollView>
           
           <View style={styles.modalButtons}>
+            {onDelete && (
+              <TouchableOpacity
+                style={[styles.modalButton, styles.deleteButton]}
+                onPress={onDelete}
+              >
+                <Text style={styles.deleteButtonText}>Delete</Text>
+              </TouchableOpacity>
+            )}
             <TouchableOpacity
               style={[styles.modalButton, styles.cancelButton]}
               onPress={onCancel}
@@ -209,6 +219,14 @@ const styles = StyleSheet.create({
     fontWeight: '600' as const,
   },
   saveButtonText: {
+    color: LogiPointColors.white,
+    fontSize: 16,
+    fontWeight: '600' as const,
+  },
+  deleteButton: {
+    backgroundColor: LogiPointColors.accent,
+  },
+  deleteButtonText: {
     color: LogiPointColors.white,
     fontSize: 16,
     fontWeight: '600' as const,
