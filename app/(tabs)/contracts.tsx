@@ -4,6 +4,7 @@ import { Stack } from 'expo-router';
 import { Building2, TrendingUp, MapPin, Edit2, Plus, Calendar, Car, Upload, X, Image as ImageIcon } from 'lucide-react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
+import * as FileSystem from 'expo-file-system';
 import { LogiPointColors } from '@/constants/colors';
 import { Card } from '@/components/Card';
 import { EditModal } from '@/components/EditModal';
@@ -276,13 +277,18 @@ export default function RealEstateScreen() {
     try {
       const manipResult = await manipulateAsync(
         uri,
-        [{ resize: { width: 800 } }],
-        { compress: 0.2, format: SaveFormat.JPEG }
+        [{ resize: { width: 600 } }],
+        { compress: 0.15, format: SaveFormat.JPEG }
       );
-      return manipResult.uri;
+      
+      const base64 = await FileSystem.readAsStringAsync(manipResult.uri, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+      
+      return `data:image/jpeg;base64,${base64}`;
     } catch (error) {
       console.error('Error compressing image:', error);
-      return uri;
+      throw error;
     }
   };
 
