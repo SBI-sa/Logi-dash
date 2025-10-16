@@ -27,7 +27,7 @@ export const VerticalBarChart = React.memo(function VerticalBarChart({ data, max
   };
 
   const chartHeight = 240;
-  const actualRevenueColor = data[0]?.color || '#00617f';
+  const actualRevenueColor = '#00617f';
   
   return (
     <View style={styles.container}>
