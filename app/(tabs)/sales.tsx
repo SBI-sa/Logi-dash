@@ -654,15 +654,17 @@ export default function SalesScreen() {
             )}
           </ChartCard>
 
-          <ChartCard title="Quarterly Revenue Comparison" subtitle="2025 vs 2024">
+          <ChartCard title="Quarterly Revenue Comparison" subtitle="2025 vs 2024 vs Budget">
             <GroupedBarChart
               data={(['q1', 'q2', 'q3', 'q4'] as const).map((quarter, idx) => {
                 const q = salesData.quarterlyLabelling[quarter];
+                const budget = q.budget || q.current * 0.95;
                 return {
                   label: `Q${idx + 1}`,
                   values: [
                     { label: '2025', value: q.current, color: q.color || LogiPointColors.primary },
                     { label: '2024', value: q.lastYear, color: LogiPointColors.gray[400] },
+                    { label: 'Budget', value: budget, color: LogiPointColors.accent },
                   ],
                 };
               })}
