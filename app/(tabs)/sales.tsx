@@ -9,7 +9,7 @@ import { SimpleBarChart } from '@/components/SimpleBarChart';
 import { VerticalBarChart } from '@/components/VerticalBarChart';
 import { YearOverYearChart } from '@/components/YearOverYearChart';
 import { ComboChart } from '@/components/ComboChart';
-import { DonutPieChart } from '@/components/DonutPieChart';
+import { GroupedBarChart } from '@/components/GroupedBarChart';
 
 
 import { EditModal } from '@/components/EditModal';
@@ -655,45 +655,32 @@ export default function SalesScreen() {
           </ChartCard>
 
           <ChartCard title="Quarterly Revenue Comparison" subtitle="2025 vs 2024">
-            <View style={styles.quarterlyGrid}>
-              {(['q1', 'q2', 'q3', 'q4'] as const).map((quarter, index) => {
-                const data = salesData.quarterlyLabelling[quarter];
-                return (
-                  <View key={quarter} style={styles.quarterCard}>
-                    <Text style={styles.quarterTitle}>Q{index + 1}</Text>
-                    <DonutPieChart
-                      data={[
-                        { label: '2025', value: data.current, color: data.color || '#00617f' },
-                        { label: '2024', value: data.lastYear, color: '#a0a0a0' },
-                      ]}
-                      size={140}
-                      showLegend={false}
-                    />
-                    <View style={styles.quarterLegend}>
-                      <View style={styles.quarterLegendRow}>
-                        <View style={[styles.quarterLegendDot, { backgroundColor: data.color || '#00617f' }]} />
-                        <Text style={styles.quarterLegendLabel}>2025</Text>
-                        <Text style={styles.quarterLegendValue}>{data.current.toLocaleString()}</Text>
-                      </View>
-                      <View style={styles.quarterLegendRow}>
-                        <View style={[styles.quarterLegendDot, { backgroundColor: '#a0a0a0' }]} />
-                        <Text style={styles.quarterLegendLabel}>2024</Text>
-                        <Text style={styles.quarterLegendValue}>{data.lastYear.toLocaleString()}</Text>
-                      </View>
-                    </View>
-                    {isAdmin && (
-                      <TouchableOpacity
-                        style={styles.quarterEditButton}
-                        onPress={() => handleEditArray('quarterlyLabelling', index)}
-                      >
-                        <Edit2 size={14} color={LogiPointColors.white} />
-                        <Text style={styles.quarterEditText}>Edit</Text>
-                      </TouchableOpacity>
-                    )}
-                  </View>
-                );
+            <GroupedBarChart
+              data={(['q1', 'q2', 'q3', 'q4'] as const).map((quarter, idx) => {
+                const q = salesData.quarterlyLabelling[quarter];
+                return {
+                  label: `Q${idx + 1}`,
+                  values: [
+                    { label: '2025', value: q.current, color: q.color || LogiPointColors.primary },
+                    { label: '2024', value: q.lastYear, color: LogiPointColors.gray[400] },
+                  ],
+                };
               })}
-            </View>
+            />
+            {isAdmin && (
+              <View style={styles.chartEditButtons}>
+                {(['q1', 'q2', 'q3', 'q4'] as const).map((_, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    style={styles.chartEditButton}
+                    onPress={() => handleEditArray('quarterlyLabelling', index)}
+                  >
+                    <Edit2 size={14} color={LogiPointColors.primary} />
+                    <Text style={styles.chartEditText}>Edit Q{index + 1}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            )}
             <View style={styles.quarterlyTable}>
               <Text style={styles.quarterlyTableTitle}>Quarterly Breakdown</Text>
               <View style={styles.tableHeader}>
