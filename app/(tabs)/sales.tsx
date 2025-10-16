@@ -626,6 +626,7 @@ export default function SalesScreen() {
                 <TouchableOpacity
                   style={[styles.chartEditButton, styles.addButton]}
                   onPress={() => {
+                    console.log('Add Segment pressed for month:', selectedMonth);
                     const updatedData = { ...salesData };
                     const newSegment = {
                       segment: 'New Segment',
@@ -633,16 +634,47 @@ export default function SalesScreen() {
                       budget: 0,
                       lastYearRevenue: 0,
                       color: LogiPointColors.chart.blue,
+                    } as { segment: string; revenue: number; budget?: number; lastYearRevenue?: number; color?: string };
+
+                    const monthsList = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+                    const newMonthlySegments = { ...salesData.revenueBySegmentMonthly } as typeof salesData.revenueBySegmentMonthly;
+
+                    monthsList.forEach((m) => {
+                      if (!newMonthlySegments[m]) {
+                        newMonthlySegments[m] = [];
+                      }
+                    });
+
+                    const ensureInMonth = (month: string) => {
+                      const arr = newMonthlySegments[month] || [];
+                      const exists = arr.some((s) => s.segment === newSegment.segment);
+                      if (!exists) {
+                        newMonthlySegments[month] = [...arr, { ...newSegment }];
+                      }
                     };
-                    
+
                     if (selectedMonth === 'All') {
-                      updatedData.revenueBySegment = [...salesData.revenueBySegment, newSegment];
+                      monthsList.forEach((m) => ensureInMonth(m));
+                      if (!updatedData.revenueBySegment.some((s) => s.segment === newSegment.segment)) {
+                        updatedData.revenueBySegment = [...updatedData.revenueBySegment, { ...newSegment }];
+                      }
                     } else {
-                      const newMonthlySegments = { ...salesData.revenueBySegmentMonthly };
-                      newMonthlySegments[selectedMonth] = [...(newMonthlySegments[selectedMonth] || []), newSegment];
-                      updatedData.revenueBySegmentMonthly = newMonthlySegments;
+                      // Add to selected month explicitly
+                      const arr = newMonthlySegments[selectedMonth] || [];
+                      newMonthlySegments[selectedMonth] = [...arr, { ...newSegment }];
+                      // Also reflect in all other months with zeroed defaults if missing
+                      monthsList
+                        .filter((m) => m !== selectedMonth)
+                        .forEach((m) => ensureInMonth(m));
+                      // Keep yearly list in sync for any UIs that read it
+                      if (!updatedData.revenueBySegment.some((s) => s.segment === newSegment.segment)) {
+                        updatedData.revenueBySegment = [...updatedData.revenueBySegment, { ...newSegment }];
+                      }
                     }
-                    
+
+                    updatedData.revenueBySegmentMonthly = newMonthlySegments;
+
+                    console.log('Updated revenueBySegmentMonthly keys:', Object.keys(newMonthlySegments));
                     updateSalesData(updatedData);
                   }}
                 >
