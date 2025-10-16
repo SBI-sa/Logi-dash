@@ -353,9 +353,12 @@ export default function RealEstateScreen() {
 
       if (!result.canceled && result.assets[0]) {
         try {
+          console.log('Compressing land image...');
           const compressedUri = await compressImage(result.assets[0].uri);
+          console.log('Land image compressed, URI length:', compressedUri.length);
           const updatedData = { ...realEstateData, landImageUri: compressedUri };
           await updateRealEstateData(updatedData);
+          console.log('Land image saved successfully');
         } catch (storageError: any) {
           console.error('Storage error:', storageError);
           if (storageError?.message?.includes('quota') || storageError?.message?.includes('Storage quota exceeded')) {
@@ -393,9 +396,12 @@ export default function RealEstateScreen() {
 
       if (!result.canceled && result.assets[0]) {
         try {
+          console.log('Compressing JLH image...');
           const compressedUri = await compressImage(result.assets[0].uri);
+          console.log('JLH image compressed, URI length:', compressedUri.length);
           const updatedData = { ...realEstateData, jlhImageUri: compressedUri };
           await updateRealEstateData(updatedData);
+          console.log('JLH image saved successfully');
         } catch (storageError: any) {
           console.error('Storage error:', storageError);
           if (storageError?.message?.includes('quota') || storageError?.message?.includes('Storage quota exceeded')) {
@@ -438,7 +444,9 @@ export default function RealEstateScreen() {
 
       if (!result.canceled && result.assets[0]) {
         try {
+          console.log('Compressing additional image...');
           const compressedUri = await compressImage(result.assets[0].uri);
+          console.log('Additional image compressed, URI length:', compressedUri.length);
           const newImage = {
             id: `IMG${Date.now()}`,
             uri: compressedUri,
@@ -449,6 +457,7 @@ export default function RealEstateScreen() {
             additionalImages: [...(realEstateData.additionalImages || []), newImage],
           };
           await updateRealEstateData(updatedData);
+          console.log('Additional image saved successfully');
           setNewImageLabel('');
           setShowAddImageModal(false);
         } catch (storageError: any) {
@@ -470,7 +479,7 @@ export default function RealEstateScreen() {
     }
   };
 
-  const handleRemoveLandImage = () => {
+  const handleRemoveLandImage = async () => {
     Alert.alert(
       'Remove Image',
       'Are you sure you want to remove the land image?',
@@ -479,16 +488,23 @@ export default function RealEstateScreen() {
         {
           text: 'Remove',
           style: 'destructive',
-          onPress: () => {
-            const updatedData = { ...realEstateData, landImageUri: undefined };
-            updateRealEstateData(updatedData);
+          onPress: async () => {
+            try {
+              const updatedData = { ...realEstateData };
+              delete updatedData.landImageUri;
+              await updateRealEstateData(updatedData);
+              console.log('Land image removed successfully');
+            } catch (error) {
+              console.error('Error removing land image:', error);
+              Alert.alert('Error', 'Failed to remove image');
+            }
           },
         },
       ]
     );
   };
 
-  const handleRemoveJLHImage = () => {
+  const handleRemoveJLHImage = async () => {
     Alert.alert(
       'Remove Image',
       'Are you sure you want to remove the JLH image?',
@@ -497,9 +513,16 @@ export default function RealEstateScreen() {
         {
           text: 'Remove',
           style: 'destructive',
-          onPress: () => {
-            const updatedData = { ...realEstateData, jlhImageUri: undefined };
-            updateRealEstateData(updatedData);
+          onPress: async () => {
+            try {
+              const updatedData = { ...realEstateData };
+              delete updatedData.jlhImageUri;
+              await updateRealEstateData(updatedData);
+              console.log('JLH image removed successfully');
+            } catch (error) {
+              console.error('Error removing JLH image:', error);
+              Alert.alert('Error', 'Failed to remove image');
+            }
           },
         },
       ]
@@ -515,12 +538,18 @@ export default function RealEstateScreen() {
         {
           text: 'Remove',
           style: 'destructive',
-          onPress: () => {
-            const updatedData = {
-              ...realEstateData,
-              additionalImages: (realEstateData.additionalImages || []).filter(img => img.id !== imageId),
-            };
-            updateRealEstateData(updatedData);
+          onPress: async () => {
+            try {
+              const updatedData = {
+                ...realEstateData,
+                additionalImages: (realEstateData.additionalImages || []).filter(img => img.id !== imageId),
+              };
+              await updateRealEstateData(updatedData);
+              console.log('Additional image removed successfully');
+            } catch (error) {
+              console.error('Error removing additional image:', error);
+              Alert.alert('Error', 'Failed to remove image');
+            }
           },
         },
       ]
