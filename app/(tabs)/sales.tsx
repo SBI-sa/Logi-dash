@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { View, StyleSheet, ScrollView, TouchableOpacity, Text, Image } from 'react-native';
 import { Stack } from 'expo-router';
-import { DollarSign, Edit2, TrendingUp, Plus } from 'lucide-react-native';
+import { DollarSign, Edit2, TrendingUp, Plus, Trash2 } from 'lucide-react-native';
 import { LogiPointColors } from '@/constants/colors';
 import { KPICard } from '@/components/KPICard';
 import { ChartCard } from '@/components/ChartCard';
@@ -232,6 +232,34 @@ export default function SalesScreen() {
       return `${(value / 1000).toFixed(0)}K`;
     }
     return value.toLocaleString();
+  };
+
+  const handleDeleteSegment = (index: number) => {
+    try {
+      console.log('Deleting segment at index', index, 'for month', selectedMonth);
+      const updatedData = { ...salesData };
+      const segments = selectedMonth === 'All' ? displayedSegments : (salesData.revenueBySegmentMonthly[selectedMonth] || []);
+      const target = segments[index];
+      if (!target) {
+        console.warn('No segment found to delete at index', index);
+        return;
+      }
+      const name = target.segment;
+
+      updatedData.revenueBySegment = (updatedData.revenueBySegment || []).filter(s => s.segment !== name);
+
+      const monthsList = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+      const newMonthly = { ...updatedData.revenueBySegmentMonthly } as typeof updatedData.revenueBySegmentMonthly;
+      monthsList.forEach(m => {
+        const arr = newMonthly[m] || [];
+        newMonthly[m] = arr.filter(s => s.segment !== name);
+      });
+      updatedData.revenueBySegmentMonthly = newMonthly;
+
+      updateSalesData(updatedData);
+    } catch (e) {
+      console.error('Failed to delete segment:', e);
+    }
   };
 
   const handleSave = () => {
@@ -637,14 +665,24 @@ export default function SalesScreen() {
             {isAdmin && (
               <View style={styles.chartEditButtons}>
                 {displayedSegments.map((s, index) => (
-                  <TouchableOpacity
-                    key={index}
-                    style={styles.chartEditButton}
-                    onPress={() => handleEditArray('revenueBySegment', index)}
-                  >
-                    <Edit2 size={14} color={LogiPointColors.primary} />
-                    <Text style={styles.chartEditText}>Edit {s.segment}</Text>
-                  </TouchableOpacity>
+                  <View key={index} style={{ flexDirection: 'row', gap: 8 }}>
+                    <TouchableOpacity
+                      testID={`edit-segment-${s.segment}`}
+                      style={styles.chartEditButton}
+                      onPress={() => handleEditArray('revenueBySegment', index)}
+                    >
+                      <Edit2 size={14} color={LogiPointColors.primary} />
+                      <Text style={styles.chartEditText}>Edit {s.segment}</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      testID={`delete-segment-${s.segment}`}
+                      style={[styles.chartEditButton, styles.deleteButton]}
+                      onPress={() => handleDeleteSegment(index)}
+                    >
+                      <Trash2 size={14} color={LogiPointColors.accent} />
+                      <Text style={[styles.chartEditText, { color: LogiPointColors.accent }]}>Delete</Text>
+                    </TouchableOpacity>
+                  </View>
                 ))}
                 <TouchableOpacity
                   style={[styles.chartEditButton, styles.addButton]}
@@ -1073,6 +1111,10 @@ const styles = StyleSheet.create({
   },
   addButton: {
     borderColor: LogiPointColors.chart.green,
+  },
+  deleteButton: {
+    borderColor: LogiPointColors.accent,
+    backgroundColor: LogiPointColors.gray[50],
   },
   varianceTable: {
     marginTop: 20,
