@@ -236,6 +236,42 @@ export default function SalesScreen() {
     return value.toLocaleString();
   };
 
+  const syncSegmentsFromJanuary = () => {
+    const updatedData = { ...salesData };
+    const januarySegments = salesData.revenueBySegmentMonthly['January'] || [];
+    
+    if (januarySegments.length === 0) {
+      console.warn('No segments in January to sync');
+      return;
+    }
+
+    const monthsList = ['February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    const newMonthlySegments = { ...salesData.revenueBySegmentMonthly } as typeof salesData.revenueBySegmentMonthly;
+
+    monthsList.forEach((month) => {
+      const existingSegments = newMonthlySegments[month] || [];
+      const existingSegmentNames = new Set(existingSegments.map(s => s.segment));
+      
+      januarySegments.forEach((janSegment) => {
+        if (!existingSegmentNames.has(janSegment.segment)) {
+          existingSegments.push({
+            segment: janSegment.segment,
+            revenue: 0,
+            budget: 0,
+            lastYearRevenue: 0,
+            color: janSegment.color,
+          });
+        }
+      });
+      
+      newMonthlySegments[month] = existingSegments;
+    });
+
+    updatedData.revenueBySegmentMonthly = newMonthlySegments;
+    updateSalesData(updatedData);
+    console.log('Synced January segments to all months');
+  };
+
   const handleDeleteSegment = (index: number) => {
     try {
       console.log('Deleting segment at index', index, 'for month', selectedMonth);
@@ -1328,5 +1364,22 @@ const styles = StyleSheet.create({
   },
   changeNegative: {
     color: LogiPointColors.accent,
+  },
+  syncRow: {
+    marginBottom: 12,
+    alignItems: 'center',
+  },
+  syncButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    backgroundColor: LogiPointColors.primary,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  syncButtonText: {
+    fontSize: 14,
+    fontWeight: '600' as const,
+    color: LogiPointColors.white,
   },
 });
