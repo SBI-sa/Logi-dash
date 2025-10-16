@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import React, { useCallback, useMemo, useState } from 'react';
+import { View, StyleSheet, LayoutChangeEvent } from 'react-native';
 import { LogiPointColors } from '@/constants/colors';
 import Svg, { Rect, Line, Circle, Text as SvgText } from 'react-native-svg';
 
@@ -19,13 +19,22 @@ interface ComboChartProps {
 }
 
 export function ComboChart({ data, height = 300 }: ComboChartProps) {
+  const [containerWidth, setContainerWidth] = useState<number>(0);
+
   const chartHeight = height - 60;
-  const chartWidth = Math.max(data.length * 80, 300);
-  const barWidth = 20;
-  const spacing = 80;
+  const horizontalPadding = 24;
+  const innerWidth = Math.max(containerWidth - horizontalPadding * 2, 0);
+
+  const { chartWidth, spacing, barWidth } = useMemo(() => {
+    const safeWidth = Math.max(innerWidth, 300);
+    const count = Math.max(data.length, 1);
+    const baseSpacing = safeWidth / count;
+    const computedBar = Math.max(Math.min(baseSpacing * 0.28, 28), 10);
+    return { chartWidth: safeWidth + horizontalPadding * 2, spacing: baseSpacing, barWidth: computedBar };
+  }, [innerWidth, data.length]);
 
   const rawMax = Math.max(
-    ...data.map(d => Math.max(d.actual, d.budget, d.lastYear || 0))
+    ...data.map(d => Math.max(d.actual, d.budget, d.lastYear ?? 0))
   );
   const maxValue = rawMax > 0 ? rawMax * 1.15 : 1;
 
@@ -46,12 +55,19 @@ export function ComboChart({ data, height = 300 }: ComboChartProps) {
     return value.toString();
   };
 
+  const onLayout = useCallback((e: LayoutChangeEvent) => {
+    const w = e.nativeEvent.layout.width;
+    if (w && w !== containerWidth) {
+      setContainerWidth(w);
+    }
+  }, [containerWidth]);
+
   return (
-    <View style={styles.container}>
+    <View style={styles.container} onLayout={onLayout}>
       <View style={styles.chartContainer}>
         <Svg width={chartWidth} height={height}>
           {data.map((item, index) => {
-            const x = index * spacing + spacing / 2;
+            const x = horizontalPadding + index * spacing + spacing / 2;
             const actualBarHeight = getBarHeight(item.actual);
             const actualBarY = getYPosition(item.actual);
             const lineY = getYPosition(item.budget);
@@ -120,7 +136,7 @@ export function ComboChart({ data, height = 300 }: ComboChartProps) {
                   <Line
                     x1={x + (hasLastYear ? barWidth / 2 : 0)}
                     y1={lineY}
-                    x2={(index + 1) * spacing + spacing / 2 + (data[index + 1].lastYear ? barWidth / 2 : 0)}
+                    x2={horizontalPadding + (index + 1) * spacing + spacing / 2 + (data[index + 1].lastYear ? barWidth / 2 : 0)}
                     y2={getYPosition(data[index + 1].budget)}
                     stroke={item.lineColor || LogiPointColors.accent}
                     strokeWidth={2}
@@ -151,6 +167,6 @@ const styles = StyleSheet.create({
     marginVertical: 8,
   },
   chartContainer: {
-    overflow: 'scroll',
+    width: '100%',
   },
 });
