@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { View, StyleSheet, ScrollView, TouchableOpacity, Text, Image } from 'react-native';
 import { Stack } from 'expo-router';
 import { DollarSign, Edit2, TrendingUp, Plus, Trash2 } from 'lucide-react-native';
@@ -271,6 +271,10 @@ export default function SalesScreen() {
     updateSalesData(updatedData);
     console.log('Synced January segments to all months');
   };
+
+  useEffect(() => {
+    syncSegmentsFromJanuary();
+  }, []);
 
   const handleDeleteSegment = (index: number) => {
     try {
