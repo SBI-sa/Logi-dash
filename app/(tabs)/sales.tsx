@@ -335,13 +335,30 @@ export default function SalesScreen() {
         };
       } else if (fieldName === 'topCustomers') {
         if (selectedCustomerMonth === 'All') {
-          const newCustomers = [...salesData.topCustomers];
-          newCustomers[index] = {
-            name: editFields[0].value,
-            sales: parseFloat(editFields[1].value) || 0,
-            color: editFields[2].value,
-          };
-          updatedData.topCustomers = newCustomers;
+          const oldCustomerName = displayedCustomers[index]?.name;
+          const newCustomerName = editFields[0].value;
+          const newSales = parseFloat(editFields[1].value) || 0;
+          const newColor = editFields[2].value;
+          
+          const newMonthlyCustomers = { ...salesData.topCustomersMonthly };
+          const monthsList = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+          
+          if (oldCustomerName) {
+            monthsList.forEach((month) => {
+              const monthCustomers = newMonthlyCustomers[month] || [];
+              const idx = monthCustomers.findIndex(c => c.name === oldCustomerName);
+              if (idx >= 0) {
+                monthCustomers[idx] = {
+                  name: newCustomerName,
+                  sales: newSales / monthsList.length,
+                  color: newColor,
+                };
+                newMonthlyCustomers[month] = [...monthCustomers];
+              }
+            });
+          }
+          
+          updatedData.topCustomersMonthly = newMonthlyCustomers;
         } else {
           const newMonthlyCustomers = { ...salesData.topCustomersMonthly };
           const monthCustomers = [...(newMonthlyCustomers[selectedCustomerMonth] || [])];
@@ -948,7 +965,7 @@ export default function SalesScreen() {
                 color: c.color,
               }))}
             />
-            {isAdmin && selectedCustomerMonth !== 'All' && (
+            {isAdmin && (
               <View style={styles.chartEditButtons}>
                 {displayedCustomers.map((c, index) => (
                   <TouchableOpacity
@@ -960,24 +977,26 @@ export default function SalesScreen() {
                     <Text style={styles.chartEditText}>Edit {c.name}</Text>
                   </TouchableOpacity>
                 ))}
-                <TouchableOpacity
-                  style={[styles.chartEditButton, styles.addButton]}
-                  onPress={() => {
-                    const updatedData = { ...salesData };
-                    const newCustomer = {
-                      name: 'New Customer',
-                      sales: 0,
-                      color: '#00617f',
-                    };
-                    const newMonthlyCustomers = { ...salesData.topCustomersMonthly };
-                    newMonthlyCustomers[selectedCustomerMonth] = [...(newMonthlyCustomers[selectedCustomerMonth] || []), newCustomer];
-                    updatedData.topCustomersMonthly = newMonthlyCustomers;
-                    updateSalesData(updatedData);
-                  }}
-                >
-                  <Plus size={14} color={LogiPointColors.chart.green} />
-                  <Text style={[styles.chartEditText, { color: LogiPointColors.chart.green }]}>Add Customer</Text>
-                </TouchableOpacity>
+                {selectedCustomerMonth !== 'All' && (
+                  <TouchableOpacity
+                    style={[styles.chartEditButton, styles.addButton]}
+                    onPress={() => {
+                      const updatedData = { ...salesData };
+                      const newCustomer = {
+                        name: 'New Customer',
+                        sales: 0,
+                        color: '#00617f',
+                      };
+                      const newMonthlyCustomers = { ...salesData.topCustomersMonthly };
+                      newMonthlyCustomers[selectedCustomerMonth] = [...(newMonthlyCustomers[selectedCustomerMonth] || []), newCustomer];
+                      updatedData.topCustomersMonthly = newMonthlyCustomers;
+                      updateSalesData(updatedData);
+                    }}
+                  >
+                    <Plus size={14} color={LogiPointColors.chart.green} />
+                    <Text style={[styles.chartEditText, { color: LogiPointColors.chart.green }]}>Add Customer</Text>
+                  </TouchableOpacity>
+                )}
               </View>
             )}
           </ChartCard>
