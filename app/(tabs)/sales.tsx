@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { View, StyleSheet, ScrollView, TouchableOpacity, Text, Image } from 'react-native';
 import { Stack } from 'expo-router';
 import { DollarSign, Edit2, TrendingUp, Plus, Trash2 } from 'lucide-react-native';
@@ -665,7 +665,7 @@ export default function SalesScreen() {
             {isAdmin && (
               <View style={styles.chartEditButtons}>
                 {displayedSegments.map((s, index) => (
-                  <View key={index} style={{ flexDirection: 'row', gap: 8 }}>
+                  <React.Fragment key={index}>
                     <TouchableOpacity
                       testID={`edit-segment-${s.segment}`}
                       style={styles.chartEditButton}
@@ -682,7 +682,7 @@ export default function SalesScreen() {
                       <Trash2 size={14} color={LogiPointColors.accent} />
                       <Text style={[styles.chartEditText, { color: LogiPointColors.accent }]}>Delete</Text>
                     </TouchableOpacity>
-                  </View>
+                  </React.Fragment>
                 ))}
                 <TouchableOpacity
                   style={[styles.chartEditButton, styles.addButton]}
@@ -720,14 +720,11 @@ export default function SalesScreen() {
                         updatedData.revenueBySegment = [...updatedData.revenueBySegment, { ...newSegment }];
                       }
                     } else {
-                      // Add to selected month explicitly
                       const arr = newMonthlySegments[selectedMonth] || [];
                       newMonthlySegments[selectedMonth] = [...arr, { ...newSegment }];
-                      // Also reflect in all other months with zeroed defaults if missing
                       monthsList
                         .filter((m) => m !== selectedMonth)
                         .forEach((m) => ensureInMonth(m));
-                      // Keep yearly list in sync for any UIs that read it
                       if (!updatedData.revenueBySegment.some((s) => s.segment === newSegment.segment)) {
                         updatedData.revenueBySegment = [...updatedData.revenueBySegment, { ...newSegment }];
                       }
