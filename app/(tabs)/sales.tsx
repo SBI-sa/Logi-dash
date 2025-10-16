@@ -314,34 +314,48 @@ export default function SalesScreen() {
           updatedData.topCustomersMonthly = newMonthlyCustomers;
         }
       } else if (fieldName === 'revenueBySegment') {
+        const oldSegmentName = (selectedMonth === 'All' ? displayedSegments : (salesData.revenueBySegmentMonthly[selectedMonth] || []))[index]?.segment;
+        const newSegmentName = editFields[0].value;
+        const newSegmentData = {
+          segment: newSegmentName,
+          revenue: parseFloat(editFields[1].value) || 0,
+          budget: parseFloat(editFields[2].value) || 0,
+          lastYearRevenue: parseFloat(editFields[3].value) || 0,
+          color: editFields[4].value,
+        };
+
         if (selectedMonth === 'All') {
-          const oldName = displayedSegments[index]?.segment;
           const newSegments = [...salesData.revenueBySegment];
-          const targetIdx = oldName ? newSegments.findIndex(s => s.segment === oldName) : index;
-          const updatedSegment = {
-            segment: editFields[0].value,
-            revenue: parseFloat(editFields[1].value) || 0,
-            budget: parseFloat(editFields[2].value) || 0,
-            lastYearRevenue: parseFloat(editFields[3].value) || 0,
-            color: editFields[4].value,
-          };
+          const targetIdx = oldSegmentName ? newSegments.findIndex(s => s.segment === oldSegmentName) : index;
           if (targetIdx >= 0 && targetIdx < newSegments.length) {
-            newSegments[targetIdx] = updatedSegment;
+            newSegments[targetIdx] = newSegmentData;
           } else {
-            newSegments.push(updatedSegment);
+            newSegments.push(newSegmentData);
           }
           updatedData.revenueBySegment = newSegments;
         } else {
           const newMonthlySegments = { ...salesData.revenueBySegmentMonthly };
           const monthSegments = [...(newMonthlySegments[selectedMonth] || [])];
-          monthSegments[index] = {
-            segment: editFields[0].value,
-            revenue: parseFloat(editFields[1].value) || 0,
-            budget: parseFloat(editFields[2].value) || 0,
-            lastYearRevenue: parseFloat(editFields[3].value) || 0,
-            color: editFields[4].value,
-          };
+          monthSegments[index] = newSegmentData;
           newMonthlySegments[selectedMonth] = monthSegments;
+
+          if (oldSegmentName && oldSegmentName !== newSegmentName) {
+            const monthsList = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+            monthsList.forEach((m) => {
+              if (m !== selectedMonth && newMonthlySegments[m]) {
+                newMonthlySegments[m] = newMonthlySegments[m].map(s => 
+                  s.segment === oldSegmentName ? { ...s, segment: newSegmentName } : s
+                );
+              }
+            });
+
+            if (updatedData.revenueBySegment) {
+              updatedData.revenueBySegment = updatedData.revenueBySegment.map(s => 
+                s.segment === oldSegmentName ? { ...s, segment: newSegmentName } : s
+              );
+            }
+          }
+
           updatedData.revenueBySegmentMonthly = newMonthlySegments;
         }
       } else if (fieldName === 'monthlyRevenue') {
