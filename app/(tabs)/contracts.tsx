@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Alert, TextInput, Modal } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Alert, TextInput, Modal, Platform } from 'react-native';
 import { Stack } from 'expo-router';
 import { Building2, TrendingUp, MapPin, Edit2, Plus, Calendar, Car, Upload, X, Image as ImageIcon } from 'lucide-react-native';
 import * as ImagePicker from 'expo-image-picker';
@@ -274,17 +274,56 @@ export default function RealEstateScreen() {
 
   const compressImage = async (uri: string): Promise<string> => {
     try {
-      const manipResult = await manipulateAsync(
-        uri,
-        [{ resize: { width: 600 } }],
-        { compress: 0.15, format: SaveFormat.JPEG, base64: true }
-      );
+      if (Platform.OS === 'web') {
+        const response = await fetch(uri);
+        const blob = await response.blob();
+        
+        return new Promise((resolve, reject) => {
+          const img = new window.Image();
+          img.crossOrigin = 'anonymous';
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const maxWidth = 600;
+            const scale = maxWidth / img.width;
+            canvas.width = maxWidth;
+            canvas.height = img.height * scale;
+            
+            const ctx = canvas.getContext('2d');
+            if (!ctx) {
+              reject(new Error('Failed to get canvas context'));
+              return;
+            }
+            
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            canvas.toBlob((blob) => {
+              if (!blob) {
+                reject(new Error('Failed to create blob'));
+                return;
+              }
+              const reader = new FileReader();
+              reader.onloadend = () => {
+                resolve(reader.result as string);
+              };
+              reader.onerror = reject;
+              reader.readAsDataURL(blob);
+            }, 'image/jpeg', 0.15);
+          };
+          img.onerror = reject;
+          img.src = URL.createObjectURL(blob);
+        });
+      } else {
+        const manipResult = await manipulateAsync(
+          uri,
+          [{ resize: { width: 600 } }],
+          { compress: 0.15, format: SaveFormat.JPEG, base64: true }
+        );
 
-      if (manipResult.base64) {
-        return `data:image/jpeg;base64,${manipResult.base64}`;
+        if (manipResult.base64) {
+          return `data:image/jpeg;base64,${manipResult.base64}`;
+        }
+
+        return manipResult.uri;
       }
-
-      return manipResult.uri;
     } catch (error) {
       console.error('Error compressing image:', error);
       throw error;
