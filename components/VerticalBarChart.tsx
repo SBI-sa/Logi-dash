@@ -27,7 +27,7 @@ export const VerticalBarChart = React.memo(function VerticalBarChart({ data, max
   };
 
   const chartHeight = 240;
-  const actualRevenueColor = '#00617f';
+  const actualRevenueColor = data[0]?.color || LogiPointColors.chart.green;
   
   return (
     <View style={styles.container}>
