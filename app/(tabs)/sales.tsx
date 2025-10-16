@@ -653,7 +653,7 @@ export default function SalesScreen() {
             )}
           </ChartCard>
 
-          <ChartCard title="Quarterly Revenue Comparison" subtitle="2025 vs 2024 vs Budget">
+          <ChartCard title="Quarterly Revenue Comparison" subtitle="Actual vs Budget vs Last Year Revenue">
             <ComboChart
               data={(['q1', 'q2', 'q3', 'q4'] as const).map((quarter, idx) => {
                 const q = salesData.quarterlyLabelling[quarter];
@@ -672,15 +672,15 @@ export default function SalesScreen() {
             <View style={styles.legend}>
               <View style={styles.legendItem}>
                 <View style={[styles.legendColor, { backgroundColor: salesData.quarterlyLabelling.q1.color || LogiPointColors.primary }]} />
-                <Text style={styles.legendText}>2025 Revenue</Text>
+                <Text style={styles.legendText}>Actual Revenue</Text>
               </View>
               <View style={styles.legendItem}>
                 <View style={[styles.legendColor, { backgroundColor: LogiPointColors.beige }]} />
-                <Text style={styles.legendText}>2024 Revenue</Text>
+                <Text style={styles.legendText}>Last Year Revenue</Text>
               </View>
               <View style={styles.legendItem}>
                 <View style={[styles.legendColor, { backgroundColor: LogiPointColors.accent, borderRadius: 8 }]} />
-                <Text style={styles.legendText}>Budget (Line)</Text>
+                <Text style={styles.legendText}>Budget Revenue (Line)</Text>
               </View>
             </View>
             <View style={styles.varianceTable}>
@@ -701,10 +701,10 @@ export default function SalesScreen() {
                   <View key={quarter} style={styles.varianceRow}>
                     <Text style={styles.varianceMonth}>Q{index + 1}</Text>
                     <View style={styles.varianceValues}>
-                      <Text style={styles.varianceValue}>2025: {formatCurrency(data.current)}</Text>
+                      <Text style={styles.varianceValue}>Actual: {formatCurrency(data.current)}</Text>
                       <Text style={styles.varianceValue}>Budget: {formatCurrency(budget)}</Text>
                       {data.lastYear && data.lastYear > 0 && (
-                        <Text style={styles.varianceValue}>2024: {formatCurrency(data.lastYear)}</Text>
+                        <Text style={styles.varianceValue}>Last Year: {formatCurrency(data.lastYear)}</Text>
                       )}
                       <Text style={[styles.variancePercent, isPositive ? styles.variancePositive : styles.varianceNegative]}>
                         Var: {isPositive ? '+' : ''}{variancePercent}%
