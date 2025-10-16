@@ -21,7 +21,7 @@ export default function SalesScreen() {
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [editField, setEditField] = useState<string>('');
   const [editValue, setEditValue] = useState<string>('');
-  const [editFields, setEditFields] = useState<{ label: string; value: string; onChange: (text: string) => void; keyboardType?: 'default' | 'default' | 'decimal-pad' | 'email-address' }[]>([]);
+  const [editFields, setEditFields] = useState<{ label: string; value: string; onChange: (text: string) => void; keyboardType?: 'default' | 'decimal-pad' | 'email-address' }[]>([]);
   const [selectedMonth, setSelectedMonth] = useState<string>('All');
   const [selectedCustomerMonth, setSelectedCustomerMonth] = useState<string>('All');
 
@@ -105,7 +105,7 @@ export default function SalesScreen() {
     if (field === 'quarterlyLabelling') {
       const quarter = (['q1', 'q2', 'q3', 'q4'][index]) as 'q1' | 'q2' | 'q3' | 'q4';
       const item = salesData.quarterlyLabelling[quarter];
-      const tempFields: { label: string; value: string; onChange: (text: string) => void; keyboardType?: 'default' | 'default' | 'decimal-pad' | 'email-address' }[] = [
+      const tempFields: { label: string; value: string; onChange: (text: string) => void; keyboardType?: 'default' | 'decimal-pad' | 'email-address' }[] = [
         { label: '2025 Value', value: item.current.toString(), onChange: (text) => {
           setEditFields(prev => prev.map((f, i) => i === 0 ? { ...f, value: text } : f));
         }, keyboardType: 'default' },
@@ -121,9 +121,13 @@ export default function SalesScreen() {
       ];
       setEditFields(tempFields);
     } else if (field === 'topCustomers') {
-      const customers = selectedCustomerMonth === 'All' ? salesData.topCustomers : salesData.topCustomersMonthly[selectedCustomerMonth];
+      const customers = selectedCustomerMonth === 'All' ? salesData.topCustomers : (salesData.topCustomersMonthly[selectedCustomerMonth] || []);
       const item = customers[index];
-      const tempFields: { label: string; value: string; onChange: (text: string) => void; keyboardType?: 'default' | 'default' | 'decimal-pad' | 'email-address' }[] = [
+	      if (!item) {
+	        console.warn('Edit attempted on missing customer at index', index, 'for month', selectedCustomerMonth);
+	        return;
+	      }
+      const tempFields: { label: string; value: string; onChange: (text: string) => void; keyboardType?: 'default' | 'decimal-pad' | 'email-address' }[] = [
         { label: 'Customer Name', value: item.name, onChange: (text) => {
           setEditFields(prev => prev.map((f, i) => i === 0 ? { ...f, value: text } : f));
         }, keyboardType: 'default' },
@@ -136,9 +140,13 @@ export default function SalesScreen() {
       ];
       setEditFields(tempFields);
     } else if (field === 'revenueBySegment') {
-      const segments = selectedMonth === 'All' ? salesData.revenueBySegment : salesData.revenueBySegmentMonthly[selectedMonth];
+      const segments = selectedMonth === 'All' ? displayedSegments : (salesData.revenueBySegmentMonthly[selectedMonth] || []);
       const item = segments[index];
-      const tempFields: { label: string; value: string; onChange: (text: string) => void; keyboardType?: 'default' | 'default' | 'decimal-pad' | 'email-address' }[] = [
+	      if (!item) {
+	        console.warn('Edit attempted on missing segment at index', index, 'for month', selectedMonth);
+	        return;
+	      }
+      const tempFields: { label: string; value: string; onChange: (text: string) => void; keyboardType?: 'default' | 'decimal-pad' | 'email-address' }[] = [
         { label: 'Segment Name', value: item.segment, onChange: (text) => {
           setEditFields(prev => prev.map((f, i) => i === 0 ? { ...f, value: text } : f));
         }, keyboardType: 'default' },
@@ -158,7 +166,11 @@ export default function SalesScreen() {
       setEditFields(tempFields);
     } else if (field === 'monthlyRevenue') {
       const item = salesData.monthlyRevenue[index];
-      const tempFields: { label: string; value: string; onChange: (text: string) => void; keyboardType?: 'default' | 'default' | 'decimal-pad' | 'email-address' }[] = [
+	      if (!item) {
+	        console.warn('Edit attempted on missing monthlyRevenue at index', index);
+	        return;
+	      }
+      const tempFields: { label: string; value: string; onChange: (text: string) => void; keyboardType?: 'default' | 'decimal-pad' | 'email-address' }[] = [
         { label: 'Month', value: item.month, onChange: (text) => {
           setEditFields(prev => prev.map((f, i) => i === 0 ? { ...f, value: text } : f));
         }, keyboardType: 'default' },
@@ -184,7 +196,11 @@ export default function SalesScreen() {
       setEditFields(tempFields);
     } else if (field === 'accountManagers') {
       const item = salesData.accountManagers[index];
-      const tempFields: { label: string; value: string; onChange: (text: string) => void; keyboardType?: 'default' | 'default' | 'decimal-pad' | 'email-address' }[] = [
+	      if (!item) {
+	        console.warn('Edit attempted on missing accountManager at index', index);
+	        return;
+	      }
+      const tempFields: { label: string; value: string; onChange: (text: string) => void; keyboardType?: 'default' | 'decimal-pad' | 'email-address' }[] = [
         { label: 'Manager Name', value: item.name, onChange: (text) => {
           setEditFields(prev => prev.map((f, i) => i === 0 ? { ...f, value: text } : f));
         }, keyboardType: 'default' },
@@ -269,14 +285,21 @@ export default function SalesScreen() {
         }
       } else if (fieldName === 'revenueBySegment') {
         if (selectedMonth === 'All') {
+          const oldName = displayedSegments[index]?.segment;
           const newSegments = [...salesData.revenueBySegment];
-          newSegments[index] = {
+          const targetIdx = oldName ? newSegments.findIndex(s => s.segment === oldName) : index;
+          const updatedSegment = {
             segment: editFields[0].value,
             revenue: parseFloat(editFields[1].value) || 0,
             budget: parseFloat(editFields[2].value) || 0,
             lastYearRevenue: parseFloat(editFields[3].value) || 0,
             color: editFields[4].value,
           };
+          if (targetIdx >= 0 && targetIdx < newSegments.length) {
+            newSegments[targetIdx] = updatedSegment;
+          } else {
+            newSegments.push(updatedSegment);
+          }
           updatedData.revenueBySegment = newSegments;
         } else {
           const newMonthlySegments = { ...salesData.revenueBySegmentMonthly };
