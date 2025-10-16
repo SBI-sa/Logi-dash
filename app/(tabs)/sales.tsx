@@ -9,7 +9,6 @@ import { SimpleBarChart } from '@/components/SimpleBarChart';
 import { VerticalBarChart } from '@/components/VerticalBarChart';
 import { YearOverYearChart } from '@/components/YearOverYearChart';
 import { ComboChart } from '@/components/ComboChart';
-import { GroupedBarChart } from '@/components/GroupedBarChart';
 
 
 import { EditModal } from '@/components/EditModal';
@@ -655,63 +654,75 @@ export default function SalesScreen() {
           </ChartCard>
 
           <ChartCard title="Quarterly Revenue Comparison" subtitle="2025 vs 2024 vs Budget">
-            <GroupedBarChart
+            <ComboChart
               data={(['q1', 'q2', 'q3', 'q4'] as const).map((quarter, idx) => {
                 const q = salesData.quarterlyLabelling[quarter];
                 const budget = q.budget || q.current * 0.95;
                 return {
                   label: `Q${idx + 1}`,
-                  values: [
-                    { label: '2025', value: q.current, color: q.color || LogiPointColors.primary },
-                    { label: '2024', value: q.lastYear, color: LogiPointColors.gray[400] },
-                    { label: 'Budget', value: budget, color: LogiPointColors.accent },
-                  ],
+                  actual: q.current,
+                  budget: budget,
+                  lastYear: q.lastYear,
+                  barColor: q.color || LogiPointColors.primary,
+                  lineColor: LogiPointColors.accent,
+                  lastYearColor: LogiPointColors.beige,
                 };
               })}
             />
-            {isAdmin && (
-              <View style={styles.chartEditButtons}>
-                {(['q1', 'q2', 'q3', 'q4'] as const).map((_, index) => (
-                  <TouchableOpacity
-                    key={index}
-                    style={styles.chartEditButton}
-                    onPress={() => handleEditArray('quarterlyLabelling', index)}
-                  >
-                    <Edit2 size={14} color={LogiPointColors.primary} />
-                    <Text style={styles.chartEditText}>Edit Q{index + 1}</Text>
-                  </TouchableOpacity>
-                ))}
+            <View style={styles.legend}>
+              <View style={styles.legendItem}>
+                <View style={[styles.legendColor, { backgroundColor: salesData.quarterlyLabelling.q1.color || LogiPointColors.primary }]} />
+                <Text style={styles.legendText}>2025 Revenue</Text>
               </View>
-            )}
-            <View style={styles.quarterlyTable}>
-              <Text style={styles.quarterlyTableTitle}>Quarterly Breakdown</Text>
-              <View style={styles.tableHeader}>
-                <Text style={[styles.tableHeaderText, styles.tableQuarterCol]}>Quarter</Text>
-                <Text style={[styles.tableHeaderText, styles.tableValueCol]}>2025</Text>
-                <Text style={[styles.tableHeaderText, styles.tableValueCol]}>2024</Text>
-                <Text style={[styles.tableHeaderText, styles.tableValueCol]}>Budget</Text>
-                <Text style={[styles.tableHeaderText, styles.tableChangeCol]}>Change</Text>
-                <Text style={[styles.tableHeaderText, styles.tableChangeCol]}>Var %</Text>
+              <View style={styles.legendItem}>
+                <View style={[styles.legendColor, { backgroundColor: LogiPointColors.beige }]} />
+                <Text style={styles.legendText}>2024 Revenue</Text>
               </View>
+              <View style={styles.legendItem}>
+                <View style={[styles.legendColor, { backgroundColor: LogiPointColors.accent, borderRadius: 8 }]} />
+                <Text style={styles.legendText}>Budget (Line)</Text>
+              </View>
+            </View>
+            <View style={styles.varianceTable}>
+              <Text style={styles.varianceTitle}>Variance Analysis</Text>
               {(['q1', 'q2', 'q3', 'q4'] as const).map((quarter, index) => {
                 const data = salesData.quarterlyLabelling[quarter];
                 const budget = data.budget || data.current * 0.95;
-                const change = data.lastYear > 0 ? ((data.current - data.lastYear) / data.lastYear * 100).toFixed(1) : '0.0';
-                const isPositive = parseFloat(change) >= 0;
-                const variance = budget > 0 ? ((data.current - budget) / budget * 100).toFixed(1) : '0.0';
-                const isVariancePositive = parseFloat(variance) >= 0;
+                const variance = data.current - budget;
+                const variancePercent = budget > 0 ? ((variance / budget) * 100).toFixed(1) : '0.0';
+                const isPositive = variance >= 0;
+                
+                const yoyGrowth = data.lastYear && data.lastYear > 0 
+                  ? ((data.current - data.lastYear) / data.lastYear * 100).toFixed(1)
+                  : null;
+                const isGrowthPositive = yoyGrowth ? parseFloat(yoyGrowth) >= 0 : false;
+                
                 return (
-                  <View key={quarter} style={styles.tableRow}>
-                    <Text style={[styles.tableCell, styles.tableQuarterCol]}>Q{index + 1}</Text>
-                    <Text style={[styles.tableCell, styles.tableValueCol]}>{data.current.toLocaleString()}</Text>
-                    <Text style={[styles.tableCell, styles.tableValueCol]}>{data.lastYear.toLocaleString()}</Text>
-                    <Text style={[styles.tableCell, styles.tableValueCol]}>{budget.toLocaleString()}</Text>
-                    <Text style={[styles.tableCell, styles.tableChangeCol, isPositive ? styles.changePositive : styles.changeNegative]}>
-                      {isPositive ? '+' : ''}{change}%
-                    </Text>
-                    <Text style={[styles.tableCell, styles.tableChangeCol, isVariancePositive ? styles.changePositive : styles.changeNegative]}>
-                      {isVariancePositive ? '+' : ''}{variance}%
-                    </Text>
+                  <View key={quarter} style={styles.varianceRow}>
+                    <Text style={styles.varianceMonth}>Q{index + 1}</Text>
+                    <View style={styles.varianceValues}>
+                      <Text style={styles.varianceValue}>2025: {formatCurrency(data.current)}</Text>
+                      <Text style={styles.varianceValue}>Budget: {formatCurrency(budget)}</Text>
+                      {data.lastYear && data.lastYear > 0 && (
+                        <Text style={styles.varianceValue}>2024: {formatCurrency(data.lastYear)}</Text>
+                      )}
+                      <Text style={[styles.variancePercent, isPositive ? styles.variancePositive : styles.varianceNegative]}>
+                        Var: {isPositive ? '+' : ''}{variancePercent}%
+                      </Text>
+                      {yoyGrowth && (
+                        <Text style={[styles.variancePercent, isGrowthPositive ? styles.variancePositive : styles.varianceNegative]}>
+                          YoY: {isGrowthPositive ? '+' : ''}{yoyGrowth}%
+                        </Text>
+                      )}
+                    </View>
+                    {isAdmin && (
+                      <TouchableOpacity
+                        style={styles.varianceEditButton}
+                        onPress={() => handleEditArray('quarterlyLabelling', index)}
+                      >
+                        <Edit2 size={12} color={LogiPointColors.primary} />
+                      </TouchableOpacity>
+                    )}
                   </View>
                 );
               })}
