@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { LogiPointColors } from '@/constants/colors';
+import Svg, { Rect, Text as SvgText } from 'react-native-svg';
 
 export interface GroupedBarData {
   label: string;
@@ -14,87 +15,107 @@ export interface GroupedBarData {
 interface GroupedBarChartProps {
   data: GroupedBarData[];
   maxValue?: number;
+  height?: number;
 }
 
-export const GroupedBarChart = React.memo(function GroupedBarChart({ data, maxValue }: GroupedBarChartProps) {
+export const GroupedBarChart = React.memo(function GroupedBarChart({ data, maxValue, height = 300 }: GroupedBarChartProps) {
   const max = maxValue || Math.max(...data.flatMap(d => d.values.map(v => v.value)));
-  
+  const chartHeight = height - 60;
+  const chartWidth = Math.max(data.length * 100, 300);
+  const barWidth = 20;
+  const spacing = 100;
+
+  const getBarHeight = (value: number) => {
+    return (value / (max * 1.15)) * chartHeight;
+  };
+
+  const getYPosition = (value: number) => {
+    return chartHeight - getBarHeight(value);
+  };
+
+  const formatValue = (value: number) => {
+    if (value >= 1000000) {
+      return `${(value / 1000000).toFixed(1)}M`;
+    } else if (value >= 1000) {
+      return `${(value / 1000).toFixed(0)}K`;
+    }
+    return value.toString();
+  };
+
   return (
     <View style={styles.container}>
-      {data.map((item, index) => {
-        return (
-          <View key={index} style={styles.groupContainer}>
-            <Text style={styles.label}>{item.label}</Text>
-            <View style={styles.barsContainer}>
-              {item.values.map((bar, barIndex) => {
-                const percentage = (bar.value / max) * 100;
-                
-                return (
-                  <View key={barIndex} style={styles.barRow}>
-                    <View style={styles.barWrapper}>
-                      <View 
-                        style={[
-                          styles.bar, 
-                          { 
-                            width: `${percentage}%`,
-                            backgroundColor: bar.color,
-                          }
-                        ]} 
+      <View style={styles.chartContainer}>
+        <Svg width={chartWidth} height={height}>
+          {data.map((item, index) => {
+            const x = index * spacing + spacing / 2;
+            const numBars = item.values.length;
+            const totalBarsWidth = numBars * barWidth + (numBars - 1) * 2;
+            const startX = x - totalBarsWidth / 2;
+
+            return (
+              <React.Fragment key={index}>
+                {item.values.map((bar, barIndex) => {
+                  const barX = startX + barIndex * (barWidth + 2);
+                  const barHeight = getBarHeight(bar.value);
+                  const barY = getYPosition(bar.value);
+
+                  return (
+                    <React.Fragment key={barIndex}>
+                      <Rect
+                        x={barX}
+                        y={barY}
+                        width={barWidth}
+                        height={barHeight}
+                        fill={bar.color}
+                        rx={4}
                       />
-                      <Text style={styles.value}>{bar.value.toLocaleString()}</Text>
-                    </View>
-                    <Text style={styles.barLabel}>{bar.label}</Text>
-                  </View>
-                );
-              })}
-            </View>
-          </View>
-        );
-      })}
+                      <SvgText
+                        x={barX + barWidth / 2}
+                        y={barY - 5}
+                        fontSize="9"
+                        fill={LogiPointColors.gray[700]}
+                        textAnchor="middle"
+                        fontWeight="600"
+                      >
+                        {formatValue(bar.value)}
+                      </SvgText>
+                      <SvgText
+                        x={barX + barWidth / 2}
+                        y={height - 20}
+                        fontSize="9"
+                        fill={LogiPointColors.gray[500]}
+                        textAnchor="middle"
+                        fontWeight="500"
+                      >
+                        {bar.label}
+                      </SvgText>
+                    </React.Fragment>
+                  );
+                })}
+                <SvgText
+                  x={x}
+                  y={height - 5}
+                  fontSize="11"
+                  fill={LogiPointColors.gray[600]}
+                  textAnchor="middle"
+                  fontWeight="600"
+                >
+                  {item.label}
+                </SvgText>
+              </React.Fragment>
+            );
+          })}
+        </Svg>
+      </View>
     </View>
   );
 });
 
 const styles = StyleSheet.create({
   container: {
-    gap: 16,
+    marginVertical: 8,
   },
-  groupContainer: {
-    gap: 6,
-  },
-  label: {
-    fontSize: 13,
-    color: LogiPointColors.gray[700],
-    fontWeight: '600' as const,
-  },
-  barsContainer: {
-    gap: 6,
-  },
-  barRow: {
-    gap: 4,
-  },
-  barWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  bar: {
-    height: 24,
-    borderRadius: 4,
-    minWidth: 2,
-    flexShrink: 1,
-  },
-  value: {
-    fontSize: 12,
-    fontWeight: '600' as const,
-    color: LogiPointColors.midnight,
-    minWidth: 50,
-    flexShrink: 0,
-  },
-  barLabel: {
-    fontSize: 11,
-    color: LogiPointColors.gray[600],
-    fontWeight: '500' as const,
-    marginLeft: 4,
+  chartContainer: {
+    overflow: 'scroll',
   },
 });
