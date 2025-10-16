@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Alert, TextInput, Platform } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Alert, TextInput, Platform, Modal } from 'react-native';
 import { Stack } from 'expo-router';
 import { Building2, TrendingUp, MapPin, Edit2, Plus, Calendar, Car, Upload, X, Image as ImageIcon } from 'lucide-react-native';
 import * as ImagePicker from 'expo-image-picker';
@@ -19,6 +19,7 @@ export default function RealEstateScreen() {
   const [isAddingNew, setIsAddingNew] = useState(false);
   const [newImageLabel, setNewImageLabel] = useState('');
   const [showAddImageModal, setShowAddImageModal] = useState(false);
+  const [fullscreenImageUri, setFullscreenImageUri] = useState<string | null>(null);
 
   const handleEdit = (field: string, currentValue: number | string) => {
     setEditField(field);
@@ -772,11 +773,13 @@ export default function RealEstateScreen() {
               <Text style={styles.imageCardTitle}>Land Image</Text>
               {realEstateData.landImageUri ? (
                 <View style={styles.imageContainer}>
-                  <Image
-                    source={{ uri: realEstateData.landImageUri }}
-                    style={styles.propertyImage}
-                    resizeMode="contain"
-                  />
+                  <TouchableOpacity onPress={() => setFullscreenImageUri(realEstateData.landImageUri!)}>
+                    <Image
+                      source={{ uri: realEstateData.landImageUri }}
+                      style={styles.propertyImage}
+                      resizeMode="contain"
+                    />
+                  </TouchableOpacity>
                   {isAdmin && (
                     <View style={styles.imageActions}>
                       <TouchableOpacity
@@ -817,11 +820,13 @@ export default function RealEstateScreen() {
               <Text style={styles.imageCardTitle}>JLH Image</Text>
               {realEstateData.jlhImageUri ? (
                 <View style={styles.imageContainer}>
-                  <Image
-                    source={{ uri: realEstateData.jlhImageUri }}
-                    style={styles.propertyImage}
-                    resizeMode="contain"
-                  />
+                  <TouchableOpacity onPress={() => setFullscreenImageUri(realEstateData.jlhImageUri!)}>
+                    <Image
+                      source={{ uri: realEstateData.jlhImageUri }}
+                      style={styles.propertyImage}
+                      resizeMode="contain"
+                    />
+                  </TouchableOpacity>
                   {isAdmin && (
                     <View style={styles.imageActions}>
                       <TouchableOpacity
@@ -876,11 +881,13 @@ export default function RealEstateScreen() {
                   {realEstateData.additionalImages.map((img) => (
                     <View key={img.id} style={styles.additionalImageItem}>
                       <Text style={styles.additionalImageLabel}>{img.label}</Text>
-                      <Image
-                        source={{ uri: img.uri }}
-                        style={styles.additionalImage}
-                        resizeMode="cover"
-                      />
+                      <TouchableOpacity onPress={() => setFullscreenImageUri(img.uri)}>
+                        <Image
+                          source={{ uri: img.uri }}
+                          style={styles.additionalImage}
+                          resizeMode="cover"
+                        />
+                      </TouchableOpacity>
                       {isAdmin && (
                         <TouchableOpacity
                           style={styles.removeAdditionalImageButton}
@@ -934,6 +941,29 @@ export default function RealEstateScreen() {
             </View>
           </View>
         )}
+
+        <Modal
+          visible={fullscreenImageUri !== null}
+          transparent={true}
+          animationType="fade"
+          onRequestClose={() => setFullscreenImageUri(null)}
+        >
+          <View style={styles.fullscreenModalOverlay}>
+            <TouchableOpacity 
+              style={styles.fullscreenCloseButton}
+              onPress={() => setFullscreenImageUri(null)}
+            >
+              <X size={28} color={LogiPointColors.white} />
+            </TouchableOpacity>
+            {fullscreenImageUri && (
+              <Image
+                source={{ uri: fullscreenImageUri }}
+                style={styles.fullscreenImage}
+                resizeMode="contain"
+              />
+            )}
+          </View>
+        </Modal>
       </View>
     </>
   );
@@ -1333,5 +1363,27 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600' as const,
     color: LogiPointColors.white,
+  },
+  fullscreenModalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.95)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  fullscreenCloseButton: {
+    position: 'absolute',
+    top: 50,
+    right: 20,
+    zIndex: 10,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    borderRadius: 20,
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  fullscreenImage: {
+    width: '100%',
+    height: '100%',
   },
 });
