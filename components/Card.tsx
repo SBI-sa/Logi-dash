@@ -31,7 +31,7 @@ export const Card = React.memo(function Card({ children, style, lastUpdated, onL
   const showLastUpdated = lastUpdated !== undefined;
 
   const CardWrapper = Platform.OS === 'web' ? View : BlurView;
-  const blurProps = Platform.OS === 'web' ? {} : { intensity: 10, tint: 'light' as const };
+  const blurProps = Platform.OS === 'web' ? {} : { intensity: 40, tint: 'light' as const };
 
   return (
     <CardWrapper style={[styles.card, style]} {...blurProps}>
@@ -106,24 +106,24 @@ export const Card = React.memo(function Card({ children, style, lastUpdated, onL
 const styles = StyleSheet.create({
   card: {
     backgroundColor: Platform.select({
-      web: 'rgba(255, 255, 255, 0.25)',
-      default: 'rgba(255, 255, 255, 0.15)',
+      web: 'rgba(255, 255, 255, 0.08)',
+      default: 'rgba(255, 255, 255, 0.05)',
     }),
-    borderRadius: 16,
+    borderRadius: 20,
     padding: 0,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.4)',
+    borderWidth: 1.5,
+    borderColor: 'rgba(255, 255, 255, 0.25)',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.15,
-    shadowRadius: 16,
-    elevation: 8,
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.2,
+    shadowRadius: 20,
+    elevation: 10,
     overflow: 'hidden',
     position: 'relative' as const,
     ...(Platform.OS === 'web' ? {
-      backdropFilter: 'blur(20px) saturate(180%)',
-      WebkitBackdropFilter: 'blur(20px) saturate(180%)',
-      boxShadow: '0 4px 24px 0 rgba(0, 0, 0, 0.1), inset 0 0.5px 0 0 rgba(255, 255, 255, 0.5)',
+      backdropFilter: 'blur(40px) saturate(150%)',
+      WebkitBackdropFilter: 'blur(40px) saturate(150%)',
+      boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.12), inset 0 1px 0 0 rgba(255, 255, 255, 0.3)',
     } : {}),
   },
   glassOverlay: {
@@ -132,18 +132,18 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(255, 255, 255, 0.25)',
-    borderRadius: 16,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 20,
   },
   shineEffect: {
     position: 'absolute' as const,
     top: 0,
     left: 0,
     right: 0,
-    height: '40%',
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
+    height: '50%',
+    backgroundColor: 'rgba(255, 255, 255, 0.12)',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
   },
   contentWrapper: {
     padding: 16,
@@ -175,26 +175,26 @@ const styles = StyleSheet.create({
   },
   modalContent: {
     backgroundColor: Platform.select({
-      web: 'rgba(255, 255, 255, 0.35)',
-      default: 'rgba(255, 255, 255, 0.25)',
+      web: 'rgba(255, 255, 255, 0.1)',
+      default: 'rgba(255, 255, 255, 0.08)',
     }),
-    borderRadius: 20,
+    borderRadius: 24,
     padding: 0,
     width: '80%',
     maxWidth: 400,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.5)',
+    borderWidth: 1.5,
+    borderColor: 'rgba(255, 255, 255, 0.25)',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 12 },
-    shadowOpacity: 0.2,
-    shadowRadius: 24,
+    shadowOpacity: 0.25,
+    shadowRadius: 30,
     elevation: 12,
     overflow: 'hidden',
     position: 'relative' as const,
     ...(Platform.OS === 'web' ? {
-      backdropFilter: 'blur(24px) saturate(180%)',
-      WebkitBackdropFilter: 'blur(24px) saturate(180%)',
-      boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.15), inset 0 0.5px 0 0 rgba(255, 255, 255, 0.6)',
+      backdropFilter: 'blur(40px) saturate(150%)',
+      WebkitBackdropFilter: 'blur(40px) saturate(150%)',
+      boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.2), inset 0 1px 0 0 rgba(255, 255, 255, 0.3)',
     } : {}),
   },
   modalGlassOverlay: {
@@ -203,18 +203,18 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(255, 255, 255, 0.3)',
-    borderRadius: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.12)',
+    borderRadius: 24,
   },
   modalShineEffect: {
     position: 'absolute' as const,
     top: 0,
     left: 0,
     right: 0,
-    height: '35%',
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
+    height: '50%',
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
   },
   modalInnerContent: {
     padding: 24,
