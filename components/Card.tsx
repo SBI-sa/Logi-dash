@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, ViewStyle, Text, TouchableOpacity, TextInput, Modal, Platform } from 'react-native';
 import { BlurView } from 'expo-blur';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Edit2, X } from 'lucide-react-native';
 import { LogiPointColors } from '@/constants/colors';
 import { useAuth } from '@/contexts/AuthContext';
@@ -31,12 +32,18 @@ export const Card = React.memo(function Card({ children, style, lastUpdated, onL
   const showLastUpdated = lastUpdated !== undefined;
 
   const CardWrapper = Platform.OS === 'web' ? View : BlurView;
-  const blurProps = Platform.OS === 'web' ? {} : { intensity: 40, tint: 'light' as const };
+  const blurProps = Platform.OS === 'web' ? {} : { intensity: 65, tint: 'light' as const };
 
   return (
-    <CardWrapper style={[styles.card, style]} {...blurProps}>
+    <CardWrapper style={[styles.card, style]} {...blurProps} testID="glass-card">
       <View style={styles.glassOverlay} />
-      <View style={styles.shineEffect} />
+      <LinearGradient
+        colors={["rgba(255,255,255,0.28)", "rgba(255,255,255,0.06)"]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.diagonalSheen}
+      />
+      <View style={styles.innerBorder} />
       <View style={styles.contentWrapper}>
         {showLastUpdated && (
           <View style={styles.lastUpdatedContainer}>
@@ -48,6 +55,7 @@ export const Card = React.memo(function Card({ children, style, lastUpdated, onL
                   setEditValue(lastUpdated || '');
                   setEditModalVisible(true);
                 }}
+                testID="edit-last-updated"
               >
                 <Edit2 size={12} color={LogiPointColors.gray[500]} />
               </TouchableOpacity>
@@ -66,11 +74,16 @@ export const Card = React.memo(function Card({ children, style, lastUpdated, onL
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <View style={styles.modalGlassOverlay} />
-            <View style={styles.modalShineEffect} />
+            <LinearGradient
+              colors={["rgba(255,255,255,0.25)", "rgba(255,255,255,0.04)"]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.modalDiagonalSheen}
+            />
             <View style={styles.modalInnerContent}>
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>Edit Last Updated</Text>
-              <TouchableOpacity onPress={() => setEditModalVisible(false)}>
+              <TouchableOpacity onPress={() => setEditModalVisible(false)} testID="close-edit-last-updated">
                 <X size={24} color={LogiPointColors.gray[600]} />
               </TouchableOpacity>
             </View>
@@ -85,12 +98,14 @@ export const Card = React.memo(function Card({ children, style, lastUpdated, onL
               <TouchableOpacity
                 style={[styles.modalButton, styles.cancelButton]}
                 onPress={() => setEditModalVisible(false)}
+                testID="cancel-edit-last-updated"
               >
                 <Text style={styles.cancelButtonText}>Cancel</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.modalButton, styles.saveButton]}
                 onPress={handleSave}
+                testID="save-edit-last-updated"
               >
                 <Text style={styles.saveButtonText}>Save</Text>
               </TouchableOpacity>
@@ -106,24 +121,24 @@ export const Card = React.memo(function Card({ children, style, lastUpdated, onL
 const styles = StyleSheet.create({
   card: {
     backgroundColor: Platform.select({
-      web: 'rgba(255, 255, 255, 0.08)',
-      default: 'rgba(255, 255, 255, 0.05)',
+      web: 'rgba(255, 255, 255, 0.16)',
+      default: 'rgba(255, 255, 255, 0.10)',
     }),
-    borderRadius: 20,
+    borderRadius: 24,
     padding: 0,
-    borderWidth: 1.5,
-    borderColor: 'rgba(255, 255, 255, 0.25)',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.2,
-    shadowRadius: 20,
-    elevation: 10,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.32)',
+    shadowColor: '#001019',
+    shadowOffset: { width: 0, height: 14 },
+    shadowOpacity: 0.22,
+    shadowRadius: 28,
+    elevation: 14,
     overflow: 'hidden',
     position: 'relative' as const,
     ...(Platform.OS === 'web' ? {
-      backdropFilter: 'blur(40px) saturate(150%)',
-      WebkitBackdropFilter: 'blur(40px) saturate(150%)',
-      boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.12), inset 0 1px 0 0 rgba(255, 255, 255, 0.3)',
+      backdropFilter: 'blur(28px) saturate(180%)',
+      WebkitBackdropFilter: 'blur(28px) saturate(180%)',
+      boxShadow: '0 10px 40px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.45), inset 0 -1px 0 rgba(0,0,0,0.06)',
     } : {}),
   },
   glassOverlay: {
@@ -132,18 +147,28 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.06)',
+    borderRadius: 24,
   },
-  shineEffect: {
+  diagonalSheen: {
     position: 'absolute' as const,
-    top: 0,
-    left: 0,
-    right: 0,
-    height: '50%',
-    backgroundColor: 'rgba(255, 255, 255, 0.12)',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
+    top: -10,
+    left: -10,
+    right: -10,
+    height: '55%',
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
+  },
+  innerBorder: {
+    position: 'absolute' as const,
+    top: 1,
+    left: 1,
+    right: 1,
+    bottom: 1,
+    borderRadius: 22,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.28)',
+    opacity: 0.35,
   },
   contentWrapper: {
     padding: 16,
@@ -175,26 +200,26 @@ const styles = StyleSheet.create({
   },
   modalContent: {
     backgroundColor: Platform.select({
-      web: 'rgba(255, 255, 255, 0.1)',
-      default: 'rgba(255, 255, 255, 0.08)',
+      web: 'rgba(255, 255, 255, 0.16)',
+      default: 'rgba(255, 255, 255, 0.10)',
     }),
-    borderRadius: 24,
+    borderRadius: 28,
     padding: 0,
     width: '80%',
-    maxWidth: 400,
-    borderWidth: 1.5,
-    borderColor: 'rgba(255, 255, 255, 0.25)',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 12 },
+    maxWidth: 440,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.32)',
+    shadowColor: '#001019',
+    shadowOffset: { width: 0, height: 14 },
     shadowOpacity: 0.25,
-    shadowRadius: 30,
-    elevation: 12,
+    shadowRadius: 32,
+    elevation: 14,
     overflow: 'hidden',
     position: 'relative' as const,
     ...(Platform.OS === 'web' ? {
-      backdropFilter: 'blur(40px) saturate(150%)',
-      WebkitBackdropFilter: 'blur(40px) saturate(150%)',
-      boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.2), inset 0 1px 0 0 rgba(255, 255, 255, 0.3)',
+      backdropFilter: 'blur(28px) saturate(180%)',
+      WebkitBackdropFilter: 'blur(28px) saturate(180%)',
+      boxShadow: '0 10px 40px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.45), inset 0 -1px 0 rgba(0,0,0,0.06)',
     } : {}),
   },
   modalGlassOverlay: {
@@ -206,15 +231,14 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.12)',
     borderRadius: 24,
   },
-  modalShineEffect: {
+  modalDiagonalSheen: {
     position: 'absolute' as const,
-    top: 0,
-    left: 0,
-    right: 0,
-    height: '50%',
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
+    top: -12,
+    left: -12,
+    right: -12,
+    height: '55%',
+    borderTopLeftRadius: 32,
+    borderTopRightRadius: 32,
   },
   modalInnerContent: {
     padding: 24,
