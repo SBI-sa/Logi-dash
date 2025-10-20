@@ -24,11 +24,12 @@ export default function SalesScreen() {
   const [editFields, setEditFields] = useState<{ label: string; value: string; onChange: (text: string) => void; keyboardType?: 'default' | 'decimal-pad' | 'email-address' }[]>([]);
   const [selectedMonth, setSelectedMonth] = useState<string>('All');
   const [selectedCustomerMonth, setSelectedCustomerMonth] = useState<string>('All');
-  const [selectedTop10Month, setSelectedTop10Month] = useState<string>('January');
+  const [selectedTop10Month, setSelectedTop10Month] = useState<string>('Total');
   const [currentEditIndex, setCurrentEditIndex] = useState<number | null>(null);
 
   const months = ['All', 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
   const monthsOnly = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  const monthsWithTotal = ['Total', ...monthsOnly];
 
   const displayedSegments = useMemo(() => {
     if (selectedMonth === 'All') {
@@ -64,6 +65,23 @@ export default function SalesScreen() {
   }, [selectedMonth, salesData.revenueBySegmentMonthly]);
 
   const top10Customers = useMemo(() => {
+    if (selectedTop10Month === 'Total') {
+      const totals = new Map<string, { sales: number; color: string }>();
+      Object.values(salesData.topCustomersMonthly).forEach(monthCustomers => {
+        monthCustomers.forEach(customer => {
+          const existing = totals.get(customer.name);
+          if (existing) {
+            existing.sales += customer.sales;
+          } else {
+            totals.set(customer.name, { sales: customer.sales, color: customer.color });
+          }
+        });
+      });
+      return Array.from(totals.entries())
+        .map(([name, data]) => ({ name, sales: data.sales, color: data.color }))
+        .sort((a, b) => b.sales - a.sales)
+        .slice(0, 10);
+    }
     const customers = salesData.topCustomersMonthly[selectedTop10Month] || [];
     return customers.slice(0, 10);
   }, [selectedTop10Month, salesData.topCustomersMonthly]);
@@ -1045,7 +1063,7 @@ export default function SalesScreen() {
             onLastUpdatedChange={(value) => updateLastUpdated('sales-top-10-customers', value)}
           >
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.monthFilter}>
-              {monthsOnly.map((month) => (
+              {monthsWithTotal.map((month) => (
                 <TouchableOpacity
                   key={month}
                   style={[
