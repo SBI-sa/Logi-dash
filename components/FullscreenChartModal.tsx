@@ -128,7 +128,14 @@ export const FullscreenChartModal = React.memo(function FullscreenChartModal({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: LogiPointColors.white,
+    backgroundColor: Platform.select({
+      web: 'rgba(255, 255, 255, 0.85)',
+      default: LogiPointColors.white,
+    }),
+    ...(Platform.OS === 'web' ? {
+      backdropFilter: 'blur(10px)',
+      WebkitBackdropFilter: 'blur(10px)',
+    } : {}),
   },
   header: {
     flexDirection: 'row',

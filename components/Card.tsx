@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, ViewStyle, Text, TouchableOpacity, TextInput, Modal } from 'react-native';
+import { View, StyleSheet, ViewStyle, Text, TouchableOpacity, TextInput, Modal, Platform } from 'react-native';
+import { BlurView } from 'expo-blur';
 import { Edit2, X } from 'lucide-react-native';
 import { LogiPointColors } from '@/constants/colors';
 import { useAuth } from '@/contexts/AuthContext';
@@ -29,8 +30,11 @@ export const Card = React.memo(function Card({ children, style, lastUpdated, onL
 
   const showLastUpdated = lastUpdated !== undefined;
 
+  const CardWrapper = Platform.OS === 'web' ? View : BlurView;
+  const blurProps = Platform.OS === 'web' ? {} : { intensity: 20, tint: 'light' as const };
+
   return (
-    <View style={[styles.card, style]}>
+    <CardWrapper style={[styles.card, style]} {...blurProps}>
       {showLastUpdated && (
         <View style={styles.lastUpdatedContainer}>
           <Text style={styles.lastUpdatedText}>{lastUpdated || 'Not updated'}</Text>
@@ -87,20 +91,30 @@ export const Card = React.memo(function Card({ children, style, lastUpdated, onL
           </View>
         </View>
       </Modal>
-    </View>
+    </CardWrapper>
   );
 });
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: LogiPointColors.white,
-    borderRadius: 12,
+    backgroundColor: Platform.select({
+      web: 'rgba(255, 255, 255, 0.7)',
+      default: 'rgba(255, 255, 255, 0.25)',
+    }),
+    borderRadius: 16,
     padding: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.5)',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 3,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.15,
+    shadowRadius: 16,
+    elevation: 8,
+    overflow: 'hidden',
+    ...(Platform.OS === 'web' ? {
+      backdropFilter: 'blur(20px)',
+      WebkitBackdropFilter: 'blur(20px)',
+    } : {}),
   },
   lastUpdatedContainer: {
     position: 'absolute',
@@ -126,11 +140,25 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalContent: {
-    backgroundColor: LogiPointColors.white,
-    borderRadius: 12,
+    backgroundColor: Platform.select({
+      web: 'rgba(255, 255, 255, 0.95)',
+      default: LogiPointColors.white,
+    }),
+    borderRadius: 16,
     padding: 24,
     width: '80%',
     maxWidth: 400,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.6)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.2,
+    shadowRadius: 24,
+    elevation: 10,
+    ...(Platform.OS === 'web' ? {
+      backdropFilter: 'blur(20px)',
+      WebkitBackdropFilter: 'blur(20px)',
+    } : {}),
   },
   modalHeader: {
     flexDirection: 'row',

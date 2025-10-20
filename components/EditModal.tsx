@@ -1,4 +1,4 @@
-import { View, Text, TextInput, TouchableOpacity, Modal, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Modal, StyleSheet, ScrollView, Platform } from 'react-native';
 import { LogiPointColors } from '@/constants/colors';
 import { X, ChevronDown } from 'lucide-react-native';
 import { useState } from 'react';
@@ -149,17 +149,26 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   modalContent: {
-    backgroundColor: LogiPointColors.white,
+    backgroundColor: Platform.select({
+      web: 'rgba(255, 255, 255, 0.95)',
+      default: LogiPointColors.white,
+    }),
     borderRadius: 16,
     padding: 24,
     width: '100%',
     maxWidth: 500,
     maxHeight: '80%',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.6)',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 5,
+    shadowRadius: 24,
+    elevation: 10,
+    ...(Platform.OS === 'web' ? {
+      backdropFilter: 'blur(20px)',
+      WebkitBackdropFilter: 'blur(20px)',
+    } : {}),
   },
   modalHeader: {
     flexDirection: 'row',
