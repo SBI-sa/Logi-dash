@@ -9,14 +9,16 @@ interface ChartCardProps {
   title: string;
   children: React.ReactNode;
   subtitle?: string;
+  lastUpdated?: string;
+  onLastUpdatedChange?: (value: string) => void;
 }
 
-export const ChartCard = React.memo(function ChartCard({ title, children, subtitle }: ChartCardProps) {
+export const ChartCard = React.memo(function ChartCard({ title, children, subtitle, lastUpdated, onLastUpdatedChange }: ChartCardProps) {
   const [isFullscreen, setIsFullscreen] = useState(false);
 
   return (
     <>
-      <Card style={styles.container}>
+      <Card style={styles.container} lastUpdated={lastUpdated} onLastUpdatedChange={onLastUpdatedChange}>
         <View style={styles.header}>
           <View style={styles.headerText}>
             <Text style={styles.title}>{title}</Text>

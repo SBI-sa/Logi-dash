@@ -15,11 +15,13 @@ interface KPICardProps {
   };
   icon?: LucideIcon;
   color?: string;
+  lastUpdated?: string;
+  onLastUpdatedChange?: (value: string) => void;
 }
 
-export const KPICard = React.memo(function KPICard({ title, value, subtitle, trend, icon: Icon, color = LogiPointColors.primary }: KPICardProps) {
+export const KPICard = React.memo(function KPICard({ title, value, subtitle, trend, icon: Icon, color = LogiPointColors.primary, lastUpdated, onLastUpdatedChange }: KPICardProps) {
   return (
-    <Card style={styles.container}>
+    <Card style={styles.container} lastUpdated={lastUpdated} onLastUpdatedChange={onLastUpdatedChange}>
       <View style={styles.header}>
         <Text style={styles.title}>{title}</Text>
         {Icon && <Icon size={20} color={color} />}

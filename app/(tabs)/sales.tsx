@@ -17,7 +17,7 @@ import { useData } from '@/contexts/DataContext';
 
 export default function SalesScreen() {
   const { isAdmin } = useAuth();
-  const { salesData, updateSalesData } = useData();
+  const { salesData, updateSalesData, getLastUpdated, updateLastUpdated } = useData();
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [editField, setEditField] = useState<string>('');
   const [editValue, setEditValue] = useState<string>('');
@@ -588,6 +588,8 @@ export default function SalesScreen() {
                   }}
                   icon={TrendingUp}
                   color={parseFloat(ytdBudgetVariance) >= 0 ? LogiPointColors.chart.green : LogiPointColors.accent}
+                  lastUpdated={getLastUpdated('sales-ytd-revenue')}
+                  onLastUpdatedChange={(value) => updateLastUpdated('sales-ytd-revenue', value)}
                 />
                 {isAdmin && (
                   <View style={styles.budgetEditButtons}>
@@ -616,6 +618,8 @@ export default function SalesScreen() {
                 trend={{ value: parseFloat(ytdGrowthPercentage), isPositive: parseFloat(ytdGrowthPercentage) >= 0 }}
                 icon={DollarSign}
                 color={salesData.totalRevenueColor || LogiPointColors.primary}
+                lastUpdated={getLastUpdated('sales-total-revenue')}
+                onLastUpdatedChange={(value) => updateLastUpdated('sales-total-revenue', value)}
               />
               {isAdmin && (
                 <View style={styles.kpiEditButtons}>
@@ -654,7 +658,12 @@ export default function SalesScreen() {
 
           </ScrollView>
 
-          <ChartCard title="Monthly Revenue Performance" subtitle="Actual vs Budget vs Last Year Revenue">
+          <ChartCard 
+            title="Monthly Revenue Performance" 
+            subtitle="Actual vs Budget vs Last Year Revenue"
+            lastUpdated={getLastUpdated('sales-monthly-revenue')}
+            onLastUpdatedChange={(value) => updateLastUpdated('sales-monthly-revenue', value)}
+          >
             <ComboChart 
               data={salesData.monthlyRevenue.map(m => ({
                 label: m.month,
@@ -724,7 +733,12 @@ export default function SalesScreen() {
             </View>
           </ChartCard>
 
-          <ChartCard title="Revenue by Segment" subtitle={selectedMonth === 'All' ? 'Year-over-Year Comparison' : `${selectedMonth} Year-over-Year Comparison`}>
+          <ChartCard 
+            title="Revenue by Segment" 
+            subtitle={selectedMonth === 'All' ? 'Year-over-Year Comparison' : `${selectedMonth} Year-over-Year Comparison`}
+            lastUpdated={getLastUpdated('sales-revenue-by-segment')}
+            onLastUpdatedChange={(value) => updateLastUpdated('sales-revenue-by-segment', value)}
+          >
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.monthFilter}>
               {months.map((month) => (
                 <TouchableOpacity
@@ -877,7 +891,12 @@ export default function SalesScreen() {
             )}
           </ChartCard>
 
-          <ChartCard title="Quarterly Revenue Comparison" subtitle="Actual vs Budget vs Last Year Revenue">
+          <ChartCard 
+            title="Quarterly Revenue Comparison" 
+            subtitle="Actual vs Budget vs Last Year Revenue"
+            lastUpdated={getLastUpdated('sales-quarterly-revenue')}
+            onLastUpdatedChange={(value) => updateLastUpdated('sales-quarterly-revenue', value)}
+          >
             <ComboChart
               data={(['q1', 'q2', 'q3', 'q4'] as const).map((quarter, idx) => {
                 const q = salesData.quarterlyLabelling[quarter];
@@ -953,7 +972,12 @@ export default function SalesScreen() {
             </View>
           </ChartCard>
 
-          <ChartCard title="Account Manager Performance" subtitle="Revenue vs Budget">
+          <ChartCard 
+            title="Account Manager Performance" 
+            subtitle="Revenue vs Budget"
+            lastUpdated={getLastUpdated('sales-account-manager')}
+            onLastUpdatedChange={(value) => updateLastUpdated('sales-account-manager', value)}
+          >
             <VerticalBarChart 
               data={salesData.accountManagers.map((am, i) => ({
                 label: am.name,
@@ -1014,7 +1038,12 @@ export default function SalesScreen() {
             )}
           </ChartCard>
 
-          <ChartCard title="Top 10 Customers by Revenue" subtitle={`${selectedTop10Month} - Total: ${formatCurrency(top10Total)}`}>
+          <ChartCard 
+            title="Top 10 Customers by Revenue" 
+            subtitle={`${selectedTop10Month} - Total: ${formatCurrency(top10Total)}`}
+            lastUpdated={getLastUpdated('sales-top-10-customers')}
+            onLastUpdatedChange={(value) => updateLastUpdated('sales-top-10-customers', value)}
+          >
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.monthFilter}>
               {monthsOnly.map((month) => (
                 <TouchableOpacity

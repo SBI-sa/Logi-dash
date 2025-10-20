@@ -29,7 +29,12 @@ const STORAGE_KEYS = {
   warehouse: '@logipoint_warehouse',
   vas: '@logipoint_vas',
   po: '@logipoint_po',
+  lastUpdated: '@logipoint_last_updated',
 };
+
+export interface LastUpdatedData {
+  [cardKey: string]: string;
+}
 
 export const [DataProvider, useData] = createContextHook(() => {
   const [salesData, setSalesData] = useState<SalesData>(mockSalesData);
@@ -40,11 +45,12 @@ export const [DataProvider, useData] = createContextHook(() => {
   const [warehouseData, setWarehouseData] = useState<WarehouseData>(mockWarehouseData);
   const [vasData, setVasData] = useState<VASData>(mockVASData);
   const [poData, setPoData] = useState<POData>(mockPOData);
+  const [lastUpdated, setLastUpdated] = useState<LastUpdatedData>({});
   const [isLoading, setIsLoading] = useState(true);
 
   const loadAllData = useCallback(async () => {
     try {
-      const [sales, risks, contracts, realEstate, logistics, warehouse, vas, po] = await Promise.all([
+      const [sales, risks, contracts, realEstate, logistics, warehouse, vas, po, lastUpdatedStr] = await Promise.all([
         AsyncStorage.getItem(STORAGE_KEYS.sales),
         AsyncStorage.getItem(STORAGE_KEYS.risks),
         AsyncStorage.getItem(STORAGE_KEYS.contracts),
@@ -53,6 +59,7 @@ export const [DataProvider, useData] = createContextHook(() => {
         AsyncStorage.getItem(STORAGE_KEYS.warehouse),
         AsyncStorage.getItem(STORAGE_KEYS.vas),
         AsyncStorage.getItem(STORAGE_KEYS.po),
+        AsyncStorage.getItem(STORAGE_KEYS.lastUpdated),
       ]);
 
       if (sales) {
@@ -83,6 +90,7 @@ export const [DataProvider, useData] = createContextHook(() => {
       if (warehouse) setWarehouseData(JSON.parse(warehouse));
       if (vas) setVasData(JSON.parse(vas));
       if (po) setPoData(JSON.parse(po));
+      if (lastUpdatedStr) setLastUpdated(JSON.parse(lastUpdatedStr));
     } catch (error) {
       console.error('Failed to load data:', error);
     } finally {
@@ -144,6 +152,16 @@ export const [DataProvider, useData] = createContextHook(() => {
     await AsyncStorage.setItem(STORAGE_KEYS.po, JSON.stringify(data));
   }, []);
 
+  const updateLastUpdated = useCallback(async (cardKey: string, value: string) => {
+    const updated = { ...lastUpdated, [cardKey]: value };
+    setLastUpdated(updated);
+    await AsyncStorage.setItem(STORAGE_KEYS.lastUpdated, JSON.stringify(updated));
+  }, [lastUpdated]);
+
+  const getLastUpdated = useCallback((cardKey: string) => {
+    return lastUpdated[cardKey] || '';
+  }, [lastUpdated]);
+
   return useMemo(
     () => ({
       salesData,
@@ -163,6 +181,9 @@ export const [DataProvider, useData] = createContextHook(() => {
       updateWarehouseData,
       updateVasData,
       updatePoData,
+      lastUpdated,
+      updateLastUpdated,
+      getLastUpdated,
     }),
     [
       salesData,
@@ -182,6 +203,9 @@ export const [DataProvider, useData] = createContextHook(() => {
       updateWarehouseData,
       updateVasData,
       updatePoData,
+      lastUpdated,
+      updateLastUpdated,
+      getLastUpdated,
     ]
   );
 });
