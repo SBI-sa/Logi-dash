@@ -32,7 +32,7 @@ export const Card = React.memo(function Card({ children, style, lastUpdated, onL
   const showLastUpdated = lastUpdated !== undefined;
 
   const CardWrapper = Platform.OS === 'web' ? View : BlurView;
-  const blurProps = Platform.OS === 'web' ? {} : { intensity: 85, tint: 'light' as const };
+  const blurProps = Platform.OS === 'web' ? {} : { intensity: 95, tint: 'light' as const };
 
   return (
     <CardWrapper style={[styles.card, style]} {...blurProps} testID="glass-card">
@@ -44,16 +44,34 @@ export const Card = React.memo(function Card({ children, style, lastUpdated, onL
         accessibilityLabel="glass-noise"
       />
       <LinearGradient
-        colors={["rgba(255,255,255,0.32)", "rgba(255,255,255,0.04)"]}
+        colors={["rgba(255,255,255,0.42)", "rgba(255,255,255,0.06)"]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.diagonalSheen}
       />
       <LinearGradient
-        colors={["rgba(255,255,255,0.55)", "rgba(255,255,255,0.00)"]}
+        colors={["rgba(255,255,255,0.75)", "rgba(255,255,255,0.00)"]}
         start={{ x: 0, y: 0 }}
         end={{ x: 0, y: 1 }}
         style={styles.topHighlight}
+      />
+      <LinearGradient
+        colors={["rgba(255,255,255,0.00)", "rgba(255,255,255,0.10)", "rgba(255,255,255,0.00)"]}
+        start={{ x: 0.5, y: 0 }}
+        end={{ x: 0.5, y: 1 }}
+        style={styles.bottomGlow}
+      />
+      <LinearGradient
+        colors={["rgba(255,255,255,0.35)", "rgba(255,255,255,0.00)"]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 0 }}
+        style={styles.edgeShineLeft}
+      />
+      <LinearGradient
+        colors={["rgba(255,255,255,0.00)", "rgba(255,255,255,0.35)"]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 0 }}
+        style={styles.edgeShineRight}
       />
       <View style={styles.innerBorder} />
       <View style={styles.contentWrapper}>
@@ -87,10 +105,16 @@ export const Card = React.memo(function Card({ children, style, lastUpdated, onL
           <View style={styles.modalContent}>
             <View style={styles.modalGlassOverlay} />
             <LinearGradient
-              colors={["rgba(255,255,255,0.25)", "rgba(255,255,255,0.04)"]}
+              colors={["rgba(255,255,255,0.35)", "rgba(255,255,255,0.06)"]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
               style={styles.modalDiagonalSheen}
+            />
+            <LinearGradient
+              colors={["rgba(255,255,255,0.00)", "rgba(255,255,255,0.12)", "rgba(255,255,255,0.00)"]}
+              start={{ x: 0.5, y: 0 }}
+              end={{ x: 0.5, y: 1 }}
+              style={styles.modalBottomGlow}
             />
             <View style={styles.modalInnerContent}>
             <View style={styles.modalHeader}>
@@ -133,24 +157,24 @@ export const Card = React.memo(function Card({ children, style, lastUpdated, onL
 const styles = StyleSheet.create({
   card: {
     backgroundColor: Platform.select({
-      web: 'rgba(255, 255, 255, 0.14)',
-      default: 'rgba(255, 255, 255, 0.10)',
+      web: 'rgba(255, 255, 255, 0.18)',
+      default: 'rgba(255, 255, 255, 0.14)',
     }),
     borderRadius: 28,
     padding: 0,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.36)',
+    borderColor: 'rgba(255, 255, 255, 0.50)',
     shadowColor: '#001019',
-    shadowOffset: { width: 0, height: 18 },
-    shadowOpacity: 0.25,
-    shadowRadius: 32,
-    elevation: 18,
+    shadowOffset: { width: 0, height: 22 },
+    shadowOpacity: 0.3,
+    shadowRadius: 40,
+    elevation: 22,
     overflow: 'hidden',
     position: 'relative' as const,
     ...(Platform.OS === 'web' ? {
-      backdropFilter: 'blur(40px) saturate(220%)',
-      WebkitBackdropFilter: 'blur(40px) saturate(220%)',
-      boxShadow: '0 12px 48px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.55), inset 0 -1px 0 rgba(0,0,0,0.08)',
+      backdropFilter: 'blur(60px) saturate(260%) contrast(1.1)',
+      WebkitBackdropFilter: 'blur(60px) saturate(260%) contrast(1.1)',
+      boxShadow: '0 16px 56px rgba(0,0,0,0.22), inset 0 1px 0 rgba(255,255,255,0.7), inset 0 -1px 0 rgba(0,0,0,0.10)',
     } : {}),
   },
   glassOverlay: {
@@ -159,7 +183,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(255, 255, 255, 0.06)',
+    backgroundColor: 'rgba(255, 255, 255, 0.10)',
     borderRadius: 28,
   },
   noiseOverlay: {
@@ -168,7 +192,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    opacity: 0.08,
+    opacity: 0.12,
     pointerEvents: 'none' as const,
   },
   diagonalSheen: {
@@ -176,7 +200,7 @@ const styles = StyleSheet.create({
     top: -12,
     left: -12,
     right: -12,
-    height: '58%',
+    height: '65%',
     borderTopLeftRadius: 32,
     borderTopRightRadius: 32,
   },
@@ -186,7 +210,32 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: 1,
-    backgroundColor: 'rgba(255,255,255,0.65)',
+    backgroundColor: 'rgba(255,255,255,0.85)',
+    opacity: 0.9,
+  },
+  bottomGlow: {
+    position: 'absolute' as const,
+    left: 16,
+    right: 16,
+    bottom: 12,
+    height: 56,
+    borderRadius: 28,
+    opacity: 0.7,
+  },
+  edgeShineLeft: {
+    position: 'absolute' as const,
+    top: 12,
+    bottom: 12,
+    left: 0,
+    width: 16,
+    opacity: 0.6,
+  },
+  edgeShineRight: {
+    position: 'absolute' as const,
+    top: 12,
+    bottom: 12,
+    right: 0,
+    width: 16,
     opacity: 0.6,
   },
   innerBorder: {
@@ -197,8 +246,8 @@ const styles = StyleSheet.create({
     bottom: 1,
     borderRadius: 24,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.32)',
-    opacity: 0.45,
+    borderColor: 'rgba(255,255,255,0.50)',
+    opacity: 0.6,
   },
   contentWrapper: {
     padding: 16,
@@ -230,26 +279,26 @@ const styles = StyleSheet.create({
   },
   modalContent: {
     backgroundColor: Platform.select({
-      web: 'rgba(255, 255, 255, 0.14)',
-      default: 'rgba(255, 255, 255, 0.10)',
+      web: 'rgba(255, 255, 255, 0.18)',
+      default: 'rgba(255, 255, 255, 0.14)',
     }),
     borderRadius: 28,
     padding: 0,
     width: '80%',
     maxWidth: 440,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.36)',
+    borderColor: 'rgba(255, 255, 255, 0.50)',
     shadowColor: '#001019',
-    shadowOffset: { width: 0, height: 18 },
-    shadowOpacity: 0.28,
-    shadowRadius: 36,
-    elevation: 18,
+    shadowOffset: { width: 0, height: 22 },
+    shadowOpacity: 0.32,
+    shadowRadius: 42,
+    elevation: 22,
     overflow: 'hidden',
     position: 'relative' as const,
     ...(Platform.OS === 'web' ? {
-      backdropFilter: 'blur(40px) saturate(220%)',
-      WebkitBackdropFilter: 'blur(40px) saturate(220%)',
-      boxShadow: '0 12px 48px rgba(0,0,0,0.22), inset 0 1px 0 rgba(255,255,255,0.55), inset 0 -1px 0 rgba(0,0,0,0.08)',
+      backdropFilter: 'blur(60px) saturate(260%) contrast(1.1)',
+      WebkitBackdropFilter: 'blur(60px) saturate(260%) contrast(1.1)',
+      boxShadow: '0 16px 56px rgba(0,0,0,0.26), inset 0 1px 0 rgba(255,255,255,0.7), inset 0 -1px 0 rgba(0,0,0,0.10)',
     } : {}),
   },
   modalGlassOverlay: {
@@ -258,7 +307,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(255, 255, 255, 0.10)',
+    backgroundColor: 'rgba(255, 255, 255, 0.14)',
     borderRadius: 28,
   },
   modalDiagonalSheen: {
@@ -266,9 +315,18 @@ const styles = StyleSheet.create({
     top: -12,
     left: -12,
     right: -12,
-    height: '58%',
+    height: '65%',
     borderTopLeftRadius: 36,
     borderTopRightRadius: 36,
+  },
+  modalBottomGlow: {
+    position: 'absolute' as const,
+    left: 24,
+    right: 24,
+    bottom: 16,
+    height: 40,
+    borderRadius: 20,
+    opacity: 0.8,
   },
   modalInnerContent: {
     padding: 24,
