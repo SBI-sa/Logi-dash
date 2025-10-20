@@ -24,9 +24,11 @@ export default function SalesScreen() {
   const [editFields, setEditFields] = useState<{ label: string; value: string; onChange: (text: string) => void; keyboardType?: 'default' | 'decimal-pad' | 'email-address' }[]>([]);
   const [selectedMonth, setSelectedMonth] = useState<string>('All');
   const [selectedCustomerMonth, setSelectedCustomerMonth] = useState<string>('All');
+  const [selectedTop10Month, setSelectedTop10Month] = useState<string>('January');
   const [currentEditIndex, setCurrentEditIndex] = useState<number | null>(null);
 
   const months = ['All', 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  const monthsOnly = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
   const displayedSegments = useMemo(() => {
     if (selectedMonth === 'All') {
@@ -60,6 +62,15 @@ export default function SalesScreen() {
     }
     return salesData.revenueBySegmentMonthly[selectedMonth] || [];
   }, [selectedMonth, salesData.revenueBySegmentMonthly]);
+
+  const top10Customers = useMemo(() => {
+    const customers = salesData.topCustomersMonthly[selectedTop10Month] || [];
+    return customers.slice(0, 10);
+  }, [selectedTop10Month, salesData.topCustomersMonthly]);
+
+  const top10Total = useMemo(() => {
+    return top10Customers.reduce((sum, customer) => sum + customer.sales, 0);
+  }, [top10Customers]);
 
   const displayedCustomers = useMemo(() => {
     console.log('Recalculating displayedCustomers for month:', selectedCustomerMonth);
@@ -193,6 +204,25 @@ export default function SalesScreen() {
         }, keyboardType: 'default' },
         { label: 'Last Year Bar Color (hex)', value: item.lastYearColor || LogiPointColors.beige, onChange: (text) => {
           setEditFields(prev => prev.map((f, i) => i === 6 ? { ...f, value: text } : f));
+        }, keyboardType: 'default' },
+      ];
+      setEditFields(tempFields);
+    } else if (field === 'top10Customers') {
+      const customers = salesData.topCustomersMonthly[selectedTop10Month] || [];
+      const item = customers[index];
+      if (!item) {
+        console.warn('Edit attempted on missing top10 customer at index', index);
+        return;
+      }
+      const tempFields: { label: string; value: string; onChange: (text: string) => void; keyboardType?: 'default' | 'decimal-pad' | 'email-address' }[] = [
+        { label: 'Customer Name', value: item.name, onChange: (text) => {
+          setEditFields(prev => prev.map((f, i) => i === 0 ? { ...f, value: text } : f));
+        }, keyboardType: 'default' },
+        { label: 'Revenue', value: item.sales.toString(), onChange: (text) => {
+          setEditFields(prev => prev.map((f, i) => i === 1 ? { ...f, value: text } : f));
+        }, keyboardType: 'default' },
+        { label: 'Color (hex)', value: item.color, onChange: (text) => {
+          setEditFields(prev => prev.map((f, i) => i === 2 ? { ...f, value: text } : f));
         }, keyboardType: 'default' },
       ];
       setEditFields(tempFields);
@@ -427,6 +457,16 @@ export default function SalesScreen() {
           lastYearColor: editFields[6].value,
         };
         updatedData.monthlyRevenue = newMonthly;
+      } else if (fieldName === 'top10Customers') {
+        const newMonthlyCustomers = { ...salesData.topCustomersMonthly };
+        const monthCustomers = [...(newMonthlyCustomers[selectedTop10Month] || [])];
+        monthCustomers[index] = {
+          name: editFields[0].value,
+          sales: parseFloat(editFields[1].value) || 0,
+          color: editFields[2].value,
+        };
+        newMonthlyCustomers[selectedTop10Month] = monthCustomers;
+        updatedData.topCustomersMonthly = newMonthlyCustomers;
       } else if (fieldName === 'accountManagers') {
         const newManagers = [...salesData.accountManagers];
         newManagers[index] = {
@@ -938,6 +978,79 @@ export default function SalesScreen() {
             )}
           </ChartCard>
 
+          <ChartCard title="Top 10 Customers by Revenue" subtitle={`${selectedTop10Month} - Total: ${formatCurrency(top10Total)}`}>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.monthFilter}>
+              {monthsOnly.map((month) => (
+                <TouchableOpacity
+                  key={month}
+                  style={[
+                    styles.monthButton,
+                    selectedTop10Month === month && styles.monthButtonActive,
+                  ]}
+                  onPress={() => setSelectedTop10Month(month)}
+                >
+                  <Text style={[
+                    styles.monthButtonText,
+                    selectedTop10Month === month && styles.monthButtonTextActive,
+                  ]}>
+                    {month}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+            <View style={styles.customersTable}>
+              <View style={styles.customersTableHeader}>
+                <Text style={[styles.customersTableHeaderText, { flex: 1 }]}>Customer Name</Text>
+                <Text style={[styles.customersTableHeaderText, { width: 120, textAlign: 'right' }]}>Revenue</Text>
+                {isAdmin && <View style={{ width: 40 }} />}
+              </View>
+              {top10Customers.map((customer, index) => (
+                <View key={index} style={styles.customersTableRow}>
+                  <Text style={[styles.customersTableCell, { flex: 1 }]}>{customer.name}</Text>
+                  <Text style={[styles.customersTableCell, { width: 120, textAlign: 'right', fontWeight: '700' }]}>
+                    {formatCurrency(customer.sales)}
+                  </Text>
+                  {isAdmin && (
+                    <TouchableOpacity
+                      style={styles.customersTableEditButton}
+                      onPress={() => handleEditArray('top10Customers', index)}
+                    >
+                      <Edit2 size={14} color={LogiPointColors.primary} />
+                    </TouchableOpacity>
+                  )}
+                </View>
+              ))}
+              <View style={styles.customersTotalRow}>
+                <Text style={[styles.customersTotalText, { flex: 1 }]}>Total</Text>
+                <Text style={[styles.customersTotalText, { width: 120, textAlign: 'right' }]}>
+                  {formatCurrency(top10Total)}
+                </Text>
+                {isAdmin && <View style={{ width: 40 }} />}
+              </View>
+            </View>
+            {isAdmin && (
+              <TouchableOpacity
+                style={[styles.chartEditButton, styles.addButton, { marginTop: 16 }]}
+                onPress={() => {
+                  const updatedData = { ...salesData };
+                  const newCustomer = {
+                    name: 'New Customer',
+                    sales: 0,
+                    color: LogiPointColors.primary,
+                  };
+                  const newMonthlyCustomers = { ...salesData.topCustomersMonthly };
+                  const monthCustomers = [...(newMonthlyCustomers[selectedTop10Month] || [])];
+                  monthCustomers.push(newCustomer);
+                  newMonthlyCustomers[selectedTop10Month] = monthCustomers;
+                  updatedData.topCustomersMonthly = newMonthlyCustomers;
+                  updateSalesData(updatedData);
+                }}
+              >
+                <Plus size={14} color={LogiPointColors.chart.green} />
+                <Text style={[styles.chartEditText, { color: LogiPointColors.chart.green }]}>Add Customer</Text>
+              </TouchableOpacity>
+            )}
+          </ChartCard>
 
         </ScrollView>
       </View>
@@ -1354,5 +1467,61 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '700' as const,
     color: LogiPointColors.white,
+  },
+  customersTable: {
+    marginTop: 16,
+    backgroundColor: LogiPointColors.white,
+    borderRadius: 12,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: LogiPointColors.gray[200],
+  },
+  customersTableHeader: {
+    flexDirection: 'row',
+    backgroundColor: LogiPointColors.gray[100],
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderBottomWidth: 2,
+    borderBottomColor: LogiPointColors.gray[300],
+  },
+  customersTableHeaderText: {
+    fontSize: 14,
+    fontWeight: '700' as const,
+    color: LogiPointColors.midnight,
+  },
+  customersTableRow: {
+    flexDirection: 'row',
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: LogiPointColors.gray[200],
+    alignItems: 'center',
+  },
+  customersTableCell: {
+    fontSize: 14,
+    color: LogiPointColors.gray[700],
+  },
+  customersTableEditButton: {
+    width: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 6,
+    backgroundColor: LogiPointColors.gray[100],
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: LogiPointColors.primary,
+  },
+  customersTotalRow: {
+    flexDirection: 'row',
+    backgroundColor: LogiPointColors.gray[50],
+    paddingVertical: 16,
+    paddingHorizontal: 16,
+    borderTopWidth: 2,
+    borderTopColor: LogiPointColors.primary,
+  },
+  customersTotalText: {
+    fontSize: 16,
+    fontWeight: '700' as const,
+    color: LogiPointColors.midnight,
   },
 });
