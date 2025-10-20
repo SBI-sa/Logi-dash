@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, ViewStyle, Text, TouchableOpacity, TextInput, Modal, Platform } from 'react-native';
+import { View, StyleSheet, ViewStyle, Text, TouchableOpacity, TextInput, Modal, Platform, Image } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Edit2, X } from 'lucide-react-native';
@@ -32,16 +32,28 @@ export const Card = React.memo(function Card({ children, style, lastUpdated, onL
   const showLastUpdated = lastUpdated !== undefined;
 
   const CardWrapper = Platform.OS === 'web' ? View : BlurView;
-  const blurProps = Platform.OS === 'web' ? {} : { intensity: 65, tint: 'light' as const };
+  const blurProps = Platform.OS === 'web' ? {} : { intensity: 85, tint: 'light' as const };
 
   return (
     <CardWrapper style={[styles.card, style]} {...blurProps} testID="glass-card">
       <View style={styles.glassOverlay} />
+      <Image
+        source={{ uri: 'https://pub-e001eb4506b145aa938b5d3badbff6a5.r2.dev/textures/noise-512.png' }}
+        style={styles.noiseOverlay}
+        resizeMode="cover"
+        accessibilityLabel="glass-noise"
+      />
       <LinearGradient
-        colors={["rgba(255,255,255,0.28)", "rgba(255,255,255,0.06)"]}
+        colors={["rgba(255,255,255,0.32)", "rgba(255,255,255,0.04)"]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.diagonalSheen}
+      />
+      <LinearGradient
+        colors={["rgba(255,255,255,0.55)", "rgba(255,255,255,0.00)"]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0, y: 1 }}
+        style={styles.topHighlight}
       />
       <View style={styles.innerBorder} />
       <View style={styles.contentWrapper}>
@@ -121,24 +133,24 @@ export const Card = React.memo(function Card({ children, style, lastUpdated, onL
 const styles = StyleSheet.create({
   card: {
     backgroundColor: Platform.select({
-      web: 'rgba(255, 255, 255, 0.16)',
+      web: 'rgba(255, 255, 255, 0.14)',
       default: 'rgba(255, 255, 255, 0.10)',
     }),
-    borderRadius: 24,
+    borderRadius: 28,
     padding: 0,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.32)',
+    borderColor: 'rgba(255, 255, 255, 0.36)',
     shadowColor: '#001019',
-    shadowOffset: { width: 0, height: 14 },
-    shadowOpacity: 0.22,
-    shadowRadius: 28,
-    elevation: 14,
+    shadowOffset: { width: 0, height: 18 },
+    shadowOpacity: 0.25,
+    shadowRadius: 32,
+    elevation: 18,
     overflow: 'hidden',
     position: 'relative' as const,
     ...(Platform.OS === 'web' ? {
-      backdropFilter: 'blur(28px) saturate(180%)',
-      WebkitBackdropFilter: 'blur(28px) saturate(180%)',
-      boxShadow: '0 10px 40px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.45), inset 0 -1px 0 rgba(0,0,0,0.06)',
+      backdropFilter: 'blur(40px) saturate(220%)',
+      WebkitBackdropFilter: 'blur(40px) saturate(220%)',
+      boxShadow: '0 12px 48px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.55), inset 0 -1px 0 rgba(0,0,0,0.08)',
     } : {}),
   },
   glassOverlay: {
@@ -148,16 +160,34 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     backgroundColor: 'rgba(255, 255, 255, 0.06)',
-    borderRadius: 24,
+    borderRadius: 28,
+  },
+  noiseOverlay: {
+    position: 'absolute' as const,
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    opacity: 0.08,
+    pointerEvents: 'none' as const,
   },
   diagonalSheen: {
     position: 'absolute' as const,
-    top: -10,
-    left: -10,
-    right: -10,
-    height: '55%',
-    borderTopLeftRadius: 28,
-    borderTopRightRadius: 28,
+    top: -12,
+    left: -12,
+    right: -12,
+    height: '58%',
+    borderTopLeftRadius: 32,
+    borderTopRightRadius: 32,
+  },
+  topHighlight: {
+    position: 'absolute' as const,
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 1,
+    backgroundColor: 'rgba(255,255,255,0.65)',
+    opacity: 0.6,
   },
   innerBorder: {
     position: 'absolute' as const,
@@ -165,10 +195,10 @@ const styles = StyleSheet.create({
     left: 1,
     right: 1,
     bottom: 1,
-    borderRadius: 22,
+    borderRadius: 24,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.28)',
-    opacity: 0.35,
+    borderColor: 'rgba(255,255,255,0.32)',
+    opacity: 0.45,
   },
   contentWrapper: {
     padding: 16,
@@ -200,7 +230,7 @@ const styles = StyleSheet.create({
   },
   modalContent: {
     backgroundColor: Platform.select({
-      web: 'rgba(255, 255, 255, 0.16)',
+      web: 'rgba(255, 255, 255, 0.14)',
       default: 'rgba(255, 255, 255, 0.10)',
     }),
     borderRadius: 28,
@@ -208,18 +238,18 @@ const styles = StyleSheet.create({
     width: '80%',
     maxWidth: 440,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.32)',
+    borderColor: 'rgba(255, 255, 255, 0.36)',
     shadowColor: '#001019',
-    shadowOffset: { width: 0, height: 14 },
-    shadowOpacity: 0.25,
-    shadowRadius: 32,
-    elevation: 14,
+    shadowOffset: { width: 0, height: 18 },
+    shadowOpacity: 0.28,
+    shadowRadius: 36,
+    elevation: 18,
     overflow: 'hidden',
     position: 'relative' as const,
     ...(Platform.OS === 'web' ? {
-      backdropFilter: 'blur(28px) saturate(180%)',
-      WebkitBackdropFilter: 'blur(28px) saturate(180%)',
-      boxShadow: '0 10px 40px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.45), inset 0 -1px 0 rgba(0,0,0,0.06)',
+      backdropFilter: 'blur(40px) saturate(220%)',
+      WebkitBackdropFilter: 'blur(40px) saturate(220%)',
+      boxShadow: '0 12px 48px rgba(0,0,0,0.22), inset 0 1px 0 rgba(255,255,255,0.55), inset 0 -1px 0 rgba(0,0,0,0.08)',
     } : {}),
   },
   modalGlassOverlay: {
@@ -228,17 +258,17 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(255, 255, 255, 0.12)',
-    borderRadius: 24,
+    backgroundColor: 'rgba(255, 255, 255, 0.10)',
+    borderRadius: 28,
   },
   modalDiagonalSheen: {
     position: 'absolute' as const,
     top: -12,
     left: -12,
     right: -12,
-    height: '55%',
-    borderTopLeftRadius: 32,
-    borderTopRightRadius: 32,
+    height: '58%',
+    borderTopLeftRadius: 36,
+    borderTopRightRadius: 36,
   },
   modalInnerContent: {
     padding: 24,
