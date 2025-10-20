@@ -354,7 +354,7 @@ type DraggableActionCardProps = {
 function DraggableActionCard({ action, index, onPress, onDragStart, onDragEnd, onSwap, isDragging }: DraggableActionCardProps) {
   const pan = useRef(new Animated.ValueXY()).current;
   const [isLongPress, setIsLongPress] = useState(false);
-  const longPressTimer = useRef<NodeJS.Timeout | null>(null);
+  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const cardLayout = useRef({ x: 0, y: 0, width: 0, height: 0 });
 
   const panResponder = useRef(
