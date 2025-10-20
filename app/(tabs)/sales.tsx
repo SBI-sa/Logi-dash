@@ -953,6 +953,67 @@ export default function SalesScreen() {
             </View>
           </ChartCard>
 
+          <ChartCard title="Account Manager Performance" subtitle="Revenue vs Budget">
+            <VerticalBarChart 
+              data={salesData.accountManagers.map((am, i) => ({
+                label: am.name,
+                actual: am.revenue,
+                budget: am.budget,
+                color: am.color || [LogiPointColors.chart.green, LogiPointColors.primary, LogiPointColors.accent, LogiPointColors.chart.blue, LogiPointColors.chart.purple][i % 5],
+              }))}
+            />
+            <View style={styles.varianceTable}>
+              <Text style={styles.varianceTitle}>Performance Analysis</Text>
+              {salesData.accountManagers.map((am, index) => {
+                const variance = am.revenue - am.budget;
+                const variancePercent = am.budget > 0 ? ((variance / am.budget) * 100).toFixed(1) : '0.0';
+                const isPositive = variance >= 0;
+                const achievement = am.budget > 0 ? ((am.revenue / am.budget) * 100).toFixed(1) : '0.0';
+                
+                return (
+                  <View key={index} style={styles.varianceRow}>
+                    <Text style={styles.varianceMonth}>{am.name}</Text>
+                    <View style={styles.varianceValues}>
+                      <Text style={styles.varianceValue}>Revenue: {formatCurrency(am.revenue)}</Text>
+                      <Text style={styles.varianceValue}>Budget: {formatCurrency(am.budget)}</Text>
+                      <Text style={[styles.variancePercent, isPositive ? styles.variancePositive : styles.varianceNegative]}>
+                        Var: {isPositive ? '+' : ''}{variancePercent}%
+                      </Text>
+                      <Text style={styles.varianceValue}>Achievement: {achievement}%</Text>
+                    </View>
+                    {isAdmin && (
+                      <TouchableOpacity
+                        style={styles.varianceEditButton}
+                        onPress={() => handleEditArray('accountManagers', index)}
+                      >
+                        <Edit2 size={12} color={LogiPointColors.primary} />
+                      </TouchableOpacity>
+                    )}
+                  </View>
+                );
+              })}
+            </View>
+            {isAdmin && (
+              <TouchableOpacity
+                style={[styles.chartEditButton, styles.addButton, { marginTop: 16 }]}
+                onPress={() => {
+                  const updatedData = { ...salesData };
+                  const newManager = {
+                    name: 'New Manager',
+                    revenue: 0,
+                    budget: 0,
+                    color: LogiPointColors.chart.green,
+                  };
+                  updatedData.accountManagers = [...salesData.accountManagers, newManager];
+                  updateSalesData(updatedData);
+                }}
+              >
+                <Plus size={14} color={LogiPointColors.chart.green} />
+                <Text style={[styles.chartEditText, { color: LogiPointColors.chart.green }]}>Add Manager</Text>
+              </TouchableOpacity>
+            )}
+          </ChartCard>
+
           <ChartCard title="Top 10 Customers by Revenue" subtitle={`${selectedTop10Month} - Total: ${formatCurrency(top10Total)}`}>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.monthFilter}>
               {monthsOnly.map((month) => (
