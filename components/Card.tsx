@@ -16,6 +16,10 @@ export const Card = React.memo(function Card({ children, style, lastUpdated, onL
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [editValue, setEditValue] = useState(lastUpdated || '');
 
+  React.useEffect(() => {
+    setEditValue(lastUpdated || '');
+  }, [lastUpdated]);
+
   const handleSave = () => {
     if (onLastUpdatedChange) {
       onLastUpdatedChange(editValue);
@@ -23,9 +27,11 @@ export const Card = React.memo(function Card({ children, style, lastUpdated, onL
     setEditModalVisible(false);
   };
 
+  const showLastUpdated = lastUpdated !== undefined;
+
   return (
     <View style={[styles.card, style]}>
-      {lastUpdated !== undefined && (
+      {showLastUpdated && (
         <View style={styles.lastUpdatedContainer}>
           <Text style={styles.lastUpdatedText}>{lastUpdated || 'Not updated'}</Text>
           {isAdmin && onLastUpdatedChange && (
@@ -44,7 +50,7 @@ export const Card = React.memo(function Card({ children, style, lastUpdated, onL
       {children}
       
       <Modal
-        visible={editModalVisible}
+        visible={editModalVisible && showLastUpdated}
         transparent
         animationType="fade"
         onRequestClose={() => setEditModalVisible(false)}
