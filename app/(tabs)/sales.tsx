@@ -953,31 +953,6 @@ export default function SalesScreen() {
             </View>
           </ChartCard>
 
-          <ChartCard title="Account Manager Performance" subtitle="Revenue vs Budget in SAR">
-            <VerticalBarChart 
-              data={salesData.accountManagers.map(am => ({
-                label: am.name,
-                actual: am.revenue,
-                budget: am.budget,
-                color: am.color || LogiPointColors.chart.green,
-              }))}
-            />
-            {isAdmin && (
-              <View style={styles.chartEditButtons}>
-                {salesData.accountManagers.map((am, index) => (
-                  <TouchableOpacity
-                    key={index}
-                    style={styles.chartEditButton}
-                    onPress={() => handleEditArray('accountManagers', index)}
-                  >
-                    <Edit2 size={14} color={LogiPointColors.primary} />
-                    <Text style={styles.chartEditText}>Edit {am.name}</Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            )}
-          </ChartCard>
-
           <ChartCard title="Top 10 Customers by Revenue" subtitle={`${selectedTop10Month} - Total: ${formatCurrency(top10Total)}`}>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.monthFilter}>
               {monthsOnly.map((month) => (
