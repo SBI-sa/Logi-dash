@@ -133,8 +133,8 @@ export const [DataProvider, useData] = createContextHook(() => {
     setRealEstateData(data);
     try {
       await AsyncStorage.setItem(STORAGE_KEYS.realEstate, JSON.stringify(data));
-    } catch (error: any) {
-      if (error?.message?.includes('quota') || error?.message?.includes('QuotaExceededError')) {
+    } catch (error: unknown) {
+      if (error instanceof Error && (error.message.includes('quota') || error.message.includes('QuotaExceededError'))) {
         console.error('Storage quota exceeded. Data too large to save.');
         throw new Error('Storage quota exceeded. Images are too large. Please use smaller images.');
       }
@@ -153,10 +153,12 @@ export const [DataProvider, useData] = createContextHook(() => {
   }, []);
 
   const updateLastUpdated = useCallback(async (cardKey: string, value: string) => {
-    const updated = { ...lastUpdated, [cardKey]: value };
-    setLastUpdated(updated);
-    await AsyncStorage.setItem(STORAGE_KEYS.lastUpdated, JSON.stringify(updated));
-  }, [lastUpdated]);
+    setLastUpdated(prev => {
+      const updated = { ...prev, [cardKey]: value };
+      AsyncStorage.setItem(STORAGE_KEYS.lastUpdated, JSON.stringify(updated));
+      return updated;
+    });
+  }, []);
 
   const getLastUpdated = useCallback((cardKey: string) => {
     return lastUpdated[cardKey] || '';

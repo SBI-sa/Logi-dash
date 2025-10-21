@@ -1,11 +1,11 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { View, StyleSheet, ScrollView, TouchableOpacity, Text, Image } from 'react-native';
 import { Stack } from 'expo-router';
 import { DollarSign, Edit2, TrendingUp, Plus, Trash2 } from 'lucide-react-native';
 import { LogiPointColors } from '@/constants/colors';
 import { KPICard } from '@/components/KPICard';
 import { ChartCard } from '@/components/ChartCard';
-import { SimpleBarChart } from '@/components/SimpleBarChart';
+
 import { VerticalBarChart } from '@/components/VerticalBarChart';
 import { YearOverYearChart } from '@/components/YearOverYearChart';
 import { ComboChart } from '@/components/ComboChart';
@@ -23,7 +23,7 @@ export default function SalesScreen() {
   const [editValue, setEditValue] = useState<string>('');
   const [editFields, setEditFields] = useState<{ label: string; value: string; onChange: (text: string) => void; keyboardType?: 'default' | 'decimal-pad' | 'email-address' }[]>([]);
   const [selectedMonth, setSelectedMonth] = useState<string>('All');
-  const [selectedCustomerMonth, setSelectedCustomerMonth] = useState<string>('All');
+  const [selectedCustomerMonth] = useState<string>('All');
   const [selectedTop10Month, setSelectedTop10Month] = useState<string>('Total');
   const [currentEditIndex, setCurrentEditIndex] = useState<number | null>(null);
 
@@ -91,19 +91,14 @@ export default function SalesScreen() {
   }, [top10Customers]);
 
   const displayedCustomers = useMemo(() => {
-    console.log('Recalculating displayedCustomers for month:', selectedCustomerMonth);
-    console.log('topCustomersMonthly data:', JSON.stringify(salesData.topCustomersMonthly));
     if (selectedCustomerMonth === 'All') {
       const totals = new Map<string, { sales: number; color: string }>();
-      Object.entries(salesData.topCustomersMonthly).forEach(([month, arr]) => {
-        console.log(`Processing month ${month}:`, arr);
+      Object.entries(salesData.topCustomersMonthly).forEach(([, arr]) => {
         arr.forEach((c) => {
           const prev = totals.get(c.name);
           if (prev) {
-            console.log(`Adding ${c.sales} to existing ${prev.sales} for ${c.name}`);
             prev.sales += c.sales;
           } else {
-            console.log(`Creating new entry for ${c.name} with ${c.sales}`);
             totals.set(c.name, { sales: c.sales, color: c.color });
           }
         });
@@ -112,11 +107,9 @@ export default function SalesScreen() {
         .map(([name, v]) => ({ name, sales: v.sales, color: v.color }))
         .sort((a, b) => b.sales - a.sales)
         .slice(0, 5);
-      console.log('All view calculated result:', result);
       return result;
     }
     const monthResult = salesData.topCustomersMonthly[selectedCustomerMonth] || [];
-    console.log(`Returning month ${selectedCustomerMonth} data:`, monthResult);
     return monthResult;
   }, [selectedCustomerMonth, salesData.topCustomersMonthly]);
 
@@ -154,10 +147,9 @@ export default function SalesScreen() {
     } else if (field === 'topCustomers') {
       const customers = selectedCustomerMonth === 'All' ? salesData.topCustomers : (salesData.topCustomersMonthly[selectedCustomerMonth] || []);
       const item = customers[index];
-	      if (!item) {
-	        console.warn('Edit attempted on missing customer at index', index, 'for month', selectedCustomerMonth);
-	        return;
-	      }
+      if (!item) {
+        return;
+      }
       const tempFields: { label: string; value: string; onChange: (text: string) => void; keyboardType?: 'default' | 'decimal-pad' | 'email-address' }[] = [
         { label: 'Customer Name', value: item.name, onChange: (text) => {
           setEditFields(prev => prev.map((f, i) => i === 0 ? { ...f, value: text } : f));
@@ -173,10 +165,9 @@ export default function SalesScreen() {
     } else if (field === 'revenueBySegment') {
       const segments = selectedMonth === 'All' ? displayedSegments : (salesData.revenueBySegmentMonthly[selectedMonth] || []);
       const item = segments[index];
-	      if (!item) {
-	        console.warn('Edit attempted on missing segment at index', index, 'for month', selectedMonth);
-	        return;
-	      }
+      if (!item) {
+        return;
+      }
       const tempFields: { label: string; value: string; onChange: (text: string) => void; keyboardType?: 'default' | 'decimal-pad' | 'email-address' }[] = [
         { label: 'Segment Name', value: item.segment, onChange: (text) => {
           setEditFields(prev => prev.map((f, i) => i === 0 ? { ...f, value: text } : f));
@@ -197,10 +188,9 @@ export default function SalesScreen() {
       setEditFields(tempFields);
     } else if (field === 'monthlyRevenue') {
       const item = salesData.monthlyRevenue[index];
-	      if (!item) {
-	        console.warn('Edit attempted on missing monthlyRevenue at index', index);
-	        return;
-	      }
+      if (!item) {
+        return;
+      }
       const tempFields: { label: string; value: string; onChange: (text: string) => void; keyboardType?: 'default' | 'decimal-pad' | 'email-address' }[] = [
         { label: 'Month', value: item.month, onChange: (text) => {
           setEditFields(prev => prev.map((f, i) => i === 0 ? { ...f, value: text } : f));
@@ -229,7 +219,6 @@ export default function SalesScreen() {
       const customers = salesData.topCustomersMonthly[selectedTop10Month] || [];
       const item = customers[index];
       if (!item) {
-        console.warn('Edit attempted on missing top10 customer at index', index);
         return;
       }
       const tempFields: { label: string; value: string; onChange: (text: string) => void; keyboardType?: 'default' | 'decimal-pad' | 'email-address' }[] = [
@@ -246,10 +235,9 @@ export default function SalesScreen() {
       setEditFields(tempFields);
     } else if (field === 'accountManagers') {
       const item = salesData.accountManagers[index];
-	      if (!item) {
-	        console.warn('Edit attempted on missing accountManager at index', index);
-	        return;
-	      }
+      if (!item) {
+        return;
+      }
       const tempFields: { label: string; value: string; onChange: (text: string) => void; keyboardType?: 'default' | 'decimal-pad' | 'email-address' }[] = [
         { label: 'Manager Name', value: item.name, onChange: (text) => {
           setEditFields(prev => prev.map((f, i) => i === 0 ? { ...f, value: text } : f));
@@ -284,12 +272,11 @@ export default function SalesScreen() {
     return value.toLocaleString();
   };
 
-  const syncSegmentsFromJanuary = () => {
+  const syncSegmentsFromJanuary = useCallback(() => {
     const updatedData = { ...salesData };
     const januarySegments = salesData.revenueBySegmentMonthly['January'] || [];
     
     if (januarySegments.length === 0) {
-      console.warn('No segments in January to sync');
       return;
     }
 
@@ -317,21 +304,18 @@ export default function SalesScreen() {
 
     updatedData.revenueBySegmentMonthly = newMonthlySegments;
     updateSalesData(updatedData);
-    console.log('Synced January segments to all months');
-  };
+  }, [salesData, updateSalesData]);
 
   useEffect(() => {
     syncSegmentsFromJanuary();
-  }, []);
+  }, [syncSegmentsFromJanuary]);
 
   const handleDeleteSegment = (index: number) => {
     try {
-      console.log('Deleting segment at index', index, 'for month', selectedMonth);
       const updatedData = { ...salesData };
       const segments = selectedMonth === 'All' ? displayedSegments : (salesData.revenueBySegmentMonthly[selectedMonth] || []);
       const target = segments[index];
       if (!target) {
-        console.warn('No segment found to delete at index', index);
         return;
       }
       const name = target.segment;
@@ -853,7 +837,6 @@ export default function SalesScreen() {
                 <TouchableOpacity
                   style={[styles.chartEditButton, styles.addButton]}
                   onPress={() => {
-                    console.log('Add Segment pressed for month:', selectedMonth);
                     const updatedData = { ...salesData };
                     const newSegment = {
                       segment: 'New Segment',
@@ -898,7 +881,6 @@ export default function SalesScreen() {
 
                     updatedData.revenueBySegmentMonthly = newMonthlySegments;
 
-                    console.log('Updated revenueBySegmentMonthly keys:', Object.keys(newMonthlySegments));
                     updateSalesData(updatedData);
                   }}
                 >
