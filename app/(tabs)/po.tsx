@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { View, StyleSheet, ScrollView, TouchableOpacity, Text, Image } from 'react-native';
 import { Stack } from 'expo-router';
 import { Edit2 } from 'lucide-react-native';
@@ -19,6 +19,17 @@ export default function POScreen() {
   const [editValue, setEditValue] = useState<string>('');
   const [editFields, setEditFields] = useState<{ label: string; value: string; onChange: (text: string) => void; keyboardType?: 'default' | 'numeric' }[]>([]);
   const [fclLclFilter, setFclLclFilter] = useState<'all' | 'fcl' | 'lcl'>('all');
+
+  const screenOptions = useMemo(() => ({
+    title: 'PO',
+    headerStyle: {
+      backgroundColor: LogiPointColors.midnight,
+    },
+    headerTintColor: LogiPointColors.white,
+    headerTitleStyle: {
+      fontWeight: '700' as const,
+    },
+  }), []);
 
   const handleEditQuarter = (type: 'fcl' | 'lcl', quarter: 'q1' | 'q2' | 'q3' | 'q4') => {
     setEditField(`${type}_quarterly_${quarter}`);
@@ -212,18 +223,7 @@ export default function POScreen() {
 
   return (
     <>
-      <Stack.Screen 
-        options={{ 
-          title: 'PO',
-          headerStyle: {
-            backgroundColor: LogiPointColors.midnight,
-          },
-          headerTintColor: LogiPointColors.white,
-          headerTitleStyle: {
-            fontWeight: '700' as const,
-          },
-        }} 
-      />
+      <Stack.Screen options={screenOptions} />
       
       <EditModal
         visible={editModalVisible}

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { View, StyleSheet, ScrollView, TouchableOpacity, Text, Image } from 'react-native';
 import { Stack } from 'expo-router';
 import { Edit2, Plus, Trash2 } from 'lucide-react-native';
@@ -18,6 +18,17 @@ export default function VASScreen() {
   const [editField, setEditField] = useState<string>('');
   const [editValue, setEditValue] = useState<string>('');
   const [editFields, setEditFields] = useState<{ label: string; value: string; onChange: (text: string) => void; keyboardType?: 'default' | 'numeric' }[]>([]);
+
+  const screenOptions = useMemo(() => ({
+    title: 'VAS',
+    headerStyle: {
+      backgroundColor: LogiPointColors.midnight,
+    },
+    headerTintColor: LogiPointColors.white,
+    headerTitleStyle: {
+      fontWeight: '700' as const,
+    },
+  }), []);
 
   const handleEditDeliveryTotal = () => {
     setEditField('delivery_total');
@@ -223,18 +234,7 @@ export default function VASScreen() {
 
   return (
     <>
-      <Stack.Screen 
-        options={{ 
-          title: 'VAS',
-          headerStyle: {
-            backgroundColor: LogiPointColors.midnight,
-          },
-          headerTintColor: LogiPointColors.white,
-          headerTitleStyle: {
-            fontWeight: '700' as const,
-          },
-        }} 
-      />
+      <Stack.Screen options={screenOptions} />
       
       <EditModal
         visible={editModalVisible}

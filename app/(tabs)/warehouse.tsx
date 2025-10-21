@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Alert } from 'react-native';
 import { Stack } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -20,6 +20,17 @@ export default function WarehouseScreen() {
   const [editField, setEditField] = useState<string>('');
   const [editValue, setEditValue] = useState<string>('');
   const [editFields, setEditFields] = useState<{ label: string; value: string; onChange: (text: string) => void; keyboardType?: 'default' | 'numeric' }[]>([]);
+
+  const screenOptions = useMemo(() => ({
+    title: 'Warehouse Management',
+    headerStyle: {
+      backgroundColor: LogiPointColors.midnight,
+    },
+    headerTintColor: LogiPointColors.white,
+    headerTitleStyle: {
+      fontWeight: '700' as const,
+    },
+  }), []);
 
   const handleEdit = (field: string, currentValue: number) => {
     setEditField(field);
@@ -152,18 +163,7 @@ export default function WarehouseScreen() {
 
   return (
     <>
-      <Stack.Screen 
-        options={{ 
-          title: 'Warehouse Management',
-          headerStyle: {
-            backgroundColor: LogiPointColors.midnight,
-          },
-          headerTintColor: LogiPointColors.white,
-          headerTitleStyle: {
-            fontWeight: '700' as const,
-          },
-        }} 
-      />
+      <Stack.Screen options={screenOptions} />
       
       <EditModal
         visible={editModalVisible}

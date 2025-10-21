@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Alert, TextInput, Modal, Platform } from 'react-native';
 import { Stack } from 'expo-router';
 import { Building2, TrendingUp, MapPin, Edit2, Plus, Calendar, Car, Upload, X, Image as ImageIcon } from 'lucide-react-native';
@@ -22,6 +22,17 @@ export default function RealEstateScreen() {
   const [newImageLabel, setNewImageLabel] = useState('');
   const [showAddImageModal, setShowAddImageModal] = useState(false);
   const [fullscreenImageUri, setFullscreenImageUri] = useState<string | null>(null);
+
+  const screenOptions = useMemo(() => ({
+    title: 'Real Estate',
+    headerStyle: {
+      backgroundColor: LogiPointColors.midnight,
+    },
+    headerTintColor: LogiPointColors.white,
+    headerTitleStyle: {
+      fontWeight: '700' as const,
+    },
+  }), []);
 
   const handleEdit = (field: string, currentValue: number | string) => {
     setEditField(field);
@@ -559,18 +570,7 @@ export default function RealEstateScreen() {
 
   return (
     <>
-      <Stack.Screen 
-        options={{ 
-          title: 'Real Estate',
-          headerStyle: {
-            backgroundColor: LogiPointColors.midnight,
-          },
-          headerTintColor: LogiPointColors.white,
-          headerTitleStyle: {
-            fontWeight: '700' as const,
-          },
-        }} 
-      />
+      <Stack.Screen options={screenOptions} />
       
       <EditModal
         visible={editModalVisible}

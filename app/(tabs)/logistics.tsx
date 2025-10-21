@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { View, StyleSheet, ScrollView, TouchableOpacity, Text, Image } from 'react-native';
 import { Stack } from 'expo-router';
 import { Truck, Clock, Package, Edit2, Plus, Users, TrendingUp, MapPin } from 'lucide-react-native';
@@ -21,6 +21,17 @@ export default function LogisticsScreen() {
   const [editFields, setEditFields] = useState<{ label: string; value: string; onChange: (text: string) => void; keyboardType?: 'default' | 'numeric' }[]>([]);
   const [editModalTitle, setEditModalTitle] = useState<string>('');
   const [tripCategoryFilter, setTripCategoryFilter] = useState<'total' | string>('total');
+
+  const screenOptions = useMemo(() => ({
+    title: 'Transportation',
+    headerStyle: {
+      backgroundColor: LogiPointColors.midnight,
+    },
+    headerTintColor: LogiPointColors.white,
+    headerTitleStyle: {
+      fontWeight: '700' as const,
+    },
+  }), []);
 
   const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
@@ -269,18 +280,7 @@ export default function LogisticsScreen() {
 
   return (
     <>
-      <Stack.Screen 
-        options={{ 
-          title: 'Transportation',
-          headerStyle: {
-            backgroundColor: LogiPointColors.midnight,
-          },
-          headerTintColor: LogiPointColors.white,
-          headerTitleStyle: {
-            fontWeight: '700' as const,
-          },
-        }} 
-      />
+      <Stack.Screen options={screenOptions} />
       
       <EditModal
         visible={editModalVisible}
