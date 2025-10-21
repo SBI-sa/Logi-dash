@@ -49,6 +49,15 @@ export default function TabLayout() {
         options={{
           title: "Sales",
           tabBarIcon: ({ color }) => <DollarSign size={22} color={color} />,
+          headerShown: true,
+          headerStyle: {
+            backgroundColor: LogiPointColors.midnight,
+          },
+          headerTintColor: LogiPointColors.white,
+          headerTitleStyle: {
+            fontWeight: '700' as const,
+          },
+          headerTitle: 'Sales Revenue',
         }}
       />
       <Tabs.Screen
@@ -56,6 +65,14 @@ export default function TabLayout() {
         options={{
           title: "Risk Updates",
           tabBarIcon: ({ color }) => <AlertTriangle size={22} color={color} />,
+          headerShown: true,
+          headerStyle: {
+            backgroundColor: LogiPointColors.midnight,
+          },
+          headerTintColor: LogiPointColors.white,
+          headerTitleStyle: {
+            fontWeight: '700' as const,
+          },
         }}
       />
       <Tabs.Screen

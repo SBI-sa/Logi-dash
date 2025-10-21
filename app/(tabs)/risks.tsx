@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Modal, Image } from 'react-native';
-import { Stack } from 'expo-router';
 import { AlertTriangle, Edit2, Plus, X, Trash2 } from 'lucide-react-native';
 import { LogiPointColors } from '@/constants/colors';
 import { KPICard } from '@/components/KPICard';
@@ -172,19 +171,6 @@ export default function RisksScreen() {
 
   return (
     <>
-      <Stack.Screen 
-        options={{ 
-          title: 'Risk Updates',
-          headerStyle: {
-            backgroundColor: LogiPointColors.midnight,
-          },
-          headerTintColor: LogiPointColors.white,
-          headerTitleStyle: {
-            fontWeight: '700' as const,
-          },
-        }} 
-      />
-      
       <EditModal
         visible={editModalVisible}
         title={editField}

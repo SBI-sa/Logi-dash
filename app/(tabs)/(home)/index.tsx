@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, PanResponder, Animated, TextInput } from 'react-native';
-import { Stack, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LogOut, TrendingUp, AlertCircle, Building2, Truck as TruckIcon, Warehouse as WarehouseIcon, Tag, Edit3 } from 'lucide-react-native';
 import { LogiPointColors } from '@/constants/colors';
@@ -62,14 +62,7 @@ export default function HomeScreen() {
   };
 
   return (
-    <>
-      <Stack.Screen 
-        options={{ 
-          headerShown: false,
-        }} 
-      />
-      
-      <View style={styles.container}>
+    <View style={styles.container}>
         <View style={styles.backgroundLogo}>
           <Image 
             source={{ uri: 'https://pub-e001eb4506b145aa938b5d3badbff6a5.r2.dev/attachments/4i9f5ip8s1j9hyoj71h9q' }}
@@ -156,7 +149,6 @@ export default function HomeScreen() {
           </View>
         </ScrollView>
       </View>
-    </>
   );
 }
 

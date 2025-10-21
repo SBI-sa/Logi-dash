@@ -1,6 +1,5 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { View, StyleSheet, ScrollView, TouchableOpacity, Text, Image } from 'react-native';
-import { Stack } from 'expo-router';
 import { DollarSign, Edit2, TrendingUp, Plus, Trash2 } from 'lucide-react-native';
 import { LogiPointColors } from '@/constants/colors';
 import { KPICard } from '@/components/KPICard';
@@ -534,19 +533,6 @@ export default function SalesScreen() {
 
   return (
     <>
-      <Stack.Screen 
-        options={{ 
-          title: 'Sales Revenue',
-          headerStyle: {
-            backgroundColor: LogiPointColors.midnight,
-          },
-          headerTintColor: LogiPointColors.white,
-          headerTitleStyle: {
-            fontWeight: '700' as const,
-          },
-        }} 
-      />
-      
       <EditModal
         visible={editModalVisible}
         title={editField}
