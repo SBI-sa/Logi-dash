@@ -31,8 +31,8 @@ export const ChartCard = React.memo(function ChartCard({ title, children, subtit
             <Maximize2 size={20} color={LogiPointColors.primary} />
           </TouchableOpacity>
         </View>
-        <View style={styles.chartContainer}>
-          {children}
+        <View style={styles.chartContainer} testID="chart-card-content">
+          {!isFullscreen ? children : null}
         </View>
       </Card>
 

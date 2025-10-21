@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Modal, View, Text, StyleSheet, TouchableOpacity, Dimensions, Platform } from 'react-native';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import { X, Maximize2 } from 'lucide-react-native';
@@ -93,8 +93,24 @@ export const FullscreenChartModal = React.memo(function FullscreenChartModal({
     };
   }, [visible]);
 
-  const { width, height } = Dimensions.get('window');
-  const isLandscape = width > height;
+  const [dims, setDims] = useState<{ width: number; height: number }>(() => {
+    const w = Dimensions.get('window');
+    return { width: w.width, height: w.height };
+  });
+
+  useEffect(() => {
+    const sub = Dimensions.addEventListener('change', ({ window }) => {
+      console.log('[fullscreen] dimensions changed', window.width, window.height);
+      setDims({ width: window.width, height: window.height });
+    });
+    return () => {
+      if (sub && typeof (sub as unknown as { remove?: () => void }).remove === 'function') {
+        (sub as unknown as { remove: () => void }).remove();
+      }
+    };
+  }, []);
+
+  const isLandscape = dims.width > dims.height;
 
   return (
     <Modal
@@ -102,8 +118,11 @@ export const FullscreenChartModal = React.memo(function FullscreenChartModal({
       animationType="fade"
       onRequestClose={onClose}
       supportedOrientations={['landscape', 'portrait']}
+      presentationStyle="fullScreen"
+      hardwareAccelerated
+      statusBarTranslucent={Platform.OS === 'android'}
     >
-      <View style={styles.container}>
+      <View style={styles.container} testID="fullscreen-chart-modal">
         <View style={styles.header}>
           <View style={styles.titleContainer}>
             <Maximize2 size={20} color={LogiPointColors.white} />
@@ -129,13 +148,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Platform.select({
-      web: 'rgba(255, 255, 255, 0.85)',
+      web: 'rgba(16, 18, 27, 0.55)',
       default: LogiPointColors.white,
     }),
-    ...(Platform.OS === 'web' ? {
-      backdropFilter: 'blur(10px)',
-      WebkitBackdropFilter: 'blur(10px)',
-    } : {}),
+    ...(Platform.OS === 'web'
+      ? {
+          backdropFilter: 'blur(14px) saturate(140%)',
+          WebkitBackdropFilter: 'blur(14px) saturate(140%)',
+        }
+      : {}),
   },
   header: {
     flexDirection: 'row',
