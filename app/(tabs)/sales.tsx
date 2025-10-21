@@ -306,8 +306,9 @@ export default function SalesScreen() {
   }, [salesData, updateSalesData]);
 
   useEffect(() => {
+    console.log('[SalesScreen] Initial syncSegmentsFromJanuary');
     syncSegmentsFromJanuary();
-  }, [syncSegmentsFromJanuary]);
+  }, []);
 
   const handleDeleteSegment = (index: number) => {
     try {
