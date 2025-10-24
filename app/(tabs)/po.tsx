@@ -163,7 +163,9 @@ export default function POScreen() {
   ) => {
     const quarters: ('q1' | 'q2' | 'q3' | 'q4')[] = ['q1', 'q2', 'q3', 'q4'];
     const totalUnits = getTotalUnits(type);
-    const color = type === 'fcl' ? '#00617f' : '#9b2743';
+    const defaultColors = type === 'fcl' 
+      ? ['#00617f', '#0d8bb5', '#1aa3d1', '#32b9e8']
+      : ['#9b2743', '#c23358', '#d8486e', '#ee5e85'];
     
     return (
       <ChartCard 
@@ -171,10 +173,10 @@ export default function POScreen() {
         subtitle="Quarterly Distribution"
       >
         <DonutPieChart 
-          data={quarters.map((q) => ({
+          data={quarters.map((q, index) => ({
             label: q.toUpperCase(),
             value: data[q].units,
-            color: data[q].color || color,
+            color: data[q].color || defaultColors[index],
           }))}
           size={180}
           centerValue={totalUnits.toLocaleString()}

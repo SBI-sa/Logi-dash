@@ -546,11 +546,10 @@ export default function LogisticsScreen() {
                   });
                 }
                 
-                return displayCategories.map((category) => ({
+                return displayCategories.filter((category) => category.name !== 'Total Trips').map((category) => ({
                   label: category.name,
                   value: category.value,
-                  color: category.name === 'Total Trips' ? LogiPointColors.primary : 
-                         category.name === 'Transit' ? LogiPointColors.chart.blue :
+                  color: category.name === 'Transit' ? LogiPointColors.chart.blue :
                          category.name === 'Inside Port' ? LogiPointColors.chart.green :
                          category.name === 'Jeddah' ? LogiPointColors.chart.purple :
                          category.name === 'Outside Jeddah' ? LogiPointColors.warning :
