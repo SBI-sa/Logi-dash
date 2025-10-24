@@ -6,7 +6,7 @@ import { LogiPointColors } from '@/constants/colors';
 import { ChartCard } from '@/components/ChartCard';
 import { EditModal } from '@/components/EditModal';
 import { CIYMovementChart } from '@/components/CIYMovementChart';
-import { DonutPieChart } from '@/components/DonutPieChart';
+import { ClusteredColumnChart } from '@/components/ClusteredColumnChart';
 
 import { useAuth } from '@/contexts/AuthContext';
 import { useData } from '@/contexts/DataContext';
@@ -156,49 +156,13 @@ export default function POScreen() {
     return quarters.reduce((sum, q) => sum + data[q].units, 0);
   };
 
-  const renderMovementCard = (
-    title: string,
-    type: 'fcl' | 'lcl',
-    data: typeof poData.fclQuarterly
-  ) => {
-    const quarters: ('q1' | 'q2' | 'q3' | 'q4')[] = ['q1', 'q2', 'q3', 'q4'];
-    const totalUnits = getTotalUnits(type);
-    const defaultColors = type === 'fcl' 
-      ? ['#00617f', '#0d8bb5', '#1aa3d1', '#32b9e8']
-      : ['#9b2743', '#c23358', '#d8486e', '#ee5e85'];
-    
-    return (
-      <ChartCard 
-        title={`${title}: ${totalUnits.toLocaleString()}`} 
-        subtitle="Quarterly Distribution"
-      >
-        <DonutPieChart 
-          data={quarters.map((q, index) => ({
-            label: q.toUpperCase(),
-            value: data[q].units,
-            color: defaultColors[index],
-          }))}
-          size={180}
-          centerValue={totalUnits.toLocaleString()}
-          showLegend={false}
-        />
-        {isAdmin && (
-          <View style={styles.chartEditButtons}>
-            {quarters.map((q) => (
-              <TouchableOpacity
-                key={q}
-                style={styles.chartEditButton}
-                onPress={() => handleEditQuarter(type, q)}
-              >
-                <Edit2 size={14} color={LogiPointColors.primary} />
-                <Text style={styles.chartEditText}>Edit {q.toUpperCase()}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        )}
-      </ChartCard>
-    );
-  };
+  const quarters: ('q1' | 'q2' | 'q3' | 'q4')[] = ['q1', 'q2', 'q3', 'q4'];
+
+  const quarterlyClusterData = quarters.map((q) => ({
+    label: q.toUpperCase(),
+    fcl: poData.fclQuarterly[q].units,
+    lcl: poData.lclQuarterly[q].units,
+  }));
 
   const getMaxFclLclValue = () => {
     const allValues: number[] = [];
@@ -254,17 +218,31 @@ export default function POScreen() {
             />
           </ChartCard>
 
-          {renderMovementCard(
-            'FCL Movement',
-            'fcl',
-            poData.fclQuarterly
-          )}
-
-          {renderMovementCard(
-            'LCL Movement',
-            'lcl',
-            poData.lclQuarterly
-          )}
+          <ChartCard title={`Quarterly Movement`} subtitle="Clustered by FCL vs LCL">
+            <ClusteredColumnChart data={quarterlyClusterData} />
+            {isAdmin && (
+              <View style={styles.chartEditButtons}>
+                {quarters.map((q) => (
+                  <React.Fragment key={q}>
+                    <TouchableOpacity
+                      style={styles.chartEditButton}
+                      onPress={() => handleEditQuarter('fcl', q)}
+                    >
+                      <Edit2 size={14} color={LogiPointColors.primary} />
+                      <Text style={styles.chartEditText}>Edit FCL {q.toUpperCase()}</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={styles.chartEditButton}
+                      onPress={() => handleEditQuarter('lcl', q)}
+                    >
+                      <Edit2 size={14} color={LogiPointColors.primary} />
+                      <Text style={styles.chartEditText}>Edit LCL {q.toUpperCase()}</Text>
+                    </TouchableOpacity>
+                  </React.Fragment>
+                ))}
+              </View>
+            )}
+          </ChartCard>
 
           <ChartCard title="FCL & LCL Movement" subtitle="Monthly Comparison">
             <View style={styles.filterContainer}>
