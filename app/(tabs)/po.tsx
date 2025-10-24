@@ -176,7 +176,7 @@ export default function POScreen() {
           data={quarters.map((q, index) => ({
             label: q.toUpperCase(),
             value: data[q].units,
-            color: data[q].color || defaultColors[index],
+            color: defaultColors[index],
           }))}
           size={180}
           centerValue={totalUnits.toLocaleString()}
