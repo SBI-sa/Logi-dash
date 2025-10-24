@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
     color: LogiPointColors.gray[700],
   },
   statsValue: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: '600' as const,
     color: LogiPointColors.midnight,
   },
@@ -154,7 +154,7 @@ const styles = StyleSheet.create({
     color: LogiPointColors.midnight,
   },
   totalValue: {
-    fontSize: 15,
+    fontSize: 13,
     fontWeight: '800' as const,
     color: LogiPointColors.midnight,
   },
@@ -168,7 +168,7 @@ const styles = StyleSheet.create({
     color: LogiPointColors.midnight,
   },
   percentValue: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '900' as const,
   },
   emptyRow: {
@@ -183,7 +183,7 @@ const styles = StyleSheet.create({
     color: LogiPointColors.gray[700],
   },
   emptyValue: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '800' as const,
     color: LogiPointColors.primary,
   },

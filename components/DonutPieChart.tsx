@@ -146,7 +146,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   centerValue: {
-    fontSize: 28,
+    fontSize: 26,
     fontWeight: '700' as const,
     color: LogiPointColors.midnight,
   },
@@ -175,7 +175,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   labelPercentage: {
-    fontSize: 12,
+    fontSize: 10,
     fontWeight: '700' as const,
     color: LogiPointColors.midnight,
   },
@@ -206,7 +206,7 @@ const styles = StyleSheet.create({
     fontWeight: '500' as const,
   },
   legendValue: {
-    fontSize: 13,
+    fontSize: 11,
     fontWeight: '600' as const,
     color: LogiPointColors.midnight,
   },

@@ -121,12 +121,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
   },
   minLabel: {
-    fontSize: 11,
+    fontSize: 9,
     fontWeight: '600' as const,
     color: LogiPointColors.gray[500],
   },
   maxLabel: {
-    fontSize: 11,
+    fontSize: 9,
     fontWeight: '600' as const,
     color: LogiPointColors.gray[500],
   },

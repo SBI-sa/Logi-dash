@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
     flexShrink: 1,
   },
   value: {
-    fontSize: 13,
+    fontSize: 11,
     fontWeight: '600' as const,
     color: LogiPointColors.midnight,
     minWidth: 60,

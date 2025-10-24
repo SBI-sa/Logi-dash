@@ -341,7 +341,7 @@ const styles = StyleSheet.create({
     minHeight: 4,
   },
   barValue: {
-    fontSize: 11,
+    fontSize: 9,
     fontWeight: '600' as const,
     color: LogiPointColors.gray[700],
     marginTop: 4,
@@ -363,7 +363,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   comparisonYearLabel: {
-    fontSize: 9,
+    fontSize: 7,
     color: LogiPointColors.gray[500],
     fontWeight: '500' as const,
   },

@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
     color: LogiPointColors.midnight,
   },
   changeText: {
-    fontSize: 13,
+    fontSize: 11,
     fontWeight: '700' as const,
   },
   barsContainer: {
@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
     minWidth: 2,
   },
   value: {
-    fontSize: 12,
+    fontSize: 10,
     fontWeight: '600' as const,
     color: LogiPointColors.midnight,
     minWidth: 60,

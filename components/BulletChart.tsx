@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
     backgroundColor: LogiPointColors.gray[100],
   },
   changeText: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: '700' as const,
   },
   chartContainer: {
@@ -129,7 +129,7 @@ const styles = StyleSheet.create({
     minWidth: 2,
   },
   value: {
-    fontSize: 13,
+    fontSize: 11,
     fontWeight: '600' as const,
     color: LogiPointColors.midnight,
     minWidth: 70,

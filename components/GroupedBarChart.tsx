@@ -72,7 +72,7 @@ export const GroupedBarChart = React.memo(function GroupedBarChart({ data, maxVa
                       <SvgText
                         x={barX + barWidth / 2}
                         y={barY - 5}
-                        fontSize="9"
+                        fontSize="7"
                         fill={LogiPointColors.gray[700]}
                         textAnchor="middle"
                         fontWeight="600"
@@ -82,7 +82,7 @@ export const GroupedBarChart = React.memo(function GroupedBarChart({ data, maxVa
                       <SvgText
                         x={barX + barWidth / 2}
                         y={height - 20}
-                        fontSize="9"
+                        fontSize="7"
                         fill={LogiPointColors.gray[500]}
                         textAnchor="middle"
                         fontWeight="500"

@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
     minHeight: 4,
   },
   barValue: {
-    fontSize: 10,
+    fontSize: 8,
     fontWeight: '600' as const,
     color: LogiPointColors.midnight,
     textAlign: 'center',

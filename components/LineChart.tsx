@@ -166,7 +166,7 @@ const styles = StyleSheet.create({
     fontWeight: '500' as const,
   },
   yAxisLabel: {
-    fontSize: 10,
+    fontSize: 8,
     color: LogiPointColors.gray[500],
     textAlign: 'right' as const,
   },

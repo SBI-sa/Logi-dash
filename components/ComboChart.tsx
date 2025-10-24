@@ -93,7 +93,7 @@ export function ComboChart({ data, height = 300 }: ComboChartProps) {
                     <SvgText
                       x={x - barOffset + barWidth / 2}
                       y={lastYearBarY - 5}
-                      fontSize="9"
+                      fontSize="7"
                       fill={LogiPointColors.gray[700]}
                       textAnchor="middle"
                       fontWeight="600"
@@ -115,7 +115,7 @@ export function ComboChart({ data, height = 300 }: ComboChartProps) {
                 <SvgText
                   x={x + (hasLastYear ? barWidth / 2 : 0)}
                   y={actualBarY - 5}
-                  fontSize="9"
+                  fontSize="7"
                   fill={LogiPointColors.gray[700]}
                   textAnchor="middle"
                   fontWeight="600"

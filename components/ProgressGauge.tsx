@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
     color: LogiPointColors.midnight,
   },
   percentage: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '700' as const,
     color: LogiPointColors.primary,
   },
@@ -79,12 +79,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   value: {
-    fontSize: 13,
+    fontSize: 11,
     fontWeight: '600' as const,
     color: LogiPointColors.midnight,
   },
   target: {
-    fontSize: 12,
+    fontSize: 10,
     color: LogiPointColors.gray[600],
   },
 });
