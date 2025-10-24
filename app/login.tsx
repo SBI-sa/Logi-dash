@@ -1,18 +1,41 @@
-import { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, Animated, Easing } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { LogiPointColors } from '@/constants/colors';
 import { useAuth } from '@/contexts/AuthContext';
+import { Shield, User as UserIcon, KeyRound } from 'lucide-react-native';
 
 export default function LoginScreen() {
-  const [isAdminMode, setIsAdminMode] = useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [viewerCode, setViewerCode] = useState('');
-  const [error, setError] = useState('');
+  const [isAdminMode, setIsAdminMode] = useState<boolean>(false);
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [viewerCode, setViewerCode] = useState<string>('');
+  const [error, setError] = useState<string>('');
   const { login } = useAuth();
   const router = useRouter();
+
+  const pulse = useRef(new Animated.Value(0)).current;
+  const float1 = useRef(new Animated.Value(0)).current;
+  const float2 = useRef(new Animated.Value(0)).current;
+  const pressScale = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulse, { toValue: 1, duration: 4000, easing: Easing.inOut(Easing.quad), useNativeDriver: true }),
+        Animated.timing(pulse, { toValue: 0, duration: 4000, easing: Easing.inOut(Easing.quad), useNativeDriver: true }),
+      ])
+    ).start();
+
+    Animated.loop(
+      Animated.timing(float1, { toValue: 1, duration: 9000, easing: Easing.inOut(Easing.quad), useNativeDriver: true })
+    ).start();
+
+    Animated.loop(
+      Animated.timing(float2, { toValue: 1, duration: 11000, easing: Easing.inOut(Easing.quad), useNativeDriver: true })
+    ).start();
+  }, [pulse, float1, float2]);
 
   const handleViewerLogin = async () => {
     try {
@@ -38,13 +61,41 @@ export default function LoginScreen() {
     }
   };
 
+  const blob1Style = useMemo(() => ({
+    transform: [
+      { translateX: float1.interpolate({ inputRange: [0, 1], outputRange: [-20, 20] }) },
+      { translateY: float1.interpolate({ inputRange: [0, 1], outputRange: [10, -10] }) },
+      { scale: pulse.interpolate({ inputRange: [0, 1], outputRange: [1, 1.08] }) },
+    ],
+    opacity: 0.18,
+  }), [float1, pulse]);
+
+  const blob2Style = useMemo(() => ({
+    transform: [
+      { translateX: float2.interpolate({ inputRange: [0, 1], outputRange: [16, -16] }) },
+      { translateY: float2.interpolate({ inputRange: [0, 1], outputRange: [-8, 8] }) },
+      { scale: pulse.interpolate({ inputRange: [0, 1], outputRange: [1, 1.04] }) },
+    ],
+    opacity: 0.14,
+  }), [float2, pulse]);
+
+  const onPressIn = () => Animated.spring(pressScale, { toValue: 0.98, useNativeDriver: true }).start();
+  const onPressOut = () => Animated.spring(pressScale, { toValue: 1, useNativeDriver: true }).start();
+
   return (
     <SafeAreaView style={styles.container}>
-      <KeyboardAvoidingView 
+      <View style={styles.background}>
+        <Animated.View style={[styles.blob, styles.blobPrimary, blob1Style]} />
+        <Animated.View style={[styles.blob, styles.blobAccent, blob2Style]} />
+        <View style={styles.vignette} />
+      </View>
+
+      <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.content}
       >
         <View style={styles.header}>
+          <Shield color={LogiPointColors.primary} size={28} />
           <Text style={styles.logo}>LogiPoint</Text>
           <Text style={styles.subtitle}>Dashboard & Reporting</Text>
         </View>
@@ -56,20 +107,33 @@ export default function LoginScreen() {
 
             <View style={styles.inputContainer}>
               <Text style={styles.label}>Viewer Code</Text>
-              <TextInput
-                style={styles.input}
-                value={viewerCode}
-                onChangeText={setViewerCode}
-                placeholder="Enter viewer code"
-                placeholderTextColor={LogiPointColors.gray[400]}
-                keyboardType="numeric"
-                secureTextEntry
-              />
+              <View style={styles.inputWrapper}>
+                <KeyRound color={LogiPointColors.gray[500]} size={18} />
+                <TextInput
+                  testID="login-viewer-code"
+                  style={styles.input}
+                  value={viewerCode}
+                  onChangeText={setViewerCode}
+                  placeholder="Enter viewer code"
+                  placeholderTextColor={LogiPointColors.gray[400]}
+                  keyboardType="numeric"
+                  secureTextEntry
+                />
+              </View>
             </View>
 
-            <TouchableOpacity style={styles.button} onPress={handleViewerLogin}>
-              <Text style={styles.buttonText}>Continue as Viewer</Text>
-            </TouchableOpacity>
+            <Animated.View style={{ transform: [{ scale: pressScale }] }}>
+              <TouchableOpacity
+                testID="login-viewer-button"
+                style={styles.button}
+                onPress={handleViewerLogin}
+                onPressIn={onPressIn}
+                onPressOut={onPressOut}
+                activeOpacity={0.9}
+              >
+                <Text style={styles.buttonText}>Continue as Viewer</Text>
+              </TouchableOpacity>
+            </Animated.View>
 
             {error ? (
               <View style={styles.errorContainer}>
@@ -77,8 +141,9 @@ export default function LoginScreen() {
               </View>
             ) : null}
 
-            <TouchableOpacity 
-              style={styles.adminLink} 
+            <TouchableOpacity
+              testID="login-admin-link"
+              style={styles.adminLink}
               onPress={() => setIsAdminMode(true)}
             >
               <Text style={styles.adminLinkText}>Admin Login</Text>
@@ -91,32 +156,49 @@ export default function LoginScreen() {
 
             <View style={styles.inputContainer}>
               <Text style={styles.label}>Email</Text>
-              <TextInput
-                style={styles.input}
-                value={email}
-                onChangeText={setEmail}
-                placeholder="thamir.sulimani@logipoint.sa"
-                placeholderTextColor={LogiPointColors.gray[400]}
-                autoCapitalize="none"
-                keyboardType="email-address"
-              />
+              <View style={styles.inputWrapper}>
+                <UserIcon color={LogiPointColors.gray[500]} size={18} />
+                <TextInput
+                  testID="login-admin-email"
+                  style={styles.input}
+                  value={email}
+                  onChangeText={setEmail}
+                  placeholder="thamir.sulimani@logipoint.sa"
+                  placeholderTextColor={LogiPointColors.gray[400]}
+                  autoCapitalize="none"
+                  keyboardType="email-address"
+                />
+              </View>
             </View>
 
             <View style={styles.inputContainer}>
               <Text style={styles.label}>Password</Text>
-              <TextInput
-                style={styles.input}
-                value={password}
-                onChangeText={setPassword}
-                placeholder="Enter password"
-                placeholderTextColor={LogiPointColors.gray[400]}
-                secureTextEntry
-              />
+              <View style={styles.inputWrapper}>
+                <KeyRound color={LogiPointColors.gray[500]} size={18} />
+                <TextInput
+                  testID="login-admin-password"
+                  style={styles.input}
+                  value={password}
+                  onChangeText={setPassword}
+                  placeholder="Enter password"
+                  placeholderTextColor={LogiPointColors.gray[400]}
+                  secureTextEntry
+                />
+              </View>
             </View>
 
-            <TouchableOpacity style={styles.button} onPress={handleAdminLogin}>
-              <Text style={styles.buttonText}>Sign In as Admin</Text>
-            </TouchableOpacity>
+            <Animated.View style={{ transform: [{ scale: pressScale }] }}>
+              <TouchableOpacity
+                testID="login-admin-button"
+                style={styles.button}
+                onPress={handleAdminLogin}
+                onPressIn={onPressIn}
+                onPressOut={onPressOut}
+                activeOpacity={0.9}
+              >
+                <Text style={styles.buttonText}>Sign In as Admin</Text>
+              </TouchableOpacity>
+            </Animated.View>
 
             {error ? (
               <View style={styles.errorContainer}>
@@ -124,8 +206,9 @@ export default function LoginScreen() {
               </View>
             ) : null}
 
-            <TouchableOpacity 
-              style={styles.backLink} 
+            <TouchableOpacity
+              testID="login-back-to-viewer"
+              style={styles.backLink}
               onPress={() => {
                 setIsAdminMode(false);
                 setEmail('');
@@ -148,6 +231,30 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: LogiPointColors.midnight,
   },
+  background: {
+    ...StyleSheet.absoluteFillObject,
+    overflow: 'hidden',
+  },
+  blob: {
+    position: 'absolute',
+    width: 240,
+    height: 240,
+    borderRadius: 9999,
+    top: -60,
+    right: -40,
+  },
+  blobPrimary: {
+    backgroundColor: LogiPointColors.primary,
+  },
+  blobAccent: {
+    backgroundColor: LogiPointColors.accent,
+    top: 160,
+    left: -80,
+  },
+  vignette: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(8, 31, 44, 0.65)',
+  },
   content: {
     flex: 1,
     justifyContent: 'center',
@@ -155,45 +262,57 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: 'center',
-    marginBottom: 48,
+    gap: 6,
+    marginBottom: 36,
   },
   logo: {
-    fontSize: 42,
+    fontSize: 40,
     fontWeight: '800' as const,
     color: LogiPointColors.white,
-    marginBottom: 8,
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: 14,
     color: LogiPointColors.beige,
     fontWeight: '500' as const,
   },
   form: {
-    gap: 20,
+    gap: 18,
   },
   inputContainer: {
     gap: 8,
   },
   label: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '600' as const,
     color: LogiPointColors.white,
   },
-  input: {
+  inputWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
     backgroundColor: LogiPointColors.white,
     borderRadius: 12,
-    padding: 16,
-    fontSize: 16,
-    color: LogiPointColors.midnight,
+    paddingHorizontal: 14,
     borderWidth: 2,
     borderColor: 'transparent',
+  },
+  input: {
+    flex: 1,
+    paddingVertical: 14,
+    fontSize: 16,
+    color: LogiPointColors.midnight,
   },
   button: {
     backgroundColor: LogiPointColors.primary,
     borderRadius: 12,
     padding: 18,
     alignItems: 'center',
-    marginTop: 12,
+    marginTop: 8,
+    shadowColor: '#000',
+    shadowOpacity: 0.25,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 8 },
+    elevation: 6,
   },
   buttonText: {
     color: LogiPointColors.white,
@@ -201,21 +320,21 @@ const styles = StyleSheet.create({
     fontWeight: '700' as const,
   },
   welcomeText: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: '700' as const,
     color: LogiPointColors.white,
     textAlign: 'center',
-    marginBottom: 8,
+    marginBottom: 4,
   },
   description: {
-    fontSize: 16,
+    fontSize: 14,
     color: LogiPointColors.beige,
     textAlign: 'center',
-    marginBottom: 32,
+    marginBottom: 20,
   },
   adminLink: {
-    marginTop: 24,
-    padding: 16,
+    marginTop: 16,
+    padding: 12,
     alignItems: 'center',
   },
   adminLinkText: {
@@ -225,8 +344,8 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline',
   },
   backLink: {
-    marginTop: 16,
-    padding: 12,
+    marginTop: 12,
+    padding: 10,
     alignItems: 'center',
   },
   backLinkText: {
