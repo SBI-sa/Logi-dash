@@ -1,7 +1,7 @@
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, PanResponder, Animated, TextInput } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, PanResponder, Animated } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { LogOut, TrendingUp, AlertCircle, Building2, Truck as TruckIcon, Warehouse as WarehouseIcon, Tag, Edit3 } from 'lucide-react-native';
+import { LogOut, TrendingUp, AlertCircle, Building2, Truck as TruckIcon, Warehouse as WarehouseIcon, Tag } from 'lucide-react-native';
 import { LogiPointColors } from '@/constants/colors';
 import { useAuth } from '@/contexts/AuthContext';
 import { useData } from '@/contexts/DataContext';
@@ -20,10 +20,7 @@ export default function HomeScreen() {
   const { logout } = useAuth();
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { lastUpdated, updateLastUpdated } = useData();
-
-  const [isEditingDate, setIsEditingDate] = useState(false);
-  const [tempDate, setTempDate] = useState('');
+  const { lastUpdated } = useData();
 
   const dataLastUpdated = lastUpdated['home_data_last_updated'] || '';
 
@@ -42,16 +39,6 @@ export default function HomeScreen() {
   const handleLogout = async () => {
     await logout();
     router.replace('/login');
-  };
-
-  const handleEditDate = () => {
-    setTempDate(dataLastUpdated);
-    setIsEditingDate(true);
-  };
-
-  const handleSaveDate = async () => {
-    await updateLastUpdated('home_data_last_updated', tempDate);
-    setIsEditingDate(false);
   };
 
   const swapItems = (fromIndex: number, toIndex: number) => {
@@ -81,31 +68,11 @@ export default function HomeScreen() {
           </View>
         </View>
         <View style={styles.dataLastUpdatedContainer}>
-          {isEditingDate ? (
-            <View style={styles.editDateRow}>
-              <TextInput
-                style={styles.dateInput}
-                value={tempDate}
-                onChangeText={setTempDate}
-                placeholder="e.g., Jan 15, 2025"
-                placeholderTextColor={LogiPointColors.gray[400]}
-                autoFocus
-              />
-              <TouchableOpacity onPress={handleSaveDate} style={styles.saveDateButton}>
-                <Text style={styles.saveDateText}>Save</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => setIsEditingDate(false)} style={styles.cancelDateButton}>
-                <Text style={styles.cancelDateText}>Cancel</Text>
-              </TouchableOpacity>
-            </View>
-          ) : (
-            <TouchableOpacity onPress={handleEditDate} style={styles.dateDisplayRow}>
-              <Text style={styles.dataLastUpdatedText}>
-                {dataLastUpdated ? `Data Last Updated: ${dataLastUpdated}` : 'Data Last Updated: Not set'}
-              </Text>
-              <Edit3 size={12} color={LogiPointColors.gray[500]} />
-            </TouchableOpacity>
-          )}
+          <View style={styles.dateDisplayRow}>
+            <Text style={styles.dataLastUpdatedText}>
+              {dataLastUpdated ? `Data Last Updated: ${dataLastUpdated}` : 'Data Last Updated: Not set'}
+            </Text>
+          </View>
         </View>
         <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
           <View style={styles.quickActions}>
@@ -286,50 +253,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 6,
   },
   dataLastUpdatedText: {
     fontSize: 11,
     color: LogiPointColors.gray[600],
     fontStyle: 'italic' as const,
-  },
-  editDateRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  dateInput: {
-    flex: 1,
-    fontSize: 11,
-    color: LogiPointColors.midnight,
-    paddingVertical: 4,
-    paddingHorizontal: 8,
-    backgroundColor: LogiPointColors.white,
-    borderRadius: 4,
-    borderWidth: 1,
-    borderColor: LogiPointColors.gray[300],
-  },
-  saveDateButton: {
-    paddingVertical: 4,
-    paddingHorizontal: 12,
-    backgroundColor: LogiPointColors.primary,
-    borderRadius: 4,
-  },
-  saveDateText: {
-    fontSize: 11,
-    color: LogiPointColors.white,
-    fontWeight: '600' as const,
-  },
-  cancelDateButton: {
-    paddingVertical: 4,
-    paddingHorizontal: 12,
-    backgroundColor: LogiPointColors.gray[300],
-    borderRadius: 4,
-  },
-  cancelDateText: {
-    fontSize: 11,
-    color: LogiPointColors.midnight,
-    fontWeight: '600' as const,
   },
 });
 
