@@ -337,7 +337,7 @@ export default function RealEstateScreen() {
       );
 
       const base64 = await FileSystem.readAsStringAsync(manipResult.uri, {
-        encoding: FileSystem.EncodingType.Base64,
+        encoding: 'base64',
       });
 
       return `data:image/jpeg;base64,${base64}`;
