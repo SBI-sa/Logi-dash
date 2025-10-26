@@ -349,6 +349,41 @@ export default function RealEstateScreen() {
 
   const handleUploadLandImage = async () => {
     try {
+      if (Platform.OS === 'web') {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.onchange = async (e: any) => {
+          const file = e.target.files[0];
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = async (event) => {
+              const base64 = event.target?.result as string;
+              try {
+                console.log('Land image selected, URI length:', base64.length);
+                const updatedData = { ...realEstateData, landImageUri: base64 };
+                await updateRealEstateData(updatedData);
+                console.log('Land image saved successfully');
+              } catch (storageError: any) {
+                console.error('Storage error:', storageError);
+                if (storageError?.message?.includes('quota') || storageError?.message?.includes('Storage quota exceeded')) {
+                  Alert.alert(
+                    'Storage Full',
+                    'The image is too large to save. Please try a smaller image or remove some existing images first.',
+                    [{ text: 'OK' }]
+                  );
+                } else {
+                  Alert.alert('Error', 'Failed to save image');
+                }
+              }
+            };
+            reader.readAsDataURL(file);
+          }
+        };
+        input.click();
+        return;
+      }
+
       const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
       
       if (permissionResult.granted === false) {
@@ -392,6 +427,41 @@ export default function RealEstateScreen() {
 
   const handleUploadJLHImage = async () => {
     try {
+      if (Platform.OS === 'web') {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.onchange = async (e: any) => {
+          const file = e.target.files[0];
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = async (event) => {
+              const base64 = event.target?.result as string;
+              try {
+                console.log('JLH image selected, URI length:', base64.length);
+                const updatedData = { ...realEstateData, jlhImageUri: base64 };
+                await updateRealEstateData(updatedData);
+                console.log('JLH image saved successfully');
+              } catch (storageError: any) {
+                console.error('Storage error:', storageError);
+                if (storageError?.message?.includes('quota') || storageError?.message?.includes('Storage quota exceeded')) {
+                  Alert.alert(
+                    'Storage Full',
+                    'The image is too large to save. Please try a smaller image or remove some existing images first.',
+                    [{ text: 'OK' }]
+                  );
+                } else {
+                  Alert.alert('Error', 'Failed to save image');
+                }
+              }
+            };
+            reader.readAsDataURL(file);
+          }
+        };
+        input.click();
+        return;
+      }
+
       const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
       
       if (permissionResult.granted === false) {
@@ -440,6 +510,51 @@ export default function RealEstateScreen() {
     }
 
     try {
+      if (Platform.OS === 'web') {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.onchange = async (e: any) => {
+          const file = e.target.files[0];
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = async (event) => {
+              const base64 = event.target?.result as string;
+              try {
+                console.log('Additional image selected, URI length:', base64.length);
+                const newImage = {
+                  id: `IMG${Date.now()}`,
+                  uri: base64,
+                  label: newImageLabel,
+                };
+                const updatedData = {
+                  ...realEstateData,
+                  additionalImages: [...(realEstateData.additionalImages || []), newImage],
+                };
+                await updateRealEstateData(updatedData);
+                console.log('Additional image saved successfully');
+                setNewImageLabel('');
+                setShowAddImageModal(false);
+              } catch (storageError: any) {
+                console.error('Storage error:', storageError);
+                if (storageError?.message?.includes('quota') || storageError?.message?.includes('Storage quota exceeded')) {
+                  Alert.alert(
+                    'Storage Full',
+                    'The image is too large to save. Please try a smaller image or remove some existing images first.',
+                    [{ text: 'OK' }]
+                  );
+                } else {
+                  Alert.alert('Error', 'Failed to save image');
+                }
+              }
+            };
+            reader.readAsDataURL(file);
+          }
+        };
+        input.click();
+        return;
+      }
+
       const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
       
       if (permissionResult.granted === false) {
