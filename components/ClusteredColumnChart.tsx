@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
     borderRadius: 2,
   },
   legendText: {
-    fontSize: 12,
+    fontSize: 10,
     color: LogiPointColors.gray[600],
   },
   chartScroll: {
@@ -119,13 +119,13 @@ const styles = StyleSheet.create({
     minHeight: 4,
   },
   barValue: {
-    fontSize: 9,
+    fontSize: 7,
     fontWeight: '600' as const,
     color: LogiPointColors.gray[700],
     marginTop: 4,
   },
   barLabel: {
-    fontSize: 11,
+    fontSize: 9,
     color: LogiPointColors.gray[600],
     fontWeight: '500' as const,
   },
@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   comparisonYearLabel: {
-    fontSize: 7,
+    fontSize: 5,
     color: LogiPointColors.gray[500],
     fontWeight: '500' as const,
   },

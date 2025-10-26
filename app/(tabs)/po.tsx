@@ -479,13 +479,13 @@ const styles = StyleSheet.create({
     minHeight: 4,
   },
   barValue: {
-    fontSize: 11,
+    fontSize: 9,
     fontWeight: '600' as const,
     color: LogiPointColors.gray[700],
     marginTop: 4,
   },
   barLabel: {
-    fontSize: 11,
+    fontSize: 9,
     color: LogiPointColors.gray[600],
     fontWeight: '500' as const,
   },

@@ -49,6 +49,7 @@ export const [DataProvider, useData] = createContextHook(() => {
   const [isLoading, setIsLoading] = useState(true);
 
   const loadAllData = useCallback(async () => {
+    setIsLoading(true);
     try {
       const [sales, risks, contracts, realEstate, logistics, warehouse, vas, po, lastUpdatedStr] = await Promise.all([
         AsyncStorage.getItem(STORAGE_KEYS.sales),
@@ -92,7 +93,10 @@ export const [DataProvider, useData] = createContextHook(() => {
       if (po) setPoData(JSON.parse(po));
       if (lastUpdatedStr) setLastUpdated(JSON.parse(lastUpdatedStr));
     } catch (error) {
-      console.error('Failed to load data:', error);
+      console.error('[DataContext] Failed to load data:', error);
+      if (error instanceof Error) {
+        console.error('[DataContext] Error details:', error.message);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -105,28 +109,53 @@ export const [DataProvider, useData] = createContextHook(() => {
 
 
   const updateSalesData = useCallback(async (data: SalesData) => {
-    setSalesData(data);
-    await AsyncStorage.setItem(STORAGE_KEYS.sales, JSON.stringify(data));
+    try {
+      setSalesData(data);
+      await AsyncStorage.setItem(STORAGE_KEYS.sales, JSON.stringify(data));
+    } catch (error) {
+      console.error('[DataContext] Failed to update sales data:', error);
+      throw error;
+    }
   }, []);
 
   const updateRiskData = useCallback(async (data: RiskData) => {
-    setRiskData(data);
-    await AsyncStorage.setItem(STORAGE_KEYS.risks, JSON.stringify(data));
+    try {
+      setRiskData(data);
+      await AsyncStorage.setItem(STORAGE_KEYS.risks, JSON.stringify(data));
+    } catch (error) {
+      console.error('[DataContext] Failed to update risk data:', error);
+      throw error;
+    }
   }, []);
 
   const updateContractData = useCallback(async (data: ContractData) => {
-    setContractData(data);
-    await AsyncStorage.setItem(STORAGE_KEYS.contracts, JSON.stringify(data));
+    try {
+      setContractData(data);
+      await AsyncStorage.setItem(STORAGE_KEYS.contracts, JSON.stringify(data));
+    } catch (error) {
+      console.error('[DataContext] Failed to update contract data:', error);
+      throw error;
+    }
   }, []);
 
   const updateLogisticsData = useCallback(async (data: LogisticsData) => {
-    setLogisticsData(data);
-    await AsyncStorage.setItem(STORAGE_KEYS.logistics, JSON.stringify(data));
+    try {
+      setLogisticsData(data);
+      await AsyncStorage.setItem(STORAGE_KEYS.logistics, JSON.stringify(data));
+    } catch (error) {
+      console.error('[DataContext] Failed to update logistics data:', error);
+      throw error;
+    }
   }, []);
 
   const updateWarehouseData = useCallback(async (data: WarehouseData) => {
-    setWarehouseData(data);
-    await AsyncStorage.setItem(STORAGE_KEYS.warehouse, JSON.stringify(data));
+    try {
+      setWarehouseData(data);
+      await AsyncStorage.setItem(STORAGE_KEYS.warehouse, JSON.stringify(data));
+    } catch (error) {
+      console.error('[DataContext] Failed to update warehouse data:', error);
+      throw error;
+    }
   }, []);
 
   const updateRealEstateData = useCallback(async (data: RealEstateData) => {
@@ -135,27 +164,40 @@ export const [DataProvider, useData] = createContextHook(() => {
       await AsyncStorage.setItem(STORAGE_KEYS.realEstate, JSON.stringify(data));
     } catch (error: unknown) {
       if (error instanceof Error && (error.message.includes('quota') || error.message.includes('QuotaExceededError'))) {
-        console.error('Storage quota exceeded. Data too large to save.');
+        console.error('[DataContext] Storage quota exceeded. Data too large to save.');
         throw new Error('Storage quota exceeded. Images are too large. Please use smaller images.');
       }
+      console.error('[DataContext] Failed to update real estate data:', error);
       throw error;
     }
   }, []);
 
   const updateVasData = useCallback(async (data: VASData) => {
-    setVasData(data);
-    await AsyncStorage.setItem(STORAGE_KEYS.vas, JSON.stringify(data));
+    try {
+      setVasData(data);
+      await AsyncStorage.setItem(STORAGE_KEYS.vas, JSON.stringify(data));
+    } catch (error) {
+      console.error('[DataContext] Failed to update VAS data:', error);
+      throw error;
+    }
   }, []);
 
   const updatePoData = useCallback(async (data: POData) => {
-    setPoData(data);
-    await AsyncStorage.setItem(STORAGE_KEYS.po, JSON.stringify(data));
+    try {
+      setPoData(data);
+      await AsyncStorage.setItem(STORAGE_KEYS.po, JSON.stringify(data));
+    } catch (error) {
+      console.error('[DataContext] Failed to update PO data:', error);
+      throw error;
+    }
   }, []);
 
   const updateLastUpdated = useCallback(async (cardKey: string, value: string) => {
     setLastUpdated(prev => {
       const updated = { ...prev, [cardKey]: value };
-      AsyncStorage.setItem(STORAGE_KEYS.lastUpdated, JSON.stringify(updated));
+      AsyncStorage.setItem(STORAGE_KEYS.lastUpdated, JSON.stringify(updated)).catch((error) => {
+        console.error('[DataContext] Failed to save last updated:', error);
+      });
       return updated;
     });
   }, []);

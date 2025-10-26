@@ -37,6 +37,13 @@ export const [AuthProvider, useAuth] = createContextHook(() => {
 
 
   const login = useCallback(async (email: string, password: string) => {
+    if (__DEV__) {
+      console.warn(
+        '[SECURITY WARNING] Using hardcoded credentials for development. ' +
+        'Replace with secure authentication in production.'
+      );
+    }
+
     if (email === 'viewer') {
       const mockUser: User = {
         id: '2',
