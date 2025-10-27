@@ -20,6 +20,11 @@ import {
   mockPOData,
 } from '@/mocks/dashboardData';
 import { supabase } from '../supabaseClient';
+// 🔍 TEMP: check what Supabase returns
+supabase.from('sales').select('*').then(({ data, error }) => {
+  console.log('🔍 Supabase test:', data, error);
+});
+
 const STORAGE_KEYS = {
   sales: '@logipoint_sales',
   risks: '@logipoint_risks',
