@@ -51,6 +51,22 @@ export const [DataProvider, useData] = createContextHook(() => {
   const loadAllData = useCallback(async () => {
     setIsLoading(true);
     try {
+      // --- Fetch from Supabase (start) ---
+const { data: salesRows, error: salesError } = await supabase
+  .from('sales')
+  .select('*')
+  .limit(1);
+
+if (salesError) {
+  console.error('Supabase fetch error:', salesError.message);
+} else if (salesRows && salesRows.length > 0) {
+  console.log('✅ Loaded sales from Supabase');
+  setSalesData(salesRows[0]);
+} else {
+  console.log('⚠️ No Supabase sales data found, using mock data');
+}
+// --- Fetch from Supabase (end) ---
+
       const [sales, risks, contracts, realEstate, logistics, warehouse, vas, po, lastUpdatedStr] = await Promise.all([
         AsyncStorage.getItem(STORAGE_KEYS.sales),
         AsyncStorage.getItem(STORAGE_KEYS.risks),
