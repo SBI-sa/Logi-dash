@@ -19,7 +19,7 @@ import {
   mockVASData,
   mockPOData,
 } from '@/mocks/dashboardData';
-
+import { supabase } from '../supabaseClient';
 const STORAGE_KEYS = {
   sales: '@logipoint_sales',
   risks: '@logipoint_risks',
