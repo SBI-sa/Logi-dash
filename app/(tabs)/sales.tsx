@@ -13,6 +13,7 @@ import { ComboChart } from '@/components/ComboChart';
 import { EditModal } from '@/components/EditModal';
 import { useAuth } from '@/contexts/AuthContext';
 import { useData } from '@/contexts/DataContext';
+import { supabase } from '@/supabaseClient';
 
 export default function SalesScreen() {
   const { isAdmin } = useAuth();
@@ -336,7 +337,7 @@ export default function SalesScreen() {
     }
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (editFields.length > 0) {
       const [fieldName, indexStr] = editField.split('_');
       const index = parseInt(indexStr);
@@ -528,6 +529,27 @@ export default function SalesScreen() {
     }
     
     setEditModalVisible(false);
+    // ✅ Push updated data to Supabase
+try {
+  const { error } = await supabase
+    .from('sales')
+    .update({
+      totalRevenue: updatedData.totalRevenue,
+      ytdRevenue: updatedData.ytdRevenue,
+      mtdRevenue: updatedData.mtdRevenue,
+      updated_at: new Date().toISOString()
+    })
+    .eq('id', 1); // adjust ID if needed
+
+  if (error) {
+    console.error('❌ Supabase update failed:', error.message);
+  } else {
+    console.log('✅ Supabase data updated successfully');
+  }
+} catch (err) {
+  console.error('❌ Unexpected error while saving to Supabase:', err);
+}
+};
   };
 
 
