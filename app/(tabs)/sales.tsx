@@ -529,27 +529,6 @@ export default function SalesScreen() {
     }
     
     setEditModalVisible(false);
-    // ✅ Push updated data to Supabase
-try {
-  const { error } = await supabase
-    .from('sales')
-    .update({
-      totalRevenue: updatedData.totalRevenue,
-      ytdRevenue: updatedData.ytdRevenue,
-      mtdRevenue: updatedData.mtdRevenue,
-      updated_at: new Date().toISOString()
-    })
-    .eq('id', 1); // adjust ID if needed
-
-  if (error) {
-    console.error('❌ Supabase update failed:', error.message);
-  } else {
-    console.log('✅ Supabase data updated successfully');
-  }
-} catch (err) {
-  console.error('❌ Unexpected error while saving to Supabase:', err);
-}
-};
   };
 
 

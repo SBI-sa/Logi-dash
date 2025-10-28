@@ -1,0 +1,225 @@
+# LogiPoint Reporting Dashboard
+
+## Overview
+This is a cross-platform reporting dashboard application built with Expo and React Native. The app provides comprehensive business analytics and reporting for LogiPoint, with support for iOS, Android, and Web platforms.
+
+**Project Type**: Expo React Native Web Application  
+**Primary Platform**: Web (in Replit environment)  
+**Framework**: Expo Router + React Native  
+**State Management**: Zustand + React Query  
+**Backend**: Supabase (configured but using mock data by default)
+
+## Current State
+- ✅ Web build successfully compiled and served on port 5000
+- ✅ Login system functional (viewer code: 2030, admin: thamir.sulimani@logipoint.sa / Logi@2030)
+- ✅ Dashboard with multiple reporting modules (Sales, Warehouse, Logistics, Contracts, etc.)
+- ✅ Static web build deployed for production-ready hosting
+
+## Recent Changes (October 28, 2025)
+- **Project Import**: Successfully imported from GitHub and configured for Replit environment
+- **Web Build Setup**: Configured Expo to export static web build
+- **Workflow Configuration**: Set up web server workflow using `serve` to host static files on port 5000
+- **Bug Fix**: Fixed syntax error in `app/(tabs)/sales.tsx` (duplicate closing braces)
+- **Deployment**: Configured for Replit autoscale deployment with build and serve commands
+
+## Project Structure
+
+```
+├── app/                     # App screens (Expo Router)
+│   ├── (tabs)/             # Tab navigation screens
+│   │   ├── (home)/         # Home tab
+│   │   ├── contracts.tsx   # Contracts reporting
+│   │   ├── logistics.tsx   # Logistics dashboard
+│   │   ├── po.tsx          # Purchase Orders
+│   │   ├── risks.tsx       # Risk management
+│   │   ├── sales.tsx       # Sales analytics
+│   │   ├── vas.tsx         # Value Added Services
+│   │   └── warehouse.tsx   # Warehouse management
+│   ├── _layout.tsx         # Root layout
+│   ├── login.tsx           # Login screen
+│   └── +not-found.tsx      # 404 screen
+├── components/             # Reusable UI components
+│   ├── charts/            # Chart components (KPI, Line, Bar, Pie, etc.)
+│   └── EditModal.tsx      # Edit functionality modal
+├── contexts/              # React contexts
+│   ├── AuthContext.tsx    # Authentication state
+│   └── DataContext.tsx    # Data management
+├── constants/             # App constants
+│   └── colors.ts         # Color palette
+├── mocks/                # Mock data
+│   └── dashboardData.ts  # Sample dashboard data
+├── assets/               # Static assets
+│   └── images/          # App icons and images
+├── dist/                # Built web application (generated)
+├── app.json             # Expo configuration
+├── supabaseClient.ts    # Supabase client setup
+└── package.json         # Dependencies and scripts
+```
+
+## Development Workflow
+
+### Running Locally
+```bash
+# Start development server (for mobile/native development)
+bun run start-dev
+
+# Build and serve web version (production preview)
+bun run build
+bun run serve
+```
+
+### Building for Web
+```bash
+# Export static web build
+bun run build
+```
+
+The build creates a `dist/` folder containing:
+- `index.html` - Main HTML file
+- `_expo/static/` - Bundled JavaScript and assets
+- `favicon.ico` - App favicon
+
+### Mobile Development
+For mobile development (iOS/Android), use:
+```bash
+bun run start-mobile
+```
+This starts Expo with tunnel mode for testing on physical devices.
+
+## Technologies
+
+### Core Stack
+- **Expo SDK 54**: Cross-platform framework
+- **React Native 0.81**: Mobile framework
+- **React 19**: UI library
+- **TypeScript**: Type safety
+- **Metro**: JavaScript bundler
+
+### Key Libraries
+- **expo-router**: File-based routing
+- **@tanstack/react-query**: Server state management
+- **zustand**: Client state management
+- **@supabase/supabase-js**: Backend integration
+- **lucide-react-native**: Icon library
+- **react-native-svg**: SVG rendering for charts
+
+### Charts & Visualizations
+Custom chart components for:
+- KPI Cards
+- Line Charts
+- Bar Charts (Simple, Grouped, Vertical, Clustered)
+- Pie Charts (Simple, Donut, Zone)
+- Combo Charts
+- Bullet Charts
+- Speedometer Gauges
+- Progress Gauges
+- Year-over-Year comparisons
+- Small Multiples
+
+## Authentication
+
+The app uses hardcoded credentials for development:
+
+**Viewer Mode:**
+- Code: `2030`
+- Limited read-only access
+
+**Admin Mode:**
+- Email: `thamir.sulimani@logipoint.sa`
+- Password: `Logi@2030`
+- Full edit permissions
+
+> ⚠️ **Security Note**: These are development credentials. For production, implement proper authentication with environment variables and server-side validation.
+
+## Data Storage
+
+### Current Setup
+- Uses AsyncStorage for local persistence (falls back to localStorage on web)
+- Supabase integration configured but uses mock data by default
+- Edit operations save to local storage
+
+### Supabase Integration
+The app is configured to connect to Supabase but currently falls back to mock data. To enable Supabase:
+1. Ensure tables exist in Supabase project
+2. Data automatically loads from Supabase if available
+3. Edits can be pushed to Supabase (admin mode)
+
+## Deployment
+
+### Replit Deployment
+This project is configured for Replit's autoscale deployment:
+- **Build Command**: `bun run build` (exports web to `dist/`)
+- **Run Command**: `bunx serve dist -l 5000` (serves static files)
+- **Port**: 5000
+
+To publish on Replit:
+1. Click the "Deploy" button in Replit
+2. The app will automatically build and serve
+
+### Alternative Deployment Options
+
+**Static Hosting (Recommended for Web):**
+- Vercel
+- Netlify  
+- GitHub Pages
+- Cloudflare Pages
+
+**Mobile App Stores:**
+- Use Expo EAS for iOS App Store and Google Play Store
+- See README.md for detailed deployment instructions
+
+## Environment Variables
+
+Currently using hardcoded Supabase credentials in `supabaseClient.ts`. For production:
+1. Move credentials to environment variables
+2. Use Replit Secrets for sensitive data
+3. Implement proper authentication flow
+
+## Known Issues & Limitations
+
+1. **Native Animations**: Web version shows warning about `useNativeDriver` (expected, native features not available on web)
+2. **Supabase Data**: Currently using mock data as Supabase tables may not be populated
+3. **LSP Errors**: TypeScript LSP shows some configuration warnings - these don't affect runtime
+
+## Browser Compatibility
+
+The web version works on:
+- ✅ Chrome/Edge (recommended)
+- ✅ Firefox
+- ✅ Safari
+- ⚠️ Requires JavaScript enabled
+- ⚠️ File API support needed for image uploads
+
+## Troubleshooting
+
+### App not loading?
+- Check that workflow "Web Server" is running
+- Verify port 5000 is accessible
+- Clear browser cache and hard reload
+
+### Changes not appearing?
+- Run `bun run build` to rebuild
+- Restart the "Web Server" workflow
+- The app serves static files, so rebuilds are required for code changes
+
+### Build errors?
+- Run `bun install` to ensure dependencies are up to date
+- Check syntax errors in source files
+- Review workflow logs for detailed error messages
+
+## Next Steps / Future Improvements
+
+1. **Authentication**: Implement proper OAuth or JWT-based authentication
+2. **Database**: Populate Supabase with real data and enable full integration
+3. **Real-time Updates**: Enable Supabase real-time subscriptions
+4. **Performance**: Implement code splitting and lazy loading
+5. **Mobile Builds**: Set up EAS Build for native iOS/Android apps
+6. **Tests**: Add unit and integration tests
+7. **CI/CD**: Automate builds and deployments
+
+## Support & Documentation
+
+- **Expo Docs**: https://docs.expo.dev/
+- **React Native**: https://reactnative.dev/
+- **Supabase**: https://supabase.com/docs
+- **Original README**: See `README.md` for detailed Rork/Expo setup instructions

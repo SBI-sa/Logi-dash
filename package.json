@@ -3,9 +3,11 @@
   "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {
-    "start": "bunx rork start -p oyd4spzce46k8nhnvi2h9 --tunnel",
-    "start-web": "bunx rork start -p oyd4spzce46k8nhnvi2h9 --web --tunnel",
-    "start-web-dev": "DEBUG=expo* bunx rork start -p oyd4spzce46k8nhnvi2h9 --web --tunnel",
+    "start": "npx serve dist -l 5000",
+    "serve": "npx serve dist -l 5000",
+    "build": "npx expo export --platform web",
+    "start-mobile": "expo start --tunnel",
+    "start-dev": "npx expo start --web --port 8081",
     "lint": "expo lint"
   },
   "dependencies": {
