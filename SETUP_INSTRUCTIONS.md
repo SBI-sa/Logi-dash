@@ -34,23 +34,208 @@ After creating the tables, you need to insert the initial mock data. You have tw
 > **Security Note:** The current admin credentials are hardcoded in `contexts/AuthContext.tsx` for development purposes. For production deployment, these should be replaced with Supabase Auth or environment-based secrets.
 
 **Option B: Insert Mock Data via SQL**
-Run this SQL in Supabase SQL Editor:
+
+You can quickly populate all 8 modules with initial data. Run this SQL in Supabase SQL Editor:
 
 ```sql
 -- Insert initial sales data
 INSERT INTO sales (id, data, updated_at) VALUES (
   1,
-  '{"totalRevenue": 12450000, "lastYearYtdRevenue": 10500000, "mtdRevenue": 3200000, "ytdRevenue": 9850000, "mtdBudget": 3500000, "ytdBudget": 10500000, "revenueTarget": 15000000, "growthPercentage": 18.5, "quarterlyTargets": {"q1": {"current": 3150000, "target": 3500000, "lastYear": 2900000}, "q2": {"current": 3700000, "target": 3750000, "lastYear": 3400000}, "q3": {"current": 3000000, "target": 3750000, "lastYear": 2800000}, "q4": {"current": 0, "target": 4000000, "lastYear": 3400000}}, "quarterlyLabelling": {"q1": {"current": 12500, "lastYear": 11200}, "q2": {"current": 13800, "lastYear": 12500}, "q3": {"current": 14200, "lastYear": 13100}, "q4": {"current": 15000, "lastYear": 13800}}, "topProducts": [{"name": "Product A", "sales": 2500000}, {"name": "Product B", "sales": 1800000}], "topCustomers": [{"name": "Client Alpha", "sales": 3200000, "color": "#00617f"}], "revenueBySegment": [], "monthlyTrend": [], "monthlyRevenue": [], "accountManagers": [], "topCustomersMonthly": {}, "revenueBySegmentMonthly": {}}',
+  jsonb_build_object(
+    'totalRevenue', 12450000,
+    'lastYearYtdRevenue', 10500000,
+    'mtdRevenue', 3200000,
+    'ytdRevenue', 9850000,
+    'mtdBudget', 3500000,
+    'ytdBudget', 10500000,
+    'revenueTarget', 15000000,
+    'growthPercentage', 18.5,
+    'quarterlyTargets', jsonb_build_object(
+      'q1', jsonb_build_object('current', 3150000, 'target', 3500000, 'lastYear', 2900000),
+      'q2', jsonb_build_object('current', 3700000, 'target', 3750000, 'lastYear', 3400000),
+      'q3', jsonb_build_object('current', 3000000, 'target', 3750000, 'lastYear', 2800000),
+      'q4', jsonb_build_object('current', 0, 'target', 4000000, 'lastYear', 3400000)
+    ),
+    'quarterlyLabelling', jsonb_build_object(
+      'q1', jsonb_build_object('current', 12500, 'lastYear', 11200, 'color', '#00617f'),
+      'q2', jsonb_build_object('current', 13800, 'lastYear', 12500, 'color', '#00617f'),
+      'q3', jsonb_build_object('current', 14200, 'lastYear', 13100, 'color', '#00617f'),
+      'q4', jsonb_build_object('current', 15000, 'lastYear', 13800, 'color', '#00617f')
+    ),
+    'topProducts', '[]'::jsonb,
+    'topCustomers', '[]'::jsonb,
+    'topCustomersMonthly', '{}'::jsonb,
+    'revenueBySegment', '[]'::jsonb,
+    'revenueBySegmentMonthly', '{}'::jsonb,
+    'monthlyTrend', '[]'::jsonb,
+    'monthlyRevenue', '[]'::jsonb,
+    'accountManagers', '[]'::jsonb
+  ),
   NOW()
 );
 
 -- Insert initial risk data  
 INSERT INTO risks (id, data, updated_at) VALUES (
   1,
-  '{"totalRisks": 24, "highRisks": 8, "mediumRisks": 10, "lowRisks": 6, "mitigatedPercentage": 65, "mitigatedRisksCount": 15, "totalRisksForMitigation": 23, "risksByDepartment": [{"department": "Operations", "count": 12, "color": "#00617f"}, {"department": "Finance", "count": 6, "color": "#00617f"}], "riskHeatmap": [], "risksAddressedDate": "2024-10-15"}',
+  jsonb_build_object(
+    'totalRisks', 47,
+    'highRisks', 8,
+    'mediumRisks', 21,
+    'lowRisks', 18,
+    'mitigatedPercentage', 62,
+    'mitigatedRisksCount', 24,
+    'totalRisksForMitigation', 47,
+    'risksByDepartment', '[]'::jsonb,
+    'riskHeatmap', '[]'::jsonb,
+    'risksAddressedDate', '2025-10-06'
+  ),
+  NOW()
+);
+
+-- Insert initial logistics data
+INSERT INTO logistics (id, data, updated_at) VALUES (
+  1,
+  jsonb_build_object(
+    'onTimeDeliveryRate', 94.5,
+    'averageDeliveryTime', 2.3,
+    'transportationCostPerShipment', 450,
+    'activeShipments', 156,
+    'delayedShipments', 8,
+    'utilizationRate', 87,
+    'fleetUtilization', 87,
+    'trucks', 45,
+    'drivers', 68,
+    'tripsInProgress', 23,
+    'tripsCompleted', 342,
+    'tripsPending', 15,
+    'tripsTransporters', 8,
+    'deliveryPerformance', '[]'::jsonb,
+    'delaysByRoute', '[]'::jsonb,
+    'thresholds', jsonb_build_object('green', 90, 'yellow', 80),
+    'tripCategories', '[]'::jsonb,
+    'tripCategoriesMonthly', '{}'::jsonb
+  ),
+  NOW()
+);
+
+-- Insert initial warehouse data
+INSERT INTO warehouse (id, data, updated_at) VALUES (
+  1,
+  jsonb_build_object(
+    'currentOccupancy', 425000,
+    'capacity', 500000,
+    'occupancyPercentage', 85,
+    'inboundShipments', 89,
+    'outboundShipments', 102,
+    'inventoryTurnover', 4.2,
+    'averageDaysInStorage', 45,
+    'occupancyByZone', '[]'::jsonb,
+    'occupancyTrend', '[]'::jsonb,
+    'allocationImageUri', ''
+  ),
+  NOW()
+);
+
+-- Insert initial real estate data
+INSERT INTO real_estate (id, data, updated_at) VALUES (
+  1,
+  jsonb_build_object(
+    'jipTotalCapacity', 500000,
+    'jipOccupiedLand', 385000,
+    'jipOccupancyPercentage', 77,
+    'jipAverageRate', 125,
+    'parking', jsonb_build_object(
+      'availableSpaces', 50,
+      'rentedSpaces', 180,
+      'occupancyRate', 78,
+      'averageRate', 250,
+      'lastRate', 275,
+      'nextEndingContract', '2026-03-15',
+      'nextEndingContractSpaces', 25
+    ),
+    'lands', '[]'::jsonb,
+    'landImageUri', '',
+    'jlhImageUri', '',
+    'additionalImages', '[]'::jsonb
+  ),
+  NOW()
+);
+
+-- Insert initial contract data
+INSERT INTO contracts (id, data, updated_at) VALUES (
+  1,
+  jsonb_build_object(
+    'expiringThisMonth', 5,
+    'expiringThisQuarter', 12,
+    'totalContracts', 48,
+    'contracts', '[]'::jsonb
+  ),
+  NOW()
+);
+
+-- Insert initial VAS data
+INSERT INTO vas (id, data, updated_at) VALUES (
+  1,
+  jsonb_build_object(
+    'deliveryTotal', jsonb_build_object(
+      'year', '2025',
+      'current', 8500,
+      'previous', 7200,
+      'percentageChange', 18.1,
+      'color', '#00617f'
+    ),
+    'labellingTotal', jsonb_build_object(
+      'year', '2025',
+      'current', 55500,
+      'previous', 49800,
+      'percentageChange', 11.4,
+      'color', '#9b2743'
+    ),
+    'top5Clients', '[]'::jsonb,
+    'labellingQuarterly', jsonb_build_object(
+      'q1', jsonb_build_object('current', 12500, 'lastYear', 11200, 'color', '#9b2743'),
+      'q2', jsonb_build_object('current', 13800, 'lastYear', 12500, 'color', '#9b2743'),
+      'q3', jsonb_build_object('current', 14200, 'lastYear', 13100, 'color', '#9b2743'),
+      'q4', jsonb_build_object('current', 15000, 'lastYear', 13800, 'color', '#9b2743')
+    ),
+    'deliveryQuarterly', jsonb_build_object(
+      'q1', jsonb_build_object('current', 1950, 'lastYear', 1650, 'color', '#00617f'),
+      'q2', jsonb_build_object('current', 2100, 'lastYear', 1800, 'color', '#00617f'),
+      'q3', jsonb_build_object('current', 2250, 'lastYear', 1900, 'color', '#00617f'),
+      'q4', jsonb_build_object('current', 2200, 'lastYear', 1850, 'color', '#00617f')
+    )
+  ),
+  NOW()
+);
+
+-- Insert initial PO data
+INSERT INTO po (id, data, updated_at) VALUES (
+  1,
+  jsonb_build_object(
+    'fclQuarterly', jsonb_build_object(
+      'q1', jsonb_build_object('units', 245, 'color', '#00617f'),
+      'q2', jsonb_build_object('units', 289, 'color', '#00617f'),
+      'q3', jsonb_build_object('units', 312, 'color', '#00617f'),
+      'q4', jsonb_build_object('units', 298, 'color', '#00617f')
+    ),
+    'lclQuarterly', jsonb_build_object(
+      'q1', jsonb_build_object('units', 156, 'color', '#9b2743'),
+      'q2', jsonb_build_object('units', 178, 'color', '#9b2743'),
+      'q3', jsonb_build_object('units', 165, 'color', '#9b2743'),
+      'q4', jsonb_build_object('units', 189, 'color', '#9b2743')
+    ),
+    'fclMonthly', '[]'::jsonb,
+    'lclMonthly', '[]'::jsonb,
+    'ciyMovement', jsonb_build_object(
+      'thisYear', '[]'::jsonb,
+      'lastYear', '[]'::jsonb
+    )
+  ),
   NOW()
 );
 ```
+
+> **Note:** After running this SQL, all 8 modules will have initial data. You can then refine the values through the Admin Dashboard.
 
 ### Step 3: Configure Row-Level Security (RLS) - Optional for now
 
