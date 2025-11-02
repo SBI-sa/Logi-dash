@@ -237,9 +237,58 @@ INSERT INTO po (id, data, updated_at) VALUES (
 
 > **Note:** After running this SQL, all 8 modules will have initial data. You can then refine the values through the Admin Dashboard.
 
-### Step 3: Configure Row-Level Security (RLS) - Optional for now
+### Step 3: Configure Row-Level Security (RLS) - REQUIRED
 
-For production, you should enable RLS policies. For development, you can disable RLS on all tables:
+**Important:** By default, Supabase enables RLS on all tables, which blocks all operations unless you create policies. You need to run the SQL below to allow your app to read and write data.
+
+**Enable RLS with proper policies (Recommended):**
+
+Run this SQL in your Supabase SQL Editor to create policies that allow all operations:
+
+```sql
+-- Enable RLS on all tables
+ALTER TABLE sales ENABLE ROW LEVEL SECURITY;
+ALTER TABLE risks ENABLE ROW LEVEL SECURITY;
+ALTER TABLE contracts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE real_estate ENABLE ROW LEVEL SECURITY;
+ALTER TABLE logistics ENABLE ROW LEVEL SECURITY;
+ALTER TABLE warehouse ENABLE ROW LEVEL SECURITY;
+ALTER TABLE vas ENABLE ROW LEVEL SECURITY;
+ALTER TABLE po ENABLE ROW LEVEL SECURITY;
+
+-- Create policies that allow all operations (development mode)
+-- These allow both read (SELECT) and write (INSERT, UPDATE, DELETE) for all users
+
+CREATE POLICY "Allow all operations on sales" ON sales
+  FOR ALL USING (true) WITH CHECK (true);
+
+CREATE POLICY "Allow all operations on risks" ON risks
+  FOR ALL USING (true) WITH CHECK (true);
+
+CREATE POLICY "Allow all operations on contracts" ON contracts
+  FOR ALL USING (true) WITH CHECK (true);
+
+CREATE POLICY "Allow all operations on real_estate" ON real_estate
+  FOR ALL USING (true) WITH CHECK (true);
+
+CREATE POLICY "Allow all operations on logistics" ON logistics
+  FOR ALL USING (true) WITH CHECK (true);
+
+CREATE POLICY "Allow all operations on warehouse" ON warehouse
+  FOR ALL USING (true) WITH CHECK (true);
+
+CREATE POLICY "Allow all operations on vas" ON vas
+  FOR ALL USING (true) WITH CHECK (true);
+
+CREATE POLICY "Allow all operations on po" ON po
+  FOR ALL USING (true) WITH CHECK (true);
+```
+
+> **Security Note:** These policies allow anyone with the anon key to read and write data. For production, you should restrict write operations to authenticated admin users only. See the "Production Security" section below for details.
+
+**Alternative: Disable RLS (Quick Development Setup)**
+
+If you prefer to disable RLS entirely for faster development:
 
 ```sql
 ALTER TABLE sales DISABLE ROW LEVEL SECURITY;
@@ -250,18 +299,30 @@ ALTER TABLE logistics DISABLE ROW LEVEL SECURITY;
 ALTER TABLE warehouse DISABLE ROW LEVEL SECURITY;
 ALTER TABLE vas DISABLE ROW LEVEL SECURITY;
 ALTER TABLE po DISABLE ROW LEVEL SECURITY;
-ALTER TABLE last_updated DISABLE ROW LEVEL SECURITY;
 ```
 
-**For production**, enable RLS and create policies like:
+**Production Security (Future Enhancement):**
+
+For production deployment, replace the "allow all" policies with admin-only write policies:
 
 ```sql
--- Allow public read access
-CREATE POLICY "Allow public read" ON sales FOR SELECT USING (true);
+-- Drop the permissive policies
+DROP POLICY "Allow all operations on sales" ON sales;
+DROP POLICY "Allow all operations on risks" ON risks;
+-- ... repeat for all tables
 
--- Allow authenticated users to update (admin only)
-CREATE POLICY "Allow authenticated update" ON sales FOR UPDATE 
-USING (auth.role() = 'authenticated');
+-- Create read-only policies for public
+CREATE POLICY "Allow public read on sales" ON sales
+  FOR SELECT USING (true);
+
+-- Create write policies for authenticated admins only
+CREATE POLICY "Allow admin write on sales" ON sales
+  FOR INSERT WITH CHECK (auth.role() = 'authenticated');
+
+CREATE POLICY "Allow admin update on sales" ON sales
+  FOR UPDATE USING (auth.role() = 'authenticated');
+
+-- ... repeat for all tables
 ```
 
 ### Step 4: Test the Admin Workflow
