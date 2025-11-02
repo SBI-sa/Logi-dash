@@ -12,6 +12,10 @@ export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('sales');
   const [isSaving, setIsSaving] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
+  const [salesDataSnapshot, setSalesDataSnapshot] = useState(salesData);
+  const [riskDataSnapshot, setRiskDataSnapshot] = useState(riskData);
+  const [salesDirty, setSalesDirty] = useState(false);
+  const [riskDirty, setRiskDirty] = useState(false);
 
   const [salesForm, setSalesForm] = useState({
     totalRevenue: salesData.totalRevenue.toString(),
@@ -30,24 +34,30 @@ export default function AdminDashboard() {
   });
 
   useEffect(() => {
-    setSalesForm({
-      totalRevenue: salesData.totalRevenue.toString(),
-      ytdRevenue: salesData.ytdRevenue.toString(),
-      mtdRevenue: salesData.mtdRevenue.toString(),
-      revenueTarget: salesData.revenueTarget.toString(),
-      growthPercentage: salesData.growthPercentage.toString(),
-    });
-  }, [salesData]);
+    if (!isSaving && !salesDirty) {
+      setSalesDataSnapshot(salesData);
+      setSalesForm({
+        totalRevenue: salesData.totalRevenue.toString(),
+        ytdRevenue: salesData.ytdRevenue.toString(),
+        mtdRevenue: salesData.mtdRevenue.toString(),
+        revenueTarget: salesData.revenueTarget.toString(),
+        growthPercentage: salesData.growthPercentage.toString(),
+      });
+    }
+  }, [salesData, isSaving, salesDirty]);
 
   useEffect(() => {
-    setRiskForm({
-      totalRisks: riskData.totalRisks.toString(),
-      highRisks: riskData.highRisks.toString(),
-      mediumRisks: riskData.mediumRisks.toString(),
-      lowRisks: riskData.lowRisks.toString(),
-      mitigatedPercentage: riskData.mitigatedPercentage.toString(),
-    });
-  }, [riskData]);
+    if (!isSaving && !riskDirty) {
+      setRiskDataSnapshot(riskData);
+      setRiskForm({
+        totalRisks: riskData.totalRisks.toString(),
+        highRisks: riskData.highRisks.toString(),
+        mediumRisks: riskData.mediumRisks.toString(),
+        lowRisks: riskData.lowRisks.toString(),
+        mitigatedPercentage: riskData.mitigatedPercentage.toString(),
+      });
+    }
+  }, [riskData, isSaving, riskDirty]);
 
   useEffect(() => {
     if (!isLoading && !isAdmin) {
@@ -56,29 +66,35 @@ export default function AdminDashboard() {
     }
   }, [isLoading, isAdmin]);
 
+  const handleSalesFormChange = (field: string, value: string) => {
+    setSalesDirty(true);
+    setSalesForm(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleRiskFormChange = (field: string, value: string) => {
+    setRiskDirty(true);
+    setRiskForm(prev => ({ ...prev, [field]: value }));
+  };
+
   const handleSaveSales = async () => {
     setIsSaving(true);
     setSuccessMessage('');
+    const prevForm = { ...salesForm };
     try {
       const updatedData = {
-        ...salesData,
-        totalRevenue: parseFloat(salesForm.totalRevenue),
-        ytdRevenue: parseFloat(salesForm.ytdRevenue),
-        mtdRevenue: parseFloat(salesForm.mtdRevenue),
-        revenueTarget: parseFloat(salesForm.revenueTarget),
-        growthPercentage: parseFloat(salesForm.growthPercentage),
+        ...salesDataSnapshot,
+        totalRevenue: parseFloat(prevForm.totalRevenue),
+        ytdRevenue: parseFloat(prevForm.ytdRevenue),
+        mtdRevenue: parseFloat(prevForm.mtdRevenue),
+        revenueTarget: parseFloat(prevForm.revenueTarget),
+        growthPercentage: parseFloat(prevForm.growthPercentage),
       };
       await updateSalesData(updatedData);
+      setSalesDirty(false);
       setSuccessMessage('✅ Sales data updated successfully!');
       setTimeout(() => setSuccessMessage(''), 3000);
     } catch (error) {
-      setSalesForm({
-        totalRevenue: salesData.totalRevenue.toString(),
-        ytdRevenue: salesData.ytdRevenue.toString(),
-        mtdRevenue: salesData.mtdRevenue.toString(),
-        revenueTarget: salesData.revenueTarget.toString(),
-        growthPercentage: salesData.growthPercentage.toString(),
-      });
+      setSalesForm(prevForm);
       Alert.alert('Error', 'Failed to update sales data. Changes have been reverted.');
       console.error(error);
     } finally {
@@ -89,26 +105,22 @@ export default function AdminDashboard() {
   const handleSaveRisks = async () => {
     setIsSaving(true);
     setSuccessMessage('');
+    const prevForm = { ...riskForm };
     try {
       const updatedData = {
-        ...riskData,
-        totalRisks: parseInt(riskForm.totalRisks),
-        highRisks: parseInt(riskForm.highRisks),
-        mediumRisks: parseInt(riskForm.mediumRisks),
-        lowRisks: parseInt(riskForm.lowRisks),
-        mitigatedPercentage: parseFloat(riskForm.mitigatedPercentage),
+        ...riskDataSnapshot,
+        totalRisks: parseInt(prevForm.totalRisks),
+        highRisks: parseInt(prevForm.highRisks),
+        mediumRisks: parseInt(prevForm.mediumRisks),
+        lowRisks: parseInt(prevForm.lowRisks),
+        mitigatedPercentage: parseFloat(prevForm.mitigatedPercentage),
       };
       await updateRiskData(updatedData);
+      setRiskDirty(false);
       setSuccessMessage('✅ Risk data updated successfully!');
       setTimeout(() => setSuccessMessage(''), 3000);
     } catch (error) {
-      setRiskForm({
-        totalRisks: riskData.totalRisks.toString(),
-        highRisks: riskData.highRisks.toString(),
-        mediumRisks: riskData.mediumRisks.toString(),
-        lowRisks: riskData.lowRisks.toString(),
-        mitigatedPercentage: riskData.mitigatedPercentage.toString(),
-      });
+      setRiskForm(prevForm);
       Alert.alert('Error', 'Failed to update risk data. Changes have been reverted.');
       console.error(error);
     } finally {
@@ -168,7 +180,7 @@ export default function AdminDashboard() {
               <TextInput
                 style={styles.input}
                 value={salesForm.totalRevenue}
-                onChangeText={(text) => setSalesForm({...salesForm, totalRevenue: text})}
+                onChangeText={(text) => handleSalesFormChange('totalRevenue', text)}
                 keyboardType="numeric"
                 placeholderTextColor="#888"
               />
@@ -179,7 +191,7 @@ export default function AdminDashboard() {
               <TextInput
                 style={styles.input}
                 value={salesForm.ytdRevenue}
-                onChangeText={(text) => setSalesForm({...salesForm, ytdRevenue: text})}
+                onChangeText={(text) => handleSalesFormChange('ytdRevenue', text)}
                 keyboardType="numeric"
                 placeholderTextColor="#888"
               />
@@ -190,7 +202,7 @@ export default function AdminDashboard() {
               <TextInput
                 style={styles.input}
                 value={salesForm.mtdRevenue}
-                onChangeText={(text) => setSalesForm({...salesForm, mtdRevenue: text})}
+                onChangeText={(text) => handleSalesFormChange('mtdRevenue', text)}
                 keyboardType="numeric"
                 placeholderTextColor="#888"
               />
@@ -201,7 +213,7 @@ export default function AdminDashboard() {
               <TextInput
                 style={styles.input}
                 value={salesForm.revenueTarget}
-                onChangeText={(text) => setSalesForm({...salesForm, revenueTarget: text})}
+                onChangeText={(text) => handleSalesFormChange('revenueTarget', text)}
                 keyboardType="numeric"
                 placeholderTextColor="#888"
               />
@@ -212,7 +224,7 @@ export default function AdminDashboard() {
               <TextInput
                 style={styles.input}
                 value={salesForm.growthPercentage}
-                onChangeText={(text) => setSalesForm({...salesForm, growthPercentage: text})}
+                onChangeText={(text) => handleSalesFormChange('growthPercentage', text)}
                 keyboardType="numeric"
                 placeholderTextColor="#888"
               />
@@ -239,7 +251,7 @@ export default function AdminDashboard() {
               <TextInput
                 style={styles.input}
                 value={riskForm.totalRisks}
-                onChangeText={(text) => setRiskForm({...riskForm, totalRisks: text})}
+                onChangeText={(text) => handleRiskFormChange('totalRisks', text)}
                 keyboardType="numeric"
                 placeholderTextColor="#888"
               />
@@ -250,7 +262,7 @@ export default function AdminDashboard() {
               <TextInput
                 style={styles.input}
                 value={riskForm.highRisks}
-                onChangeText={(text) => setRiskForm({...riskForm, highRisks: text})}
+                onChangeText={(text) => handleRiskFormChange('highRisks', text)}
                 keyboardType="numeric"
                 placeholderTextColor="#888"
               />
@@ -261,7 +273,7 @@ export default function AdminDashboard() {
               <TextInput
                 style={styles.input}
                 value={riskForm.mediumRisks}
-                onChangeText={(text) => setRiskForm({...riskForm, mediumRisks: text})}
+                onChangeText={(text) => handleRiskFormChange('mediumRisks', text)}
                 keyboardType="numeric"
                 placeholderTextColor="#888"
               />
@@ -272,7 +284,7 @@ export default function AdminDashboard() {
               <TextInput
                 style={styles.input}
                 value={riskForm.lowRisks}
-                onChangeText={(text) => setRiskForm({...riskForm, lowRisks: text})}
+                onChangeText={(text) => handleRiskFormChange('lowRisks', text)}
                 keyboardType="numeric"
                 placeholderTextColor="#888"
               />
@@ -283,7 +295,7 @@ export default function AdminDashboard() {
               <TextInput
                 style={styles.input}
                 value={riskForm.mitigatedPercentage}
-                onChangeText={(text) => setRiskForm({...riskForm, mitigatedPercentage: text})}
+                onChangeText={(text) => handleRiskFormChange('mitigatedPercentage', text)}
                 keyboardType="numeric"
                 placeholderTextColor="#888"
               />
