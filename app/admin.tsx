@@ -30,6 +30,26 @@ export default function AdminDashboard() {
   });
 
   useEffect(() => {
+    setSalesForm({
+      totalRevenue: salesData.totalRevenue.toString(),
+      ytdRevenue: salesData.ytdRevenue.toString(),
+      mtdRevenue: salesData.mtdRevenue.toString(),
+      revenueTarget: salesData.revenueTarget.toString(),
+      growthPercentage: salesData.growthPercentage.toString(),
+    });
+  }, [salesData]);
+
+  useEffect(() => {
+    setRiskForm({
+      totalRisks: riskData.totalRisks.toString(),
+      highRisks: riskData.highRisks.toString(),
+      mediumRisks: riskData.mediumRisks.toString(),
+      lowRisks: riskData.lowRisks.toString(),
+      mitigatedPercentage: riskData.mitigatedPercentage.toString(),
+    });
+  }, [riskData]);
+
+  useEffect(() => {
     if (!isLoading && !isAdmin) {
       Alert.alert('Access Denied', 'You do not have admin privileges');
       router.replace('/');
@@ -52,7 +72,14 @@ export default function AdminDashboard() {
       setSuccessMessage('✅ Sales data updated successfully!');
       setTimeout(() => setSuccessMessage(''), 3000);
     } catch (error) {
-      Alert.alert('Error', 'Failed to update sales data');
+      setSalesForm({
+        totalRevenue: salesData.totalRevenue.toString(),
+        ytdRevenue: salesData.ytdRevenue.toString(),
+        mtdRevenue: salesData.mtdRevenue.toString(),
+        revenueTarget: salesData.revenueTarget.toString(),
+        growthPercentage: salesData.growthPercentage.toString(),
+      });
+      Alert.alert('Error', 'Failed to update sales data. Changes have been reverted.');
       console.error(error);
     } finally {
       setIsSaving(false);
@@ -75,7 +102,14 @@ export default function AdminDashboard() {
       setSuccessMessage('✅ Risk data updated successfully!');
       setTimeout(() => setSuccessMessage(''), 3000);
     } catch (error) {
-      Alert.alert('Error', 'Failed to update risk data');
+      setRiskForm({
+        totalRisks: riskData.totalRisks.toString(),
+        highRisks: riskData.highRisks.toString(),
+        mediumRisks: riskData.mediumRisks.toString(),
+        lowRisks: riskData.lowRisks.toString(),
+        mitigatedPercentage: riskData.mitigatedPercentage.toString(),
+      });
+      Alert.alert('Error', 'Failed to update risk data. Changes have been reverted.');
       console.error(error);
     } finally {
       setIsSaving(false);
