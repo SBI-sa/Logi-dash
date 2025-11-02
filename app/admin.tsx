@@ -273,6 +273,7 @@ export default function AdminDashboard() {
     setSuccessMessage('');
     const prevForm = { ...salesForm };
     try {
+      console.log('[Admin] Starting sales data save...');
       const updatedData = {
         ...salesDataSnapshot,
         totalRevenue: parseFloat(prevForm.totalRevenue),
@@ -281,14 +282,20 @@ export default function AdminDashboard() {
         revenueTarget: parseFloat(prevForm.revenueTarget),
         growthPercentage: parseFloat(prevForm.growthPercentage),
       };
+      console.log('[Admin] Updated data:', updatedData);
       await updateSalesData(updatedData);
+      console.log('[Admin] Sales data saved successfully!');
       setSalesDirty(false);
       setSuccessMessage('✅ Sales data updated successfully!');
       setTimeout(() => setSuccessMessage(''), 3000);
-    } catch (error) {
+    } catch (error: any) {
+      console.error('[Admin] Failed to save sales data:', error);
+      console.error('[Admin] Error message:', error?.message);
+      console.error('[Admin] Error details:', error?.details);
+      console.error('[Admin] Error hint:', error?.hint);
       setSalesForm(prevForm);
-      Alert.alert('Error', 'Failed to update sales data. Changes have been reverted.');
-      console.error(error);
+      const errorMsg = error?.message || 'Unknown error occurred';
+      Alert.alert('Error', `Failed to update sales data: ${errorMsg}\n\nCheck browser console for details.`);
     } finally {
       setIsSaving(false);
     }

@@ -116,13 +116,33 @@ export const [DataProvider, useData] = createContextHook(() => {
 
   const updateSalesData = useCallback(async (data: SalesData) => {
     try {
+      console.log('[DataContext] Updating sales data to Supabase...', { data });
       setSalesData(data);
-      const { error } = await supabase
+      const payload = { id: 1, data, updated_at: new Date().toISOString() };
+      console.log('[DataContext] Upsert payload:', payload);
+      
+      const { data: result, error } = await supabase
         .from('sales')
-        .upsert({ id: 1, data, updated_at: new Date().toISOString() });
-      if (error) throw error;
-    } catch (error) {
+        .upsert(payload)
+        .select();
+      
+      console.log('[DataContext] Supabase response:', { result, error });
+      
+      if (error) {
+        console.error('[DataContext] Supabase error details:', {
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code,
+        });
+        throw error;
+      }
+      
+      console.log('[DataContext] Sales data updated successfully in Supabase');
+    } catch (error: any) {
       console.error('[DataContext] Failed to update sales data:', error);
+      console.error('[DataContext] Error type:', typeof error);
+      console.error('[DataContext] Error keys:', Object.keys(error || {}));
       throw error;
     }
   }, []);
