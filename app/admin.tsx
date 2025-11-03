@@ -269,7 +269,7 @@ export default function AdminDashboard() {
   };
 
   const handleSaveSales = async () => {
-    Alert.alert('DEBUG', `Button clicked! YTD Revenue: ${salesForm.ytdRevenue}`);
+    console.log('[Admin] Button clicked! YTD Revenue:', salesForm.ytdRevenue);
     setIsSaving(true);
     setSuccessMessage('');
     const prevForm = { ...salesForm };
@@ -284,22 +284,21 @@ export default function AdminDashboard() {
         growthPercentage: parseFloat(prevForm.growthPercentage),
       };
       console.log('[Admin] Updated data:', updatedData);
-      Alert.alert('DEBUG', `About to call updateSalesData with ytdRevenue: ${updatedData.ytdRevenue}`);
+      console.log('[Admin] About to call updateSalesData with ytdRevenue:', updatedData.ytdRevenue);
       await updateSalesData(updatedData);
-      console.log('[Admin] Sales data saved successfully!');
-      Alert.alert('DEBUG', 'updateSalesData completed without error');
+      console.log('[Admin] ✅ Sales data saved successfully to Supabase!');
       setSalesDirty(false);
       setSuccessMessage('✅ Sales data updated successfully!');
       setTimeout(() => setSuccessMessage(''), 3000);
     } catch (error: any) {
-      console.error('[Admin] Failed to save sales data:', error);
+      console.error('[Admin] ❌ Failed to save sales data:', error);
       console.error('[Admin] Error message:', error?.message);
       console.error('[Admin] Error details:', error?.details);
       console.error('[Admin] Error hint:', error?.hint);
-      Alert.alert('DEBUG ERROR', `Error caught: ${error?.message || error?.toString() || 'Unknown error'}`);
       setSalesForm(prevForm);
       const errorMsg = error?.message || 'Unknown error occurred';
-      Alert.alert('Error', `Failed to update sales data: ${errorMsg}\n\nCheck browser console for details.`);
+      setSuccessMessage(`❌ Error: ${errorMsg}`);
+      setTimeout(() => setSuccessMessage(''), 5000);
     } finally {
       setIsSaving(false);
     }
