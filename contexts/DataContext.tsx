@@ -110,12 +110,12 @@ export const [DataProvider, useData] = createContextHook(() => {
     try {
       console.log('[DataContext] Updating sales data to Supabase...', { data });
       setSalesData(data);
-      const payload = { id: 1, data, updated_at: new Date().toISOString() };
-      console.log('[DataContext] Upsert payload:', payload);
+      const payload = { data, updated_at: new Date().toISOString() };
+      console.log('[DataContext] Insert payload:', payload);
       
       const { data: result, error } = await supabase
         .from('sales')
-        .upsert(payload)
+        .insert(payload)
         .select();
       
       console.log('[DataContext] Supabase response:', { result, error });
@@ -144,7 +144,7 @@ export const [DataProvider, useData] = createContextHook(() => {
       setRiskData(data);
       const { error } = await supabase
         .from('risks')
-        .upsert({ id: 1, data, updated_at: new Date().toISOString() });
+        .insert({ data, updated_at: new Date().toISOString() });
       if (error) throw error;
     } catch (error) {
       console.error('[DataContext] Failed to update risk data:', error);
@@ -157,7 +157,7 @@ export const [DataProvider, useData] = createContextHook(() => {
       setContractData(data);
       const { error } = await supabase
         .from('contracts')
-        .upsert({ id: 1, data, updated_at: new Date().toISOString() });
+        .insert({ data, updated_at: new Date().toISOString() });
       if (error) throw error;
     } catch (error) {
       console.error('[DataContext] Failed to update contract data:', error);
@@ -170,7 +170,7 @@ export const [DataProvider, useData] = createContextHook(() => {
       setLogisticsData(data);
       const { error } = await supabase
         .from('logistics')
-        .upsert({ id: 1, data, updated_at: new Date().toISOString() });
+        .insert({ data, updated_at: new Date().toISOString() });
       if (error) throw error;
     } catch (error) {
       console.error('[DataContext] Failed to update logistics data:', error);
@@ -183,7 +183,7 @@ export const [DataProvider, useData] = createContextHook(() => {
       setWarehouseData(data);
       const { error } = await supabase
         .from('warehouse')
-        .upsert({ id: 1, data, updated_at: new Date().toISOString() });
+        .insert({ data, updated_at: new Date().toISOString() });
       if (error) throw error;
     } catch (error) {
       console.error('[DataContext] Failed to update warehouse data:', error);
@@ -196,7 +196,7 @@ export const [DataProvider, useData] = createContextHook(() => {
       setRealEstateData(data);
       const { error } = await supabase
         .from('real_estate')
-        .upsert({ id: 1, data, updated_at: new Date().toISOString() });
+        .insert({ data, updated_at: new Date().toISOString() });
       if (error) throw error;
     } catch (error) {
       console.error('[DataContext] Failed to update real estate data:', error);
@@ -209,7 +209,7 @@ export const [DataProvider, useData] = createContextHook(() => {
       setVasData(data);
       const { error } = await supabase
         .from('vas')
-        .upsert({ id: 1, data, updated_at: new Date().toISOString() });
+        .insert({ data, updated_at: new Date().toISOString() });
       if (error) throw error;
     } catch (error) {
       console.error('[DataContext] Failed to update VAS data:', error);
@@ -222,7 +222,7 @@ export const [DataProvider, useData] = createContextHook(() => {
       setPoData(data);
       const { error } = await supabase
         .from('po')
-        .upsert({ id: 1, data, updated_at: new Date().toISOString() });
+        .insert({ data, updated_at: new Date().toISOString() });
       if (error) throw error;
     } catch (error) {
       console.error('[DataContext] Failed to update PO data:', error);
