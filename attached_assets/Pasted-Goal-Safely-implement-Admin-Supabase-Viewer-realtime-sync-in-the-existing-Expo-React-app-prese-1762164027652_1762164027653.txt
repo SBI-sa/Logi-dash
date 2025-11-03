@@ -1,0 +1,53 @@
+Goal
+Safely implement Admin → Supabase → Viewer realtime sync in the existing Expo/React app, preserving all UI. All Admin edits must reflect in Viewer via Supabase realtime. No SQL executes from the client; schema is changed via reviewed migrations.
+
+Constraints
+- No destructive ops (no DROP/DELETE of tables). Prefer in-place ALTER; if breaking, create <table>_v2, backfill, and switch.
+- RLS stays ON. Public read; authenticated admin write.
+- Realtime enabled on all dashboard tables.
+- Client uses @supabase/supabase-js only (no raw SQL in app).
+- Migrations must be placed in /db/migrations as timestamped .sql files, shown for review, and applied only after explicit approval.
+
+Step 1 — Env & Client
+- Verify EXPO_PUBLIC_SUPABASE_URL / EXPO_PUBLIC_SUPABASE_ANON_KEY.
+- Create src/supabaseClient.ts (singleton, supabase-js v2). Do not modify other files.
+
+Step 2 — Schema Survey & Plan
+- Inspect Supabase schema for: sales, risks, contracts, logistics, warehouse, real_estate, vas, po, last_updated.
+- Produce a schema report (columns, types, PK/FK, nullability, defaults, indexes, RLS policies, realtime status).
+- Propose non-breaking changes. If needed, propose <table>_v2 strategy. Do NOT execute.
+- Generate SQL migration files under /db/migrations/<timestamp>__desc.sql. Wait for approval.
+
+Step 3 — Apply Approved Migrations
+- After I approve, instruct me to apply via Supabase Studio or supabase CLI.
+- Re-check: RLS policies (public select, admin write), realtime enabled, defaults (updated_at=now()) and triggers for auto-update.
+
+Step 4 — DataContext
+- Create/replace src/context/DataContext.tsx:
+  - On mount: .select('*') per table
+  - Subscribe to postgres_changes per table; on event, refetch that table
+  - Expose { dataByTable, loading, error, refetch }, no AsyncStorage
+- Show diff and where to wrap <DataProvider>.
+
+Step 5 — Viewer Integration
+- Update viewer dashboards to consume DataContext only.
+- Keep UI/charts unchanged; add loading/error states.
+- List minimal diffs per file.
+
+Step 6 — Admin Integration
+- Create src/lib/save.ts helper using upsert/update.
+- Wire every editable Admin field → exact Supabase column mapping.
+- Show mapping tables and diffs. On save, show toast and rely on realtime for viewer updates.
+
+Step 7 — Verification
+- Add /debug/data page listing: table, row count, latest updated_at, realtime status.
+- Script a manual test: edit each Admin field → confirm Viewer updates without refresh.
+- Report any missing columns/policies; propose follow-up migrations (again via /db/migrations, awaiting approval).
+
+Deliverables
+- supabaseClient.ts
+- DataContext.tsx
+- save.ts
+- Updated viewer/admin screens (data-only changes)
+- /db/migrations/*.sql (audited, reviewed)
+- /debug/data (temporary)
