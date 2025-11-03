@@ -49,32 +49,32 @@ export const [DataProvider, useData] = createContextHook(() => {
         vasResult,
         poResult,
       ] = await Promise.all([
-        supabase.from('sales').select('*').order('id', { ascending: false }).limit(1).maybeSingle(),
-        supabase.from('risks').select('*').order('id', { ascending: false }).limit(1).maybeSingle(),
-        supabase.from('contracts').select('*').order('id', { ascending: false }).limit(1).maybeSingle(),
-        supabase.from('real_estate').select('*').order('id', { ascending: false }).limit(1).maybeSingle(),
-        supabase.from('logistics').select('*').order('id', { ascending: false }).limit(1).maybeSingle(),
-        supabase.from('warehouse').select('*').order('id', { ascending: false }).limit(1).maybeSingle(),
-        supabase.from('vas').select('*').order('id', { ascending: false }).limit(1).maybeSingle(),
-        supabase.from('po').select('*').order('id', { ascending: false }).limit(1).maybeSingle(),
+        supabase.from('sales').select('*').order('updated_at', { ascending: false }).limit(1).maybeSingle(),
+        supabase.from('risks').select('*').order('updated_at', { ascending: false }).limit(1).maybeSingle(),
+        supabase.from('contracts').select('*').order('updated_at', { ascending: false }).limit(1).maybeSingle(),
+        supabase.from('real_estate').select('*').order('updated_at', { ascending: false }).limit(1).maybeSingle(),
+        supabase.from('logistics').select('*').order('updated_at', { ascending: false }).limit(1).maybeSingle(),
+        supabase.from('warehouse').select('*').order('updated_at', { ascending: false }).limit(1).maybeSingle(),
+        supabase.from('vas').select('*').order('updated_at', { ascending: false }).limit(1).maybeSingle(),
+        supabase.from('po').select('*').order('updated_at', { ascending: false }).limit(1).maybeSingle(),
       ]);
 
-      if (!salesResult.error && salesResult.data?.data && salesResult.data.data.revenueBySegmentMonthly) {
+      if (!salesResult.error && salesResult.data?.data) {
         setSalesData(salesResult.data.data);
         console.log('✅ Loaded sales data from Supabase');
       } else {
         console.log('⚠️ No Supabase sales data, using mock');
       }
 
-      if (!risksResult.error && risksResult.data?.data && risksResult.data.data.risksByDepartment) {
+      if (!risksResult.error && risksResult.data?.data) {
         setRiskData(risksResult.data.data);
       }
 
-      if (!contractsResult.error && contractsResult.data?.data && contractsResult.data.data.contracts) {
+      if (!contractsResult.error && contractsResult.data?.data) {
         setContractData(contractsResult.data.data);
       }
 
-      if (!realEstateResult.error && realEstateResult.data?.data && realEstateResult.data.data.lands) {
+      if (!realEstateResult.error && realEstateResult.data?.data) {
         setRealEstateData(realEstateResult.data.data);
       }
 
