@@ -246,6 +246,61 @@ export const [DataProvider, useData] = createContextHook(() => {
     return lastUpdated[cardKey] || '';
   }, [lastUpdated]);
 
+  const cleanupOldData = useCallback(async () => {
+    const tables = ['sales', 'risks', 'contracts', 'real_estate', 'logistics', 'warehouse', 'vas', 'po'];
+    const results = { success: 0, failed: 0, totalDeleted: 0 };
+    
+    try {
+      for (const table of tables) {
+        try {
+          const { data: maxRow, error: maxError } = await supabase
+            .from(table)
+            .select('updated_at')
+            .order('updated_at', { ascending: false })
+            .limit(1)
+            .maybeSingle();
+          
+          if (maxError) {
+            console.error(`❌ Error finding max updated_at in ${table}:`, maxError);
+            results.failed++;
+            continue;
+          }
+          
+          if (!maxRow) {
+            console.log(`⚠️ No rows to clean in ${table}`);
+            continue;
+          }
+          
+          const { data: deletedRows, error: deleteError } = await supabase
+            .from(table)
+            .delete()
+            .lt('updated_at', maxRow.updated_at)
+            .select('id');
+          
+          if (deleteError) {
+            console.error(`❌ Error deleting old rows from ${table}:`, deleteError);
+            results.failed++;
+            continue;
+          }
+          
+          const count = deletedRows?.length || 0;
+          results.totalDeleted += count;
+          results.success++;
+          console.log(`✅ Cleaned ${count} old row(s) from ${table} (kept rows with updated_at >= ${maxRow.updated_at})`);
+          
+        } catch (error) {
+          console.error(`❌ Error cleaning ${table}:`, error);
+          results.failed++;
+        }
+      }
+      
+      return results;
+    } catch (error) {
+      console.error('[DataContext] Cleanup failed:', error);
+      throw error;
+    }
+  }, []);
+
   return useMemo(
     () => ({
       salesData,
@@ -268,6 +323,7 @@ export const [DataProvider, useData] = createContextHook(() => {
       lastUpdated,
       updateLastUpdated,
       getLastUpdated,
+      cleanupOldData,
     }),
     [
       salesData,
@@ -290,6 +346,7 @@ export const [DataProvider, useData] = createContextHook(() => {
       lastUpdated,
       updateLastUpdated,
       getLastUpdated,
+      cleanupOldData,
     ]
   );
 });

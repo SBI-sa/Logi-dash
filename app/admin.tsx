@@ -24,6 +24,7 @@ export default function AdminDashboard() {
     updateVasData,
     poData,
     updatePoData,
+    cleanupOldData,
   } = useData();
   
   const [activeTab, setActiveTab] = useState('sales');
@@ -502,6 +503,37 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleCleanup = async () => {
+    Alert.alert(
+      'Cleanup Old Data',
+      'This will delete all old data rows from all tables, keeping only the most recent version. This action cannot be undone. Continue?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Cleanup',
+          style: 'destructive',
+          onPress: async () => {
+            setIsSaving(true);
+            try {
+              const results = await cleanupOldData();
+              Alert.alert(
+                'Cleanup Complete',
+                `Successfully cleaned ${results.success} table(s)\nDeleted ${results.totalDeleted} old row(s)\nFailed: ${results.failed} table(s)`,
+                [{ text: 'OK' }]
+              );
+              console.log('🧹 Cleanup results:', results);
+            } catch (error) {
+              Alert.alert('Error', 'Failed to cleanup old data. Please try again.');
+              console.error('Cleanup error:', error);
+            } finally {
+              setIsSaving(false);
+            }
+          },
+        },
+      ]
+    );
+  };
+
   if (isLoading) {
     return (
       <SafeAreaView style={styles.container}>
@@ -519,8 +551,17 @@ export default function AdminDashboard() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Admin Dashboard</Text>
-        <Text style={styles.headerSubtitle}>Welcome, {user?.name}</Text>
+        <View>
+          <Text style={styles.headerTitle}>Admin Dashboard</Text>
+          <Text style={styles.headerSubtitle}>Welcome, {user?.name}</Text>
+        </View>
+        <TouchableOpacity
+          style={[styles.cleanupButton, isSaving && styles.cleanupButtonDisabled]}
+          onPress={handleCleanup}
+          disabled={isSaving}
+        >
+          <Text style={styles.cleanupButtonText}>🧹 Cleanup Old Data</Text>
+        </TouchableOpacity>
       </View>
 
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.tabContainer}>
@@ -1214,6 +1255,9 @@ const styles = StyleSheet.create({
     padding: 20,
     borderBottomWidth: 1,
     borderBottomColor: '#1e3a5f',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   headerTitle: {
     fontSize: 28,
@@ -1312,5 +1356,20 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  cleanupButton: {
+    backgroundColor: '#dc2626',
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  cleanupButtonDisabled: {
+    opacity: 0.5,
+  },
+  cleanupButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '600',
   },
 });
