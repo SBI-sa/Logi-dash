@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import createContextHook from '@nkzw/create-context-hook';
 import {
   SalesData,
@@ -20,25 +19,25 @@ import {
   mockPOData,
 } from '@/mocks/dashboardData';
 import { supabase } from '../supabaseClient';
-// 🔍 TEMP: check what Supabase returns
-supabase.from('sales').select('*').then(({ data, error }) => {
-  console.log('🔍 Supabase test:', data, error);
-});
-
-const STORAGE_KEYS = {
-  sales: '@logipoint_sales',
-  risks: '@logipoint_risks',
-  contracts: '@logipoint_contracts',
-  realEstate: '@logipoint_realestate',
-  logistics: '@logipoint_logistics',
-  warehouse: '@logipoint_warehouse',
-  vas: '@logipoint_vas',
-  po: '@logipoint_po',
-  lastUpdated: '@logipoint_last_updated',
-};
+import type { RealtimeChannel } from '@supabase/supabase-js';
 
 export interface LastUpdatedData {
   [cardKey: string]: string;
+}
+
+// Helper: Map snake_case database columns to camelCase TypeScript
+function mapDbToUi<T>(dbRow: any, fallback: T): T {
+  if (!dbRow) return fallback;
+
+  const mapped: any = {};
+
+  // Map all snake_case keys to camelCase
+  Object.keys(dbRow).forEach((key) => {
+    const camelKey = key.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
+    mapped[camelKey] = dbRow[key];
+  });
+
+  return { ...fallback, ...mapped };
 }
 
 export const [DataProvider, useData] = createContextHook(() => {
@@ -52,87 +51,286 @@ export const [DataProvider, useData] = createContextHook(() => {
   const [poData, setPoData] = useState<POData>(mockPOData);
   const [lastUpdated, setLastUpdated] = useState<LastUpdatedData>({});
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
+  // Fetch individual table data
+  const fetchSalesData = useCallback(async () => {
+    try {
+      const { data, error } = await supabase.from('sales').select('*').single();
+      if (error) throw error;
+      const mapped = mapDbToUi<SalesData>(data, mockSalesData);
+      setSalesData(mapped);
+      console.log('✅ Loaded sales from Supabase');
+    } catch (err) {
+      console.warn('⚠️ Sales fetch failed, using mock data:', err);
+      setSalesData(mockSalesData);
+    }
+  }, []);
+
+  const fetchRisksData = useCallback(async () => {
+    try {
+      const { data, error } = await supabase.from('risks').select('*').single();
+      if (error) throw error;
+      const mapped = mapDbToUi<RiskData>(data, mockRiskData);
+      setRiskData(mapped);
+      console.log('✅ Loaded risks from Supabase');
+    } catch (err) {
+      console.warn('⚠️ Risks fetch failed, using mock data:', err);
+      setRiskData(mockRiskData);
+    }
+  }, []);
+
+  const fetchContractsData = useCallback(async () => {
+    try {
+      const { data, error } = await supabase.from('contracts').select('*').single();
+      if (error) throw error;
+      const mapped = mapDbToUi<ContractData>(data, mockContractData);
+      setContractData(mapped);
+      console.log('✅ Loaded contracts from Supabase');
+    } catch (err) {
+      console.warn('⚠️ Contracts fetch failed, using mock data:', err);
+      setContractData(mockContractData);
+    }
+  }, []);
+
+  const fetchRealEstateData = useCallback(async () => {
+    try {
+      const { data, error } = await supabase.from('real_estate').select('*').single();
+      if (error) throw error;
+      const mapped = mapDbToUi<RealEstateData>(data, mockRealEstateData);
+      setRealEstateData(mapped);
+      console.log('✅ Loaded real_estate from Supabase');
+    } catch (err) {
+      console.warn('⚠️ Real estate fetch failed, using mock data:', err);
+      setRealEstateData(mockRealEstateData);
+    }
+  }, []);
+
+  const fetchLogisticsData = useCallback(async () => {
+    try {
+      const { data, error } = await supabase.from('logistics').select('*').single();
+      if (error) throw error;
+      const mapped = mapDbToUi<LogisticsData>(data, mockLogisticsData);
+      setLogisticsData(mapped);
+      console.log('✅ Loaded logistics from Supabase');
+    } catch (err) {
+      console.warn('⚠️ Logistics fetch failed, using mock data:', err);
+      setLogisticsData(mockLogisticsData);
+    }
+  }, []);
+
+  const fetchWarehouseData = useCallback(async () => {
+    try {
+      const { data, error } = await supabase.from('warehouse').select('*').single();
+      if (error) throw error;
+      const mapped = mapDbToUi<WarehouseData>(data, mockWarehouseData);
+      setWarehouseData(mapped);
+      console.log('✅ Loaded warehouse from Supabase');
+    } catch (err) {
+      console.warn('⚠️ Warehouse fetch failed, using mock data:', err);
+      setWarehouseData(mockWarehouseData);
+    }
+  }, []);
+
+  const fetchVasData = useCallback(async () => {
+    try {
+      const { data, error } = await supabase.from('vas').select('*').single();
+      if (error) throw error;
+      const mapped = mapDbToUi<VASData>(data, mockVASData);
+      setVasData(mapped);
+      console.log('✅ Loaded vas from Supabase');
+    } catch (err) {
+      console.warn('⚠️ VAS fetch failed, using mock data:', err);
+      setVasData(mockVASData);
+    }
+  }, []);
+
+  const fetchPoData = useCallback(async () => {
+    try {
+      const { data, error } = await supabase.from('po').select('*').single();
+      if (error) throw error;
+      const mapped = mapDbToUi<POData>(data, mockPOData);
+      setPoData(mapped);
+      console.log('✅ Loaded po from Supabase');
+    } catch (err) {
+      console.warn('⚠️ PO fetch failed, using mock data:', err);
+      setPoData(mockPOData);
+    }
+  }, []);
+
+  const fetchLastUpdatedData = useCallback(async () => {
+    try {
+      const { data, error } = await supabase.from('last_updated').select('*').single();
+      if (error) throw error;
+      setLastUpdated(data?.timestamps || {});
+      console.log('✅ Loaded last_updated from Supabase');
+    } catch (err) {
+      console.warn('⚠️ Last updated fetch failed, using empty object:', err);
+      setLastUpdated({});
+    }
+  }, []);
+
+  // Load all data on mount
   const loadAllData = useCallback(async () => {
     setIsLoading(true);
+    setError(null);
     try {
-      // --- Fetch from Supabase (start) ---
-const { data: salesRows, error: salesError } = await supabase
-  .from('sales')
-  .select('*')
-  .limit(1);
-
-if (salesError) {
-  console.error('Supabase fetch error:', salesError.message);
-} else if (salesRows && salesRows.length > 0) {
-  console.log('✅ Loaded sales from Supabase');
-  setSalesData(salesRows[0]);
-} else {
-  console.log('⚠️ No Supabase sales data found, using mock data');
-}
-// --- Fetch from Supabase (end) ---
-
-      const [sales, risks, contracts, realEstate, logistics, warehouse, vas, po, lastUpdatedStr] = await Promise.all([
-        AsyncStorage.getItem(STORAGE_KEYS.sales),
-        AsyncStorage.getItem(STORAGE_KEYS.risks),
-        AsyncStorage.getItem(STORAGE_KEYS.contracts),
-        AsyncStorage.getItem(STORAGE_KEYS.realEstate),
-        AsyncStorage.getItem(STORAGE_KEYS.logistics),
-        AsyncStorage.getItem(STORAGE_KEYS.warehouse),
-        AsyncStorage.getItem(STORAGE_KEYS.vas),
-        AsyncStorage.getItem(STORAGE_KEYS.po),
-        AsyncStorage.getItem(STORAGE_KEYS.lastUpdated),
+      await Promise.all([
+        fetchSalesData(),
+        fetchRisksData(),
+        fetchContractsData(),
+        fetchRealEstateData(),
+        fetchLogisticsData(),
+        fetchWarehouseData(),
+        fetchVasData(),
+        fetchPoData(),
+        fetchLastUpdatedData(),
       ]);
-
-      if (sales) {
-        const parsedSales = JSON.parse(sales);
-        setSalesData({
-          ...mockSalesData,
-          ...parsedSales,
-          quarterlyTargets: parsedSales.quarterlyTargets || mockSalesData.quarterlyTargets,
-          quarterlyLabelling: {
-            q1: { ...mockSalesData.quarterlyLabelling.q1, ...parsedSales.quarterlyLabelling?.q1 },
-            q2: { ...mockSalesData.quarterlyLabelling.q2, ...parsedSales.quarterlyLabelling?.q2 },
-            q3: { ...mockSalesData.quarterlyLabelling.q3, ...parsedSales.quarterlyLabelling?.q3 },
-            q4: { ...mockSalesData.quarterlyLabelling.q4, ...parsedSales.quarterlyLabelling?.q4 },
-          },
-        });
-      }
-      if (risks) setRiskData(JSON.parse(risks));
-      if (contracts) setContractData(JSON.parse(contracts));
-      if (realEstate) {
-        const parsedRealEstate = JSON.parse(realEstate);
-        setRealEstateData({
-          ...mockRealEstateData,
-          ...parsedRealEstate,
-          parking: parsedRealEstate.parking || mockRealEstateData.parking,
-        });
-      }
-      if (logistics) setLogisticsData(JSON.parse(logistics));
-      if (warehouse) setWarehouseData(JSON.parse(warehouse));
-      if (vas) setVasData(JSON.parse(vas));
-      if (po) setPoData(JSON.parse(po));
-      if (lastUpdatedStr) setLastUpdated(JSON.parse(lastUpdatedStr));
-    } catch (error) {
-      console.error('[DataContext] Failed to load data:', error);
-      if (error instanceof Error) {
-        console.error('[DataContext] Error details:', error.message);
-      }
+      console.log('✅ All data loaded successfully');
+    } catch (err) {
+      console.error('❌ Failed to load data:', err);
+      setError(err instanceof Error ? err.message : 'Failed to load data');
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [
+    fetchSalesData,
+    fetchRisksData,
+    fetchContractsData,
+    fetchRealEstateData,
+    fetchLogisticsData,
+    fetchWarehouseData,
+    fetchVasData,
+    fetchPoData,
+    fetchLastUpdatedData,
+  ]);
 
   useEffect(() => {
     loadAllData();
   }, [loadAllData]);
 
+  // Realtime subscriptions
+  useEffect(() => {
+    const channels: RealtimeChannel[] = [];
 
+    // Sales subscription
+    const salesChannel = supabase
+      .channel('sales-updates')
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'sales' }, () => {
+        console.log('🔄 Sales updated - refetching');
+        fetchSalesData();
+      })
+      .subscribe();
+    channels.push(salesChannel);
 
+    // Risks subscription
+    const risksChannel = supabase
+      .channel('risks-updates')
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'risks' }, () => {
+        console.log('🔄 Risks updated - refetching');
+        fetchRisksData();
+      })
+      .subscribe();
+    channels.push(risksChannel);
+
+    // Contracts subscription
+    const contractsChannel = supabase
+      .channel('contracts-updates')
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'contracts' }, () => {
+        console.log('🔄 Contracts updated - refetching');
+        fetchContractsData();
+      })
+      .subscribe();
+    channels.push(contractsChannel);
+
+    // Real estate subscription
+    const realEstateChannel = supabase
+      .channel('real-estate-updates')
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'real_estate' }, () => {
+        console.log('🔄 Real estate updated - refetching');
+        fetchRealEstateData();
+      })
+      .subscribe();
+    channels.push(realEstateChannel);
+
+    // Logistics subscription
+    const logisticsChannel = supabase
+      .channel('logistics-updates')
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'logistics' }, () => {
+        console.log('🔄 Logistics updated - refetching');
+        fetchLogisticsData();
+      })
+      .subscribe();
+    channels.push(logisticsChannel);
+
+    // Warehouse subscription
+    const warehouseChannel = supabase
+      .channel('warehouse-updates')
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'warehouse' }, () => {
+        console.log('🔄 Warehouse updated - refetching');
+        fetchWarehouseData();
+      })
+      .subscribe();
+    channels.push(warehouseChannel);
+
+    // VAS subscription
+    const vasChannel = supabase
+      .channel('vas-updates')
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'vas' }, () => {
+        console.log('🔄 VAS updated - refetching');
+        fetchVasData();
+      })
+      .subscribe();
+    channels.push(vasChannel);
+
+    // PO subscription
+    const poChannel = supabase
+      .channel('po-updates')
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'po' }, () => {
+        console.log('🔄 PO updated - refetching');
+        fetchPoData();
+      })
+      .subscribe();
+    channels.push(poChannel);
+
+    // Last updated subscription
+    const lastUpdatedChannel = supabase
+      .channel('last-updated-updates')
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'last_updated' }, () => {
+        console.log('🔄 Last updated - refetching');
+        fetchLastUpdatedData();
+      })
+      .subscribe();
+    channels.push(lastUpdatedChannel);
+
+    console.log('✅ Realtime subscriptions active for all 9 tables');
+
+    // Cleanup on unmount
+    return () => {
+      channels.forEach((channel) => {
+        supabase.removeChannel(channel);
+      });
+      console.log('🔌 Realtime subscriptions cleaned up');
+    };
+  }, [
+    fetchSalesData,
+    fetchRisksData,
+    fetchContractsData,
+    fetchRealEstateData,
+    fetchLogisticsData,
+    fetchWarehouseData,
+    fetchVasData,
+    fetchPoData,
+    fetchLastUpdatedData,
+  ]);
+
+  // Update functions (will be replaced with adminSave helper later)
+  // For now, keep them for backwards compatibility with existing admin screens
   const updateSalesData = useCallback(async (data: SalesData) => {
     try {
       setSalesData(data);
-      await AsyncStorage.setItem(STORAGE_KEYS.sales, JSON.stringify(data));
+      // TODO: Replace with adminSave helper
+      console.log('[DataContext] updateSalesData called - pending adminSave integration');
     } catch (error) {
       console.error('[DataContext] Failed to update sales data:', error);
       throw error;
@@ -142,7 +340,7 @@ if (salesError) {
   const updateRiskData = useCallback(async (data: RiskData) => {
     try {
       setRiskData(data);
-      await AsyncStorage.setItem(STORAGE_KEYS.risks, JSON.stringify(data));
+      console.log('[DataContext] updateRiskData called - pending adminSave integration');
     } catch (error) {
       console.error('[DataContext] Failed to update risk data:', error);
       throw error;
@@ -152,7 +350,7 @@ if (salesError) {
   const updateContractData = useCallback(async (data: ContractData) => {
     try {
       setContractData(data);
-      await AsyncStorage.setItem(STORAGE_KEYS.contracts, JSON.stringify(data));
+      console.log('[DataContext] updateContractData called - pending adminSave integration');
     } catch (error) {
       console.error('[DataContext] Failed to update contract data:', error);
       throw error;
@@ -162,7 +360,7 @@ if (salesError) {
   const updateLogisticsData = useCallback(async (data: LogisticsData) => {
     try {
       setLogisticsData(data);
-      await AsyncStorage.setItem(STORAGE_KEYS.logistics, JSON.stringify(data));
+      console.log('[DataContext] updateLogisticsData called - pending adminSave integration');
     } catch (error) {
       console.error('[DataContext] Failed to update logistics data:', error);
       throw error;
@@ -172,7 +370,7 @@ if (salesError) {
   const updateWarehouseData = useCallback(async (data: WarehouseData) => {
     try {
       setWarehouseData(data);
-      await AsyncStorage.setItem(STORAGE_KEYS.warehouse, JSON.stringify(data));
+      console.log('[DataContext] updateWarehouseData called - pending adminSave integration');
     } catch (error) {
       console.error('[DataContext] Failed to update warehouse data:', error);
       throw error;
@@ -180,14 +378,10 @@ if (salesError) {
   }, []);
 
   const updateRealEstateData = useCallback(async (data: RealEstateData) => {
-    setRealEstateData(data);
     try {
-      await AsyncStorage.setItem(STORAGE_KEYS.realEstate, JSON.stringify(data));
-    } catch (error: unknown) {
-      if (error instanceof Error && (error.message.includes('quota') || error.message.includes('QuotaExceededError'))) {
-        console.error('[DataContext] Storage quota exceeded. Data too large to save.');
-        throw new Error('Storage quota exceeded. Images are too large. Please use smaller images.');
-      }
+      setRealEstateData(data);
+      console.log('[DataContext] updateRealEstateData called - pending adminSave integration');
+    } catch (error) {
       console.error('[DataContext] Failed to update real estate data:', error);
       throw error;
     }
@@ -196,7 +390,7 @@ if (salesError) {
   const updateVasData = useCallback(async (data: VASData) => {
     try {
       setVasData(data);
-      await AsyncStorage.setItem(STORAGE_KEYS.vas, JSON.stringify(data));
+      console.log('[DataContext] updateVasData called - pending adminSave integration');
     } catch (error) {
       console.error('[DataContext] Failed to update VAS data:', error);
       throw error;
@@ -206,7 +400,7 @@ if (salesError) {
   const updatePoData = useCallback(async (data: POData) => {
     try {
       setPoData(data);
-      await AsyncStorage.setItem(STORAGE_KEYS.po, JSON.stringify(data));
+      console.log('[DataContext] updatePoData called - pending adminSave integration');
     } catch (error) {
       console.error('[DataContext] Failed to update PO data:', error);
       throw error;
@@ -216,9 +410,7 @@ if (salesError) {
   const updateLastUpdated = useCallback(async (cardKey: string, value: string) => {
     setLastUpdated(prev => {
       const updated = { ...prev, [cardKey]: value };
-      AsyncStorage.setItem(STORAGE_KEYS.lastUpdated, JSON.stringify(updated)).catch((error) => {
-        console.error('[DataContext] Failed to save last updated:', error);
-      });
+      console.log('[DataContext] updateLastUpdated called - pending adminSave integration');
       return updated;
     });
   }, []);
@@ -238,6 +430,7 @@ if (salesError) {
       vasData,
       poData,
       isLoading,
+      error,
       updateSalesData,
       updateRiskData,
       updateContractData,
@@ -260,6 +453,7 @@ if (salesError) {
       vasData,
       poData,
       isLoading,
+      error,
       updateSalesData,
       updateRiskData,
       updateContractData,
