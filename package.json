@@ -3,10 +3,11 @@
   "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {
-    "start": "expo start --web --port 5000",
-    "serve": "serve dist -l 5000",
-    "build": "expo export --platform web",
+    "start": "npx serve dist -l 5000",
+    "serve": "npx serve dist -l 5000",
+    "build": "npx expo export --platform web",
     "start-mobile": "expo start --tunnel",
+    "start-dev": "npx expo start --web --port 8081",
     "lint": "expo lint"
   },
   "dependencies": {

@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import createContextHook from '@nkzw/create-context-hook';
 import {
   SalesData,
@@ -19,6 +20,22 @@ import {
   mockPOData,
 } from '@/mocks/dashboardData';
 import { supabase } from '../supabaseClient';
+// 🔍 TEMP: check what Supabase returns
+supabase.from('sales').select('*').then(({ data, error }) => {
+  console.log('🔍 Supabase test:', data, error);
+});
+
+const STORAGE_KEYS = {
+  sales: '@logipoint_sales',
+  risks: '@logipoint_risks',
+  contracts: '@logipoint_contracts',
+  realEstate: '@logipoint_realestate',
+  logistics: '@logipoint_logistics',
+  warehouse: '@logipoint_warehouse',
+  vas: '@logipoint_vas',
+  po: '@logipoint_po',
+  lastUpdated: '@logipoint_last_updated',
+};
 
 export interface LastUpdatedData {
   [cardKey: string]: string;
@@ -39,62 +56,68 @@ export const [DataProvider, useData] = createContextHook(() => {
   const loadAllData = useCallback(async () => {
     setIsLoading(true);
     try {
-      const [
-        salesResult,
-        risksResult,
-        contractsResult,
-        realEstateResult,
-        logisticsResult,
-        warehouseResult,
-        vasResult,
-        poResult,
-      ] = await Promise.all([
-        supabase.from('sales').select('*').order('updated_at', { ascending: false }).limit(1).maybeSingle(),
-        supabase.from('risks').select('*').order('updated_at', { ascending: false }).limit(1).maybeSingle(),
-        supabase.from('contracts').select('*').order('updated_at', { ascending: false }).limit(1).maybeSingle(),
-        supabase.from('real_estate').select('*').order('updated_at', { ascending: false }).limit(1).maybeSingle(),
-        supabase.from('logistics').select('*').order('updated_at', { ascending: false }).limit(1).maybeSingle(),
-        supabase.from('warehouse').select('*').order('updated_at', { ascending: false }).limit(1).maybeSingle(),
-        supabase.from('vas').select('*').order('updated_at', { ascending: false }).limit(1).maybeSingle(),
-        supabase.from('po').select('*').order('updated_at', { ascending: false }).limit(1).maybeSingle(),
+      // --- Fetch from Supabase (start) ---
+const { data: salesRows, error: salesError } = await supabase
+  .from('sales')
+  .select('*')
+  .limit(1);
+
+if (salesError) {
+  console.error('Supabase fetch error:', salesError.message);
+} else if (salesRows && salesRows.length > 0) {
+  console.log('✅ Loaded sales from Supabase');
+  setSalesData(salesRows[0]);
+} else {
+  console.log('⚠️ No Supabase sales data found, using mock data');
+}
+// --- Fetch from Supabase (end) ---
+
+      const [sales, risks, contracts, realEstate, logistics, warehouse, vas, po, lastUpdatedStr] = await Promise.all([
+        AsyncStorage.getItem(STORAGE_KEYS.sales),
+        AsyncStorage.getItem(STORAGE_KEYS.risks),
+        AsyncStorage.getItem(STORAGE_KEYS.contracts),
+        AsyncStorage.getItem(STORAGE_KEYS.realEstate),
+        AsyncStorage.getItem(STORAGE_KEYS.logistics),
+        AsyncStorage.getItem(STORAGE_KEYS.warehouse),
+        AsyncStorage.getItem(STORAGE_KEYS.vas),
+        AsyncStorage.getItem(STORAGE_KEYS.po),
+        AsyncStorage.getItem(STORAGE_KEYS.lastUpdated),
       ]);
 
-      if (!salesResult.error && salesResult.data?.data) {
-        setSalesData(salesResult.data.data);
-        console.log('✅ Loaded sales data from Supabase');
-      } else {
-        console.log('⚠️ No Supabase sales data, using mock');
+      if (sales) {
+        const parsedSales = JSON.parse(sales);
+        setSalesData({
+          ...mockSalesData,
+          ...parsedSales,
+          quarterlyTargets: parsedSales.quarterlyTargets || mockSalesData.quarterlyTargets,
+          quarterlyLabelling: {
+            q1: { ...mockSalesData.quarterlyLabelling.q1, ...parsedSales.quarterlyLabelling?.q1 },
+            q2: { ...mockSalesData.quarterlyLabelling.q2, ...parsedSales.quarterlyLabelling?.q2 },
+            q3: { ...mockSalesData.quarterlyLabelling.q3, ...parsedSales.quarterlyLabelling?.q3 },
+            q4: { ...mockSalesData.quarterlyLabelling.q4, ...parsedSales.quarterlyLabelling?.q4 },
+          },
+        });
       }
-
-      if (!risksResult.error && risksResult.data?.data) {
-        setRiskData(risksResult.data.data);
+      if (risks) setRiskData(JSON.parse(risks));
+      if (contracts) setContractData(JSON.parse(contracts));
+      if (realEstate) {
+        const parsedRealEstate = JSON.parse(realEstate);
+        setRealEstateData({
+          ...mockRealEstateData,
+          ...parsedRealEstate,
+          parking: parsedRealEstate.parking || mockRealEstateData.parking,
+        });
       }
-
-      if (!contractsResult.error && contractsResult.data?.data) {
-        setContractData(contractsResult.data.data);
-      }
-
-      if (!realEstateResult.error && realEstateResult.data?.data) {
-        setRealEstateData(realEstateResult.data.data);
-      }
-
-      if (!logisticsResult.error && logisticsResult.data?.data) {
-        setLogisticsData(logisticsResult.data.data);
-      }
-
-      if (!warehouseResult.error && warehouseResult.data?.data) {
-        setWarehouseData(warehouseResult.data.data);
-      }
-
-      if (!vasResult.error && vasResult.data?.data) {
-        setVasData(vasResult.data.data);
-      }
-
-      if (!poResult.error && poResult.data?.data) {
-        setPoData(poResult.data.data);
-      }
+      if (logistics) setLogisticsData(JSON.parse(logistics));
+      if (warehouse) setWarehouseData(JSON.parse(warehouse));
+      if (vas) setVasData(JSON.parse(vas));
+      if (po) setPoData(JSON.parse(po));
+      if (lastUpdatedStr) setLastUpdated(JSON.parse(lastUpdatedStr));
     } catch (error) {
-      console.error('[DataContext] Failed to load data from Supabase:', error);
+      console.error('[DataContext] Failed to load data:', error);
+      if (error instanceof Error) {
+        console.error('[DataContext] Error details:', error.message);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -108,33 +131,10 @@ export const [DataProvider, useData] = createContextHook(() => {
 
   const updateSalesData = useCallback(async (data: SalesData) => {
     try {
-      console.log('[DataContext] Updating sales data to Supabase...', { data });
       setSalesData(data);
-      const payload = { data, updated_at: new Date().toISOString() };
-      console.log('[DataContext] Insert payload:', payload);
-      
-      const { data: result, error } = await supabase
-        .from('sales')
-        .insert(payload)
-        .select();
-      
-      console.log('[DataContext] Supabase response:', { result, error });
-      
-      if (error) {
-        console.error('[DataContext] Supabase error details:', {
-          message: error.message,
-          details: error.details,
-          hint: error.hint,
-          code: error.code,
-        });
-        throw error;
-      }
-      
-      console.log('[DataContext] Sales data updated successfully in Supabase');
-    } catch (error: any) {
+      await AsyncStorage.setItem(STORAGE_KEYS.sales, JSON.stringify(data));
+    } catch (error) {
       console.error('[DataContext] Failed to update sales data:', error);
-      console.error('[DataContext] Error type:', typeof error);
-      console.error('[DataContext] Error keys:', Object.keys(error || {}));
       throw error;
     }
   }, []);
@@ -142,10 +142,7 @@ export const [DataProvider, useData] = createContextHook(() => {
   const updateRiskData = useCallback(async (data: RiskData) => {
     try {
       setRiskData(data);
-      const { error } = await supabase
-        .from('risks')
-        .insert({ data, updated_at: new Date().toISOString() });
-      if (error) throw error;
+      await AsyncStorage.setItem(STORAGE_KEYS.risks, JSON.stringify(data));
     } catch (error) {
       console.error('[DataContext] Failed to update risk data:', error);
       throw error;
@@ -155,10 +152,7 @@ export const [DataProvider, useData] = createContextHook(() => {
   const updateContractData = useCallback(async (data: ContractData) => {
     try {
       setContractData(data);
-      const { error } = await supabase
-        .from('contracts')
-        .insert({ data, updated_at: new Date().toISOString() });
-      if (error) throw error;
+      await AsyncStorage.setItem(STORAGE_KEYS.contracts, JSON.stringify(data));
     } catch (error) {
       console.error('[DataContext] Failed to update contract data:', error);
       throw error;
@@ -168,10 +162,7 @@ export const [DataProvider, useData] = createContextHook(() => {
   const updateLogisticsData = useCallback(async (data: LogisticsData) => {
     try {
       setLogisticsData(data);
-      const { error } = await supabase
-        .from('logistics')
-        .insert({ data, updated_at: new Date().toISOString() });
-      if (error) throw error;
+      await AsyncStorage.setItem(STORAGE_KEYS.logistics, JSON.stringify(data));
     } catch (error) {
       console.error('[DataContext] Failed to update logistics data:', error);
       throw error;
@@ -181,10 +172,7 @@ export const [DataProvider, useData] = createContextHook(() => {
   const updateWarehouseData = useCallback(async (data: WarehouseData) => {
     try {
       setWarehouseData(data);
-      const { error } = await supabase
-        .from('warehouse')
-        .insert({ data, updated_at: new Date().toISOString() });
-      if (error) throw error;
+      await AsyncStorage.setItem(STORAGE_KEYS.warehouse, JSON.stringify(data));
     } catch (error) {
       console.error('[DataContext] Failed to update warehouse data:', error);
       throw error;
@@ -192,13 +180,14 @@ export const [DataProvider, useData] = createContextHook(() => {
   }, []);
 
   const updateRealEstateData = useCallback(async (data: RealEstateData) => {
+    setRealEstateData(data);
     try {
-      setRealEstateData(data);
-      const { error } = await supabase
-        .from('real_estate')
-        .insert({ data, updated_at: new Date().toISOString() });
-      if (error) throw error;
-    } catch (error) {
+      await AsyncStorage.setItem(STORAGE_KEYS.realEstate, JSON.stringify(data));
+    } catch (error: unknown) {
+      if (error instanceof Error && (error.message.includes('quota') || error.message.includes('QuotaExceededError'))) {
+        console.error('[DataContext] Storage quota exceeded. Data too large to save.');
+        throw new Error('Storage quota exceeded. Images are too large. Please use smaller images.');
+      }
       console.error('[DataContext] Failed to update real estate data:', error);
       throw error;
     }
@@ -207,10 +196,7 @@ export const [DataProvider, useData] = createContextHook(() => {
   const updateVasData = useCallback(async (data: VASData) => {
     try {
       setVasData(data);
-      const { error } = await supabase
-        .from('vas')
-        .insert({ data, updated_at: new Date().toISOString() });
-      if (error) throw error;
+      await AsyncStorage.setItem(STORAGE_KEYS.vas, JSON.stringify(data));
     } catch (error) {
       console.error('[DataContext] Failed to update VAS data:', error);
       throw error;
@@ -220,10 +206,7 @@ export const [DataProvider, useData] = createContextHook(() => {
   const updatePoData = useCallback(async (data: POData) => {
     try {
       setPoData(data);
-      const { error } = await supabase
-        .from('po')
-        .insert({ data, updated_at: new Date().toISOString() });
-      if (error) throw error;
+      await AsyncStorage.setItem(STORAGE_KEYS.po, JSON.stringify(data));
     } catch (error) {
       console.error('[DataContext] Failed to update PO data:', error);
       throw error;
@@ -231,75 +214,18 @@ export const [DataProvider, useData] = createContextHook(() => {
   }, []);
 
   const updateLastUpdated = useCallback(async (cardKey: string, value: string) => {
-    try {
-      setLastUpdated(prev => ({ ...prev, [cardKey]: value }));
-      const { error } = await supabase
-        .from('last_updated')
-        .upsert({ card_key: cardKey, timestamp: value });
-      if (error) throw error;
-    } catch (error) {
-      console.error('[DataContext] Failed to save last updated:', error);
-    }
+    setLastUpdated(prev => {
+      const updated = { ...prev, [cardKey]: value };
+      AsyncStorage.setItem(STORAGE_KEYS.lastUpdated, JSON.stringify(updated)).catch((error) => {
+        console.error('[DataContext] Failed to save last updated:', error);
+      });
+      return updated;
+    });
   }, []);
 
   const getLastUpdated = useCallback((cardKey: string) => {
     return lastUpdated[cardKey] || '';
   }, [lastUpdated]);
-
-  const cleanupOldData = useCallback(async () => {
-    const tables = ['sales', 'risks', 'contracts', 'real_estate', 'logistics', 'warehouse', 'vas', 'po'];
-    const results = { success: 0, failed: 0, totalDeleted: 0 };
-    
-    try {
-      for (const table of tables) {
-        try {
-          const { data: maxRow, error: maxError } = await supabase
-            .from(table)
-            .select('updated_at')
-            .order('updated_at', { ascending: false })
-            .limit(1)
-            .maybeSingle();
-          
-          if (maxError) {
-            console.error(`❌ Error finding max updated_at in ${table}:`, maxError);
-            results.failed++;
-            continue;
-          }
-          
-          if (!maxRow) {
-            console.log(`⚠️ No rows to clean in ${table}`);
-            continue;
-          }
-          
-          const { data: deletedRows, error: deleteError } = await supabase
-            .from(table)
-            .delete()
-            .lt('updated_at', maxRow.updated_at)
-            .select('id');
-          
-          if (deleteError) {
-            console.error(`❌ Error deleting old rows from ${table}:`, deleteError);
-            results.failed++;
-            continue;
-          }
-          
-          const count = deletedRows?.length || 0;
-          results.totalDeleted += count;
-          results.success++;
-          console.log(`✅ Cleaned ${count} old row(s) from ${table} (kept rows with updated_at >= ${maxRow.updated_at})`);
-          
-        } catch (error) {
-          console.error(`❌ Error cleaning ${table}:`, error);
-          results.failed++;
-        }
-      }
-      
-      return results;
-    } catch (error) {
-      console.error('[DataContext] Cleanup failed:', error);
-      throw error;
-    }
-  }, []);
 
   return useMemo(
     () => ({
@@ -323,7 +249,6 @@ export const [DataProvider, useData] = createContextHook(() => {
       lastUpdated,
       updateLastUpdated,
       getLastUpdated,
-      cleanupOldData,
     }),
     [
       salesData,
@@ -346,7 +271,6 @@ export const [DataProvider, useData] = createContextHook(() => {
       lastUpdated,
       updateLastUpdated,
       getLastUpdated,
-      cleanupOldData,
     ]
   );
 });

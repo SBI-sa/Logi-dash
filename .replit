@@ -15,15 +15,15 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
-args = "Dev Server"
+args = "Web Server"
 
 [[workflows.workflow]]
-name = "Dev Server"
+name = "Web Server"
 author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "npm start"
+args = "bun run serve"
 waitForPort = 5000
 
 [workflows.workflow.metadata]
@@ -34,8 +34,8 @@ localPort = 5000
 externalPort = 80
 
 [[ports]]
-localPort = 8081
-externalPort = 8081
+localPort = 40603
+externalPort = 3000
 
 [deployment]
 deploymentTarget = "autoscale"
