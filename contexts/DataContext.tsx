@@ -49,57 +49,49 @@ export const [DataProvider, useData] = createContextHook(() => {
         vasResult,
         poResult,
       ] = await Promise.all([
-        supabase.from('sales').select('*').order('id', { ascending: false }).limit(1).single(),
-        supabase.from('risks').select('*').order('id', { ascending: false }).limit(1).single(),
-        supabase.from('contracts').select('*').order('id', { ascending: false }).limit(1).single(),
-        supabase.from('real_estate').select('*').order('id', { ascending: false }).limit(1).single(),
-        supabase.from('logistics').select('*').order('id', { ascending: false }).limit(1).single(),
-        supabase.from('warehouse').select('*').order('id', { ascending: false }).limit(1).single(),
-        supabase.from('vas').select('*').order('id', { ascending: false }).limit(1).single(),
-        supabase.from('po').select('*').order('id', { ascending: false }).limit(1).single(),
+        supabase.from('sales').select('*').order('id', { ascending: false }).limit(1).maybeSingle(),
+        supabase.from('risks').select('*').order('id', { ascending: false }).limit(1).maybeSingle(),
+        supabase.from('contracts').select('*').order('id', { ascending: false }).limit(1).maybeSingle(),
+        supabase.from('real_estate').select('*').order('id', { ascending: false }).limit(1).maybeSingle(),
+        supabase.from('logistics').select('*').order('id', { ascending: false }).limit(1).maybeSingle(),
+        supabase.from('warehouse').select('*').order('id', { ascending: false }).limit(1).maybeSingle(),
+        supabase.from('vas').select('*').order('id', { ascending: false }).limit(1).maybeSingle(),
+        supabase.from('po').select('*').order('id', { ascending: false }).limit(1).maybeSingle(),
       ]);
 
-      if (salesResult.data?.data) {
+      if (!salesResult.error && salesResult.data?.data && salesResult.data.data.revenueBySegmentMonthly) {
         setSalesData(salesResult.data.data);
+        console.log('✅ Loaded sales data from Supabase');
       } else {
         console.log('⚠️ No Supabase sales data, using mock');
       }
 
-      if (risksResult.data?.data) {
+      if (!risksResult.error && risksResult.data?.data && risksResult.data.data.risksByDepartment) {
         setRiskData(risksResult.data.data);
       }
 
-      if (contractsResult.data?.data) {
+      if (!contractsResult.error && contractsResult.data?.data && contractsResult.data.data.contracts) {
         setContractData(contractsResult.data.data);
       }
 
-      if (realEstateResult.data?.data) {
+      if (!realEstateResult.error && realEstateResult.data?.data && realEstateResult.data.data.lands) {
         setRealEstateData(realEstateResult.data.data);
       }
 
-      if (logisticsResult.data?.data) {
+      if (!logisticsResult.error && logisticsResult.data?.data) {
         setLogisticsData(logisticsResult.data.data);
       }
 
-      if (warehouseResult.data?.data) {
+      if (!warehouseResult.error && warehouseResult.data?.data) {
         setWarehouseData(warehouseResult.data.data);
       }
 
-      if (vasResult.data?.data) {
+      if (!vasResult.error && vasResult.data?.data) {
         setVasData(vasResult.data.data);
       }
 
-      if (poResult.data?.data) {
+      if (!poResult.error && poResult.data?.data) {
         setPoData(poResult.data.data);
-      }
-
-      const lastUpdatedResult = await supabase.from('last_updated').select('*');
-      if (lastUpdatedResult.data) {
-        const lastUpdatedMap: LastUpdatedData = {};
-        lastUpdatedResult.data.forEach((row: any) => {
-          lastUpdatedMap[row.card_key] = row.timestamp;
-        });
-        setLastUpdated(lastUpdatedMap);
       }
     } catch (error) {
       console.error('[DataContext] Failed to load data from Supabase:', error);
