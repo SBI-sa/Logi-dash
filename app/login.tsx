@@ -8,6 +8,7 @@ import { Shield, User as UserIcon, KeyRound } from 'lucide-react-native';
 
 export default function LoginScreen() {
   const [isAdminMode, setIsAdminMode] = useState<boolean>(false);
+  const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [viewerCode, setViewerCode] = useState<string>('');
   const [error, setError] = useState<string>('');
@@ -43,7 +44,7 @@ export default function LoginScreen() {
         setError('Invalid viewer code');
         return;
       }
-      await login('', viewerCode);
+      await login('viewer', '');
       router.replace('/(tabs)');
     } catch {
       setError('Login failed');
@@ -53,10 +54,10 @@ export default function LoginScreen() {
   const handleAdminLogin = async () => {
     try {
       setError('');
-      await login(password);
+      await login(email, password);
       router.replace('/(tabs)');
     } catch {
-      setError('Invalid admin password');
+      setError('Invalid admin credentials');
     }
   };
 
@@ -151,10 +152,27 @@ export default function LoginScreen() {
         ) : (
           <View style={styles.form}>
             <Text style={styles.welcomeText}>Admin Login</Text>
-            <Text style={styles.description}>Enter admin password</Text>
+            <Text style={styles.description}>Sign in to manage data</Text>
 
             <View style={styles.inputContainer}>
-              <Text style={styles.label}>Admin Password</Text>
+              <Text style={styles.label}>Email</Text>
+              <View style={styles.inputWrapper}>
+                <UserIcon color={LogiPointColors.gray[500]} size={18} />
+                <TextInput
+                  testID="login-admin-email"
+                  style={styles.input}
+                  value={email}
+                  onChangeText={setEmail}
+                  placeholder="thamir.sulimani@logipoint.sa"
+                  placeholderTextColor={LogiPointColors.gray[400]}
+                  autoCapitalize="none"
+                  keyboardType="email-address"
+                />
+              </View>
+            </View>
+
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>Password</Text>
               <View style={styles.inputWrapper}>
                 <KeyRound color={LogiPointColors.gray[500]} size={18} />
                 <TextInput
@@ -162,7 +180,7 @@ export default function LoginScreen() {
                   style={styles.input}
                   value={password}
                   onChangeText={setPassword}
-                  placeholder="Enter admin password"
+                  placeholder="Enter password"
                   placeholderTextColor={LogiPointColors.gray[400]}
                   secureTextEntry
                 />
@@ -193,6 +211,7 @@ export default function LoginScreen() {
               style={styles.backLink}
               onPress={() => {
                 setIsAdminMode(false);
+                setEmail('');
                 setPassword('');
                 setViewerCode('');
                 setError('');

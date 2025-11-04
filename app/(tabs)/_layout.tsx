@@ -76,6 +76,13 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="contracts"
+        options={{
+          title: "Real Estate",
+          tabBarIcon: ({ color }) => <Building2 size={22} color={color} />,
+        }}
+      />
+      <Tabs.Screen
         name="logistics"
         options={{
           title: "Transportation",
