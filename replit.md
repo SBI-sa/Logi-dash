@@ -7,20 +7,24 @@ This is a cross-platform reporting dashboard application built with Expo and Rea
 **Primary Platform**: Web (in Replit environment)  
 **Framework**: Expo Router + React Native  
 **State Management**: Zustand + React Query  
-**Backend**: Supabase (configured but using mock data by default)
+**Backend**: Supabase with 8 active tables and realtime subscriptions
 
 ## Current State
 - ✅ Web build successfully compiled and served on port 5000
 - ✅ Login system functional (viewer code: 2030, admin: thamir.sulimani@logipoint.sa / Logi@2030)
 - ✅ Dashboard with multiple reporting modules (Sales, Warehouse, Logistics, Contracts, etc.)
+- ✅ Supabase backend with 8 tables: sales, risks, real_estate, logistics, warehouse, vas, po, last_updated
+- ✅ Realtime subscriptions active for all 8 tables
 - ✅ Static web build deployed for production-ready hosting
 
 ## Recent Changes
 
-### November 4, 2025
-- **Real Estate Page Fix**: Fixed DataContext to use mock data for Real Estate instead of trying to fetch from non-existent Supabase tables (`contracts` and `real_estate`)
-- **Realtime Subscriptions**: Updated subscription count from 9 to 7 tables to match actual database schema
-- **Mock Data**: Real Estate now loads 5 land contracts and parking information from mock data
+### November 4, 2025 (Latest)
+- **Database Cleanup**: Dropped unused `contracts` table, reduced from 9 to 8 active Supabase tables
+- **Real Estate Restoration**: Re-enabled Supabase integration for Real Estate page (contracts.tsx)
+- **Realtime Subscriptions**: Updated subscription count from 7 to 8 tables (re-enabled real_estate subscription)
+- **Data Loading**: All 8 tables now loading successfully from Supabase with realtime updates
+- **Code Cleanup**: Removed all contract-related references from DataContext.tsx
 - **Cache Control**: Users must do hard refresh (Ctrl+Shift+R / Cmd+Shift+R) after builds to see updates
 
 ### October 28, 2025
@@ -143,14 +147,23 @@ The app uses hardcoded credentials for development:
 
 ### Current Setup
 - Uses AsyncStorage for local persistence (falls back to localStorage on web)
-- Supabase integration configured but uses mock data by default
-- Edit operations save to local storage
+- **Supabase Integration Active**: All 8 tables load data from Supabase in real-time
+- Admin edit operations save to both local storage and Supabase
 
-### Supabase Integration
-The app is configured to connect to Supabase but currently falls back to mock data. To enable Supabase:
-1. Ensure tables exist in Supabase project
-2. Data automatically loads from Supabase if available
-3. Edits can be pushed to Supabase (admin mode)
+### Supabase Tables (8 Total)
+1. **sales** - Sales analytics and revenue data
+2. **risks** - Risk management tracking
+3. **real_estate** - Land contracts and parking information
+4. **logistics** - Transportation and logistics data
+5. **warehouse** - Warehouse management metrics
+6. **vas** - Value Added Services tracking
+7. **po** - Purchase Orders
+8. **last_updated** - Timestamp tracking for data freshness
+
+### Realtime Updates
+- All 8 tables have active realtime subscriptions
+- Changes made by Admin users propagate to Viewer users instantly
+- Subscription channels handle insert, update, and delete operations
 
 ## Deployment
 
@@ -186,8 +199,8 @@ Currently using hardcoded Supabase credentials in `supabaseClient.ts`. For produ
 ## Known Issues & Limitations
 
 1. **Native Animations**: Web version shows warning about `useNativeDriver` (expected, native features not available on web)
-2. **Supabase Data**: Currently using mock data as Supabase tables may not be populated
-3. **LSP Errors**: TypeScript LSP shows some configuration warnings - these don't affect runtime
+2. **LSP Errors**: TypeScript LSP shows some configuration warnings - these don't affect runtime
+3. **Browser Caching**: Static builds require hard refresh (Ctrl+Shift+R / Cmd+Shift+R) to see updates
 
 ## Browser Compatibility
 
@@ -217,13 +230,12 @@ The web version works on:
 
 ## Next Steps / Future Improvements
 
-1. **Authentication**: Implement proper OAuth or JWT-based authentication
-2. **Database**: Populate Supabase with real data and enable full integration
-3. **Real-time Updates**: Enable Supabase real-time subscriptions
-4. **Performance**: Implement code splitting and lazy loading
-5. **Mobile Builds**: Set up EAS Build for native iOS/Android apps
-6. **Tests**: Add unit and integration tests
-7. **CI/CD**: Automate builds and deployments
+1. **Admin Screens**: Wire remaining 7 admin screens to use save helpers in lib/adminSave.ts for realtime updates
+2. **Authentication**: Implement proper OAuth or JWT-based authentication
+3. **Performance**: Implement code splitting and lazy loading
+4. **Mobile Builds**: Set up EAS Build for native iOS/Android apps
+5. **Tests**: Add unit and integration tests
+6. **CI/CD**: Automate builds and deployments
 
 ## Support & Documentation
 
