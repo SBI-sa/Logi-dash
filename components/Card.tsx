@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, ViewStyle, Text, TouchableOpacity, TextInput, Modal, Platform, Image } from 'react-native';
-import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Edit2, X } from 'lucide-react-native';
 import { LogiPointColors } from '@/constants/colors';
@@ -31,11 +30,8 @@ export const Card = React.memo(function Card({ children, style, lastUpdated, onL
 
   const showLastUpdated = lastUpdated !== undefined;
 
-  const CardWrapper = Platform.OS === 'web' ? View : BlurView;
-  const blurProps = Platform.OS === 'web' ? {} : { intensity: 95, tint: 'light' as const };
-
   return (
-    <CardWrapper style={[styles.card, style]} {...blurProps} testID="glass-card">
+    <View style={[styles.card, style]} testID="glass-card">
       <View style={styles.glassOverlay} />
       <Image
         source={{ uri: 'https://pub-e001eb4506b145aa938b5d3badbff6a5.r2.dev/textures/noise-512.png' }}
@@ -150,7 +146,7 @@ export const Card = React.memo(function Card({ children, style, lastUpdated, onL
           </View>
         </View>
       </Modal>
-    </CardWrapper>
+    </View>
   );
 });
 
