@@ -21,20 +21,20 @@ args = "Web Server"
 name = "Web Server"
 author = "agent"
 
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "bun run serve"
-waitForPort = 5000
-
 [workflows.workflow.metadata]
 outputType = "webview"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "bunx serve dist -l 5000 --single"
+waitForPort = 5000
 
 [[ports]]
 localPort = 5000
 externalPort = 80
 
 [[ports]]
-localPort = 38321
+localPort = 35077
 externalPort = 3001
 
 [[ports]]
