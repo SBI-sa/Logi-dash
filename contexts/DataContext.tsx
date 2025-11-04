@@ -31,10 +31,18 @@ function mapDbToUi<T>(dbRow: any, fallback: T): T {
 
   const mapped: any = {};
 
-  // Map all snake_case keys to camelCase
+  // Map all snake_case keys to camelCase, but SKIP null/undefined values
+  // This preserves the fallback structure when Supabase JSONB fields are empty
   Object.keys(dbRow).forEach((key) => {
+    const value = dbRow[key];
+    
+    // Skip null, undefined, and metadata fields
+    if (value === null || value === undefined || key === 'id' || key === 'created_at' || key === 'updated_at') {
+      return;
+    }
+    
     const camelKey = key.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
-    mapped[camelKey] = dbRow[key];
+    mapped[camelKey] = value;
   });
 
   return { ...fallback, ...mapped };
