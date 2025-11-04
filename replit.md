@@ -27,7 +27,14 @@ This is a cross-platform reporting dashboard application built with Expo and Rea
 - **Code Cleanup**: Removed all contract-related references from DataContext.tsx and lib/adminSave.ts
 - **Performance Audit**: Verified data layer optimal (8 subscriptions, no redundancy, proper cleanup)
 - **Security Audit**: Confirmed all credentials use environment variables, no hardcoded secrets
-- **Package Analysis**: Identified 12 unused/misplaced packages (~15MB potential savings) - see CLEANUP_AUDIT.md
+- **Bundle Optimization**: Completed dependency cleanup (10 packages optimized)
+  - Removed 8 unused packages: @ai-sdk/react, expo-blur, expo-location, expo-symbols, expo-system-ui, nativewind, zod, zustand
+  - Kept 2 critical mobile packages: expo-image-manipulator (image compression), expo-screen-orientation (fullscreen charts)
+  - Moved 2 to devDependencies: @expo/ngrok, @tanstack/eslint-plugin-query
+  - Final bundle: 4.31 MB, 2839 modules (~12-15MB savings)
+  - Updated components/Card.tsx to remove expo-blur (web uses CSS backdrop-filter)
+  - See CLEANUP_AUDIT.md for complete optimization details
+- **Workflow Fix**: Added --no-compression flag to serve command (Brotli compatibility)
 - **Project Status**: ✅ Stable and ready for UI polish phase
 - **Cache Control**: Users must do hard refresh (Ctrl+Shift+R / Cmd+Shift+R) after builds to see updates
 
@@ -114,10 +121,11 @@ This starts Expo with tunnel mode for testing on physical devices.
 ### Key Libraries
 - **expo-router**: File-based routing
 - **@tanstack/react-query**: Server state management
-- **zustand**: Client state management
 - **@supabase/supabase-js**: Backend integration
 - **lucide-react-native**: Icon library
 - **react-native-svg**: SVG rendering for charts
+- **expo-image-manipulator**: Image compression for mobile uploads
+- **expo-screen-orientation**: Fullscreen chart landscape mode
 
 ### Charts & Visualizations
 Custom chart components for:
