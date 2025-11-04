@@ -36,7 +36,7 @@ export const [AuthProvider, useAuth] = createContextHook(() => {
 
 
 
-  const login = useCallback(async (email: string, password: string) => {
+  const login = useCallback(async (password: string, viewerCode?: string) => {
     if (__DEV__) {
       console.warn(
         '[SECURITY WARNING] Using hardcoded credentials for development. ' +
@@ -44,7 +44,7 @@ export const [AuthProvider, useAuth] = createContextHook(() => {
       );
     }
 
-    if (email === 'viewer') {
+    if (viewerCode) {
       const mockUser: User = {
         id: '2',
         name: 'Viewer User',
@@ -56,11 +56,11 @@ export const [AuthProvider, useAuth] = createContextHook(() => {
       return;
     }
     
-    if (email === 'thamir.sulimani@logipoint.sa' && password === 'Logi@2030') {
+    if (password === 'Logi@2030') {
       const mockUser: User = {
         id: '1',
-        name: 'Thamir Sulimani',
-        email: 'thamir.sulimani@logipoint.sa',
+        name: 'Admin User',
+        email: 'admin@logipoint.com',
         role: 'admin',
       };
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(mockUser));

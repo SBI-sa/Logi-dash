@@ -1,11 +1,9 @@
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, PanResponder, Animated } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { LogOut, TrendingUp, AlertCircle, Building2, Truck as TruckIcon, Warehouse as WarehouseIcon, Tag } from 'lucide-react-native';
+import { LogOut, TrendingUp, AlertCircle, Truck as TruckIcon, Warehouse as WarehouseIcon, Tag } from 'lucide-react-native';
 import { LogiPointColors } from '@/constants/colors';
 import { useAuth } from '@/contexts/AuthContext';
-import { useData } from '@/contexts/DataContext';
-import { useState, useRef } from 'react';
 
 type ActionItem = {
   id: string;
@@ -20,32 +18,19 @@ export default function HomeScreen() {
   const { logout } = useAuth();
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { lastUpdated } = useData();
 
-  const dataLastUpdated = lastUpdated['home_data_last_updated'] || '';
-
-  const [actions, setActions] = useState<ActionItem[]>([
+  const actions: ActionItem[] = [
     { id: 'po', iconUri: 'https://pub-e001eb4506b145aa938b5d3badbff6a5.r2.dev/attachments/47wr6l15ryvio7ew1kip2', color: '#87CEEB', label: 'PO', route: '/(tabs)/po' },
     { id: 'risks', icon: AlertCircle, color: LogiPointColors.accent, label: 'Risk Updates', route: '/(tabs)/risks' },
-    { id: 'realestate', icon: Building2, color: LogiPointColors.warning, label: 'Real Estate', route: '/(tabs)/contracts' },
     { id: 'logistics', icon: TruckIcon, color: LogiPointColors.chart.blue, label: 'Transportation', route: '/(tabs)/logistics' },
     { id: 'warehouse', icon: WarehouseIcon, color: LogiPointColors.chart.green, label: 'Warehouse', route: '/(tabs)/warehouse' },
     { id: 'vas', icon: Tag, color: LogiPointColors.chart.purple, label: 'VAS', route: '/(tabs)/vas' },
     { id: 'sales', icon: TrendingUp, color: LogiPointColors.primary, label: 'Sales Report', route: '/(tabs)/sales' },
-  ]);
-
-  const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
+  ];
 
   const handleLogout = async () => {
     await logout();
     router.replace('/login');
-  };
-
-  const swapItems = (fromIndex: number, toIndex: number) => {
-    const newActions = [...actions];
-    const [removed] = newActions.splice(fromIndex, 1);
-    newActions.splice(toIndex, 0, removed);
-    setActions(newActions);
   };
 
   return (
@@ -67,29 +52,31 @@ export default function HomeScreen() {
             </TouchableOpacity>
           </View>
         </View>
-        <View style={styles.dataLastUpdatedContainer}>
-          <View style={styles.dateDisplayRow}>
-            <Text style={styles.dataLastUpdatedText}>
-              {dataLastUpdated ? `Data Last Updated: ${dataLastUpdated}` : 'Data Last Updated: Not set'}
-            </Text>
-          </View>
-        </View>
         <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
           <View style={styles.quickActions}>
             <Text style={styles.sectionTitle}>Quick Access</Text>
-            <Text style={styles.sectionSubtitle}>Long press and drag to reorder</Text>
             <View style={styles.actionGrid}>
-              {actions.slice(0, -1).map((action, index) => (
-                <DraggableActionCard
+              {actions.slice(0, -1).map((action) => (
+                <TouchableOpacity
                   key={action.id}
-                  action={action}
-                  index={index}
+                  style={styles.actionCard}
                   onPress={() => router.push(action.route as any)}
-                  onDragStart={() => setDraggingIndex(index)}
-                  onDragEnd={() => setDraggingIndex(null)}
-                  onSwap={swapItems}
-                  isDragging={draggingIndex === index}
-                />
+                  activeOpacity={0.7}
+                >
+                  {action.iconUri ? (
+                    <Image 
+                      source={{ uri: action.iconUri }}
+                      style={{ width: 24, height: 24, tintColor: action.color }}
+                      resizeMode="contain"
+                    />
+                  ) : action.icon ? (
+                    (() => {
+                      const IconComponent = action.icon;
+                      return <IconComponent size={24} color={action.color} />;
+                    })()
+                  ) : null}
+                  <Text style={styles.actionText}>{action.label}</Text>
+                </TouchableOpacity>
               ))}
             </View>
           </View>
@@ -185,6 +172,7 @@ const styles = StyleSheet.create({
     fontWeight: '700' as const,
     color: LogiPointColors.midnight,
     marginBottom: 12,
+    textAlign: 'center',
   },
   actionGrid: {
     flexDirection: 'row',
@@ -211,16 +199,6 @@ const styles = StyleSheet.create({
     color: LogiPointColors.midnight,
     textAlign: 'center',
   },
-  sectionSubtitle: {
-    fontSize: 12,
-    color: LogiPointColors.gray[600],
-    marginBottom: 12,
-    fontStyle: 'italic' as const,
-  },
-  draggingCard: {
-    opacity: 0.7,
-    transform: [{ scale: 1.05 }],
-  },
   bigBottomBox: {
     marginTop: 24,
   },
@@ -242,133 +220,4 @@ const styles = StyleSheet.create({
     color: LogiPointColors.midnight,
     textAlign: 'center',
   },
-  dataLastUpdatedContainer: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    backgroundColor: LogiPointColors.gray[50],
-    borderBottomWidth: 1,
-    borderBottomColor: LogiPointColors.gray[200],
-  },
-  dateDisplayRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  dataLastUpdatedText: {
-    fontSize: 11,
-    color: LogiPointColors.gray[600],
-    fontStyle: 'italic' as const,
-  },
 });
-
-type DraggableActionCardProps = {
-  action: ActionItem;
-  index: number;
-  onPress: () => void;
-  onDragStart: () => void;
-  onDragEnd: () => void;
-  onSwap: (fromIndex: number, toIndex: number) => void;
-  isDragging: boolean;
-};
-
-function DraggableActionCard({ action, index, onPress, onDragStart, onDragEnd, onSwap, isDragging }: DraggableActionCardProps) {
-  const pan = useRef(new Animated.ValueXY()).current;
-  const [isLongPress, setIsLongPress] = useState(false);
-  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const cardLayout = useRef({ x: 0, y: 0, width: 0, height: 0 });
-
-  const panResponder = useRef(
-    PanResponder.create({
-      onStartShouldSetPanResponder: () => false,
-      onMoveShouldSetPanResponder: () => isLongPress,
-      onPanResponderGrant: () => {
-        pan.setOffset({
-          x: (pan.x as any)._value,
-          y: (pan.y as any)._value,
-        });
-        pan.setValue({ x: 0, y: 0 });
-      },
-      onPanResponderMove: Animated.event([null, { dx: pan.x, dy: pan.y }], {
-        useNativeDriver: false,
-      }),
-      onPanResponderRelease: (_, gestureState) => {
-        pan.flattenOffset();
-        const movedX = gestureState.dx;
-        const movedY = gestureState.dy;
-        
-        const cardWidth = cardLayout.current.width + 12;
-        const cardHeight = cardLayout.current.height + 12;
-        
-        let newIndex = index;
-        const horizontalMove = Math.round(movedX / cardWidth);
-        const verticalMove = Math.round(movedY / cardHeight);
-        
-        newIndex += horizontalMove + (verticalMove * 2);
-        
-        if (newIndex !== index && newIndex >= 0 && newIndex < 7) {
-          onSwap(index, newIndex);
-        }
-        
-        Animated.spring(pan, {
-          toValue: { x: 0, y: 0 },
-          useNativeDriver: false,
-        }).start();
-        
-        setIsLongPress(false);
-        onDragEnd();
-      },
-    })
-  ).current;
-
-  const handlePressIn = () => {
-    longPressTimer.current = setTimeout(() => {
-      setIsLongPress(true);
-      onDragStart();
-    }, 500);
-  };
-
-  const handlePressOut = () => {
-    if (longPressTimer.current) {
-      clearTimeout(longPressTimer.current);
-    }
-    if (!isLongPress) {
-      onPress();
-    }
-  };
-
-  const Icon = action.icon;
-
-  return (
-    <Animated.View
-      style={[
-        styles.actionCard,
-        isDragging && styles.draggingCard,
-        {
-          transform: pan.getTranslateTransform(),
-        },
-      ]}
-      onLayout={(e) => {
-        cardLayout.current = e.nativeEvent.layout;
-      }}
-      {...panResponder.panHandlers}
-    >
-      <TouchableOpacity
-        style={{ alignItems: 'center', gap: 8, width: '100%' }}
-        onPressIn={handlePressIn}
-        onPressOut={handlePressOut}
-        activeOpacity={0.7}
-      >
-        {action.iconUri ? (
-          <Image 
-            source={{ uri: action.iconUri }}
-            style={{ width: 24, height: 24, tintColor: action.color }}
-            resizeMode="contain"
-          />
-        ) : Icon ? (
-          <Icon size={24} color={action.color} />
-        ) : null}
-        <Text style={styles.actionText}>{action.label}</Text>
-      </TouchableOpacity>
-    </Animated.View>
-  );
-}
