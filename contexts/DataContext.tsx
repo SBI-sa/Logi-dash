@@ -31,13 +31,21 @@ function mapDbToUi<T>(dbRow: any, fallback: T): T {
 
   const mapped: any = {};
 
-  // Map all snake_case keys to camelCase, but SKIP null/undefined values
+  // Map all snake_case keys to camelCase, but SKIP null/undefined/empty values
   // This preserves the fallback structure when Supabase JSONB fields are empty
   Object.keys(dbRow).forEach((key) => {
     const value = dbRow[key];
     
-    // Skip null, undefined, and metadata fields
-    if (value === null || value === undefined || key === 'id' || key === 'created_at' || key === 'updated_at') {
+    // Skip null, undefined, empty objects, empty arrays, and metadata fields
+    if (
+      value === null || 
+      value === undefined || 
+      key === 'id' || 
+      key === 'created_at' || 
+      key === 'updated_at' ||
+      (typeof value === 'object' && !Array.isArray(value) && Object.keys(value).length === 0) || // Empty object {}
+      (Array.isArray(value) && value.length === 0) // Empty array []
+    ) {
       return;
     }
     
@@ -66,7 +74,10 @@ export const [DataProvider, useData] = createContextHook(() => {
     try {
       const { data, error } = await supabase.from('sales').select('*').single();
       if (error) throw error;
+      console.log('📊 Raw Supabase sales data:', data);
       const mapped = mapDbToUi<SalesData>(data, mockSalesData);
+      console.log('📊 Mapped sales data:', mapped);
+      console.log('📊 Has revenueBySegmentMonthly?', mapped.revenueBySegmentMonthly);
       setSalesData(mapped);
       console.log('✅ Loaded sales from Supabase');
     } catch (err) {
