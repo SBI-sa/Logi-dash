@@ -14,10 +14,11 @@ import { EditModal } from '@/components/EditModal';
 import { useAuth } from '@/contexts/AuthContext';
 import { useData } from '@/contexts/DataContext';
 import { supabase } from '@/supabaseClient';
+import { saveSalesData } from '@/lib/adminSave';
 
 export default function SalesScreen() {
   const { isAdmin } = useAuth();
-  const { salesData, updateSalesData, getLastUpdated, updateLastUpdated } = useData();
+  const { salesData, getLastUpdated, updateLastUpdated } = useData();
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [editField, setEditField] = useState<string>('');
   const [editValue, setEditValue] = useState<string>('');
@@ -272,7 +273,7 @@ export default function SalesScreen() {
     return value.toLocaleString();
   };
 
-  const syncSegmentsFromJanuary = useCallback(() => {
+  const syncSegmentsFromJanuary = useCallback(async () => {
     const updatedData = { ...salesData };
     const januarySegments = salesData.revenueBySegmentMonthly['January'] || [];
     
@@ -303,15 +304,17 @@ export default function SalesScreen() {
     });
 
     updatedData.revenueBySegmentMonthly = newMonthlySegments;
-    updateSalesData(updatedData);
-  }, [salesData, updateSalesData]);
+    if (isAdmin) {
+      await saveSalesData(updatedData);
+    }
+  }, [salesData, isAdmin]);
 
   useEffect(() => {
     console.log('[SalesScreen] Initial syncSegmentsFromJanuary');
     syncSegmentsFromJanuary();
   }, []);
 
-  const handleDeleteSegment = (index: number) => {
+  const handleDeleteSegment = async (index: number) => {
     try {
       const updatedData = { ...salesData };
       const segments = selectedMonth === 'All' ? displayedSegments : (salesData.revenueBySegmentMonthly[selectedMonth] || []);
@@ -331,7 +334,7 @@ export default function SalesScreen() {
       });
       updatedData.revenueBySegmentMonthly = newMonthly;
 
-      updateSalesData(updatedData);
+      await saveSalesData(updatedData);
     } catch (e) {
       console.error('Failed to delete segment:', e);
     }
@@ -481,7 +484,7 @@ export default function SalesScreen() {
         updatedData.accountManagers = newManagers;
       }
       
-      updateSalesData(updatedData);
+      await saveSalesData(updatedData);
     } else {
       const numValue = parseFloat(editValue);
       if (isNaN(numValue)) return;
@@ -525,7 +528,7 @@ export default function SalesScreen() {
           }
       }
 
-      updateSalesData(updatedData);
+      await saveSalesData(updatedData);
     }
     
     setEditModalVisible(false);
@@ -869,7 +872,7 @@ export default function SalesScreen() {
 
                     updatedData.revenueBySegmentMonthly = newMonthlySegments;
 
-                    updateSalesData(updatedData);
+                    saveSalesData(updatedData);
                   }}
                 >
                   <Plus size={14} color={LogiPointColors.chart.green} />
@@ -1017,7 +1020,7 @@ export default function SalesScreen() {
                     color: LogiPointColors.chart.green,
                   };
                   updatedData.accountManagers = [...salesData.accountManagers, newManager];
-                  updateSalesData(updatedData);
+                  saveSalesData(updatedData);
                 }}
               >
                 <Plus size={14} color={LogiPointColors.chart.green} />
@@ -1096,7 +1099,7 @@ export default function SalesScreen() {
                   monthCustomers.push(newCustomer);
                   newMonthlyCustomers[selectedTop10Month] = monthCustomers;
                   updatedData.topCustomersMonthly = newMonthlyCustomers;
-                  updateSalesData(updatedData);
+                  saveSalesData(updatedData);
                 }}
               >
                 <Plus size={14} color={LogiPointColors.chart.green} />
