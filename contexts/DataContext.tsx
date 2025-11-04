@@ -100,29 +100,17 @@ export const [DataProvider, useData] = createContextHook(() => {
   }, []);
 
   const fetchContractsData = useCallback(async () => {
-    try {
-      const { data, error } = await supabase.from('contracts').select('*').single();
-      if (error) throw error;
-      const mapped = mapDbToUi<ContractData>(data, mockContractData);
-      setContractData(mapped);
-      console.log('✅ Loaded contracts from Supabase');
-    } catch (err) {
-      console.warn('⚠️ Contracts fetch failed, using mock data:', err);
-      setContractData(mockContractData);
-    }
+    // TODO: Re-enable when 'contracts' table is created in Supabase
+    // Currently using mock data only
+    setContractData(mockContractData);
+    console.log('✅ Loaded contracts (using mock data)');
   }, []);
 
   const fetchRealEstateData = useCallback(async () => {
-    try {
-      const { data, error } = await supabase.from('real_estate').select('*').single();
-      if (error) throw error;
-      const mapped = mapDbToUi<RealEstateData>(data, mockRealEstateData);
-      setRealEstateData(mapped);
-      console.log('✅ Loaded real_estate from Supabase');
-    } catch (err) {
-      console.warn('⚠️ Real estate fetch failed, using mock data:', err);
-      setRealEstateData(mockRealEstateData);
-    }
+    // TODO: Re-enable when 'real_estate' table is created in Supabase
+    // Currently using mock data only
+    setRealEstateData(mockRealEstateData);
+    console.log('✅ Loaded real_estate (using mock data)');
   }, []);
 
   const fetchLogisticsData = useCallback(async () => {
@@ -252,25 +240,26 @@ export const [DataProvider, useData] = createContextHook(() => {
       .subscribe();
     channels.push(risksChannel);
 
-    // Contracts subscription
-    const contractsChannel = supabase
-      .channel('contracts-updates')
-      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'contracts' }, () => {
-        console.log('🔄 Contracts updated - refetching');
-        fetchContractsData();
-      })
-      .subscribe();
-    channels.push(contractsChannel);
+    // TODO: Re-enable when Supabase tables are created
+    // Contracts subscription (currently disabled - table doesn't exist)
+    // const contractsChannel = supabase
+    //   .channel('contracts-updates')
+    //   .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'contracts' }, () => {
+    //     console.log('🔄 Contracts updated - refetching');
+    //     fetchContractsData();
+    //   })
+    //   .subscribe();
+    // channels.push(contractsChannel);
 
-    // Real estate subscription
-    const realEstateChannel = supabase
-      .channel('real-estate-updates')
-      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'real_estate' }, () => {
-        console.log('🔄 Real estate updated - refetching');
-        fetchRealEstateData();
-      })
-      .subscribe();
-    channels.push(realEstateChannel);
+    // Real estate subscription (currently disabled - table doesn't exist)
+    // const realEstateChannel = supabase
+    //   .channel('real-estate-updates')
+    //   .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'real_estate' }, () => {
+    //     console.log('🔄 Real estate updated - refetching');
+    //     fetchRealEstateData();
+    //   })
+    //   .subscribe();
+    // channels.push(realEstateChannel);
 
     // Logistics subscription
     const logisticsChannel = supabase
@@ -322,7 +311,7 @@ export const [DataProvider, useData] = createContextHook(() => {
       .subscribe();
     channels.push(lastUpdatedChannel);
 
-    console.log('✅ Realtime subscriptions active for all 9 tables');
+    console.log('✅ Realtime subscriptions active for all 7 tables');
 
     // Cleanup on unmount
     return () => {
