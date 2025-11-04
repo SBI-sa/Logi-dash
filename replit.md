@@ -15,7 +15,15 @@ This is a cross-platform reporting dashboard application built with Expo and Rea
 - ✅ Dashboard with multiple reporting modules (Sales, Warehouse, Logistics, Contracts, etc.)
 - ✅ Static web build deployed for production-ready hosting
 
-## Recent Changes (October 28, 2025)
+## Recent Changes
+
+### November 4, 2025
+- **Real Estate Page Fix**: Fixed DataContext to use mock data for Real Estate instead of trying to fetch from non-existent Supabase tables (`contracts` and `real_estate`)
+- **Realtime Subscriptions**: Updated subscription count from 9 to 7 tables to match actual database schema
+- **Mock Data**: Real Estate now loads 5 land contracts and parking information from mock data
+- **Cache Control**: Users must do hard refresh (Ctrl+Shift+R / Cmd+Shift+R) after builds to see updates
+
+### October 28, 2025
 - **Project Import**: Successfully imported from GitHub and configured for Replit environment
 - **Web Build Setup**: Configured Expo to export static web build
 - **Workflow Configuration**: Set up web server workflow using `serve` to host static files on port 5000
