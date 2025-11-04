@@ -3,7 +3,6 @@ import createContextHook from '@nkzw/create-context-hook';
 import {
   SalesData,
   RiskData,
-  ContractData,
   RealEstateData,
   LogisticsData,
   WarehouseData,
@@ -11,7 +10,6 @@ import {
   POData,
   mockSalesData,
   mockRiskData,
-  mockContractData,
   mockRealEstateData,
   mockLogisticsData,
   mockWarehouseData,
@@ -59,7 +57,6 @@ function mapDbToUi<T>(dbRow: any, fallback: T): T {
 export const [DataProvider, useData] = createContextHook(() => {
   const [salesData, setSalesData] = useState<SalesData>(mockSalesData);
   const [riskData, setRiskData] = useState<RiskData>(mockRiskData);
-  const [contractData, setContractData] = useState<ContractData>(mockContractData);
   const [realEstateData, setRealEstateData] = useState<RealEstateData>(mockRealEstateData);
   const [logisticsData, setLogisticsData] = useState<LogisticsData>(mockLogisticsData);
   const [warehouseData, setWarehouseData] = useState<WarehouseData>(mockWarehouseData);
@@ -99,18 +96,17 @@ export const [DataProvider, useData] = createContextHook(() => {
     }
   }, []);
 
-  const fetchContractsData = useCallback(async () => {
-    // TODO: Re-enable when 'contracts' table is created in Supabase
-    // Currently using mock data only
-    setContractData(mockContractData);
-    console.log('✅ Loaded contracts (using mock data)');
-  }, []);
-
   const fetchRealEstateData = useCallback(async () => {
-    // TODO: Re-enable when 'real_estate' table is created in Supabase
-    // Currently using mock data only
-    setRealEstateData(mockRealEstateData);
-    console.log('✅ Loaded real_estate (using mock data)');
+    try {
+      const { data, error } = await supabase.from('real_estate').select('*').single();
+      if (error) throw error;
+      const mapped = mapDbToUi<RealEstateData>(data, mockRealEstateData);
+      setRealEstateData(mapped);
+      console.log('✅ Loaded real_estate from Supabase');
+    } catch (err) {
+      console.warn('⚠️ Real estate fetch failed, using mock data:', err);
+      setRealEstateData(mockRealEstateData);
+    }
   }, []);
 
   const fetchLogisticsData = useCallback(async () => {
@@ -185,7 +181,6 @@ export const [DataProvider, useData] = createContextHook(() => {
       await Promise.all([
         fetchSalesData(),
         fetchRisksData(),
-        fetchContractsData(),
         fetchRealEstateData(),
         fetchLogisticsData(),
         fetchWarehouseData(),
@@ -203,7 +198,6 @@ export const [DataProvider, useData] = createContextHook(() => {
   }, [
     fetchSalesData,
     fetchRisksData,
-    fetchContractsData,
     fetchRealEstateData,
     fetchLogisticsData,
     fetchWarehouseData,
@@ -240,26 +234,15 @@ export const [DataProvider, useData] = createContextHook(() => {
       .subscribe();
     channels.push(risksChannel);
 
-    // TODO: Re-enable when Supabase tables are created
-    // Contracts subscription (currently disabled - table doesn't exist)
-    // const contractsChannel = supabase
-    //   .channel('contracts-updates')
-    //   .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'contracts' }, () => {
-    //     console.log('🔄 Contracts updated - refetching');
-    //     fetchContractsData();
-    //   })
-    //   .subscribe();
-    // channels.push(contractsChannel);
-
-    // Real estate subscription (currently disabled - table doesn't exist)
-    // const realEstateChannel = supabase
-    //   .channel('real-estate-updates')
-    //   .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'real_estate' }, () => {
-    //     console.log('🔄 Real estate updated - refetching');
-    //     fetchRealEstateData();
-    //   })
-    //   .subscribe();
-    // channels.push(realEstateChannel);
+    // Real estate subscription
+    const realEstateChannel = supabase
+      .channel('real-estate-updates')
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'real_estate' }, () => {
+        console.log('🔄 Real estate updated - refetching');
+        fetchRealEstateData();
+      })
+      .subscribe();
+    channels.push(realEstateChannel);
 
     // Logistics subscription
     const logisticsChannel = supabase
@@ -311,7 +294,7 @@ export const [DataProvider, useData] = createContextHook(() => {
       .subscribe();
     channels.push(lastUpdatedChannel);
 
-    console.log('✅ Realtime subscriptions active for all 7 tables');
+    console.log('✅ Realtime subscriptions active for all 8 tables');
 
     // Cleanup on unmount
     return () => {
@@ -323,7 +306,6 @@ export const [DataProvider, useData] = createContextHook(() => {
   }, [
     fetchSalesData,
     fetchRisksData,
-    fetchContractsData,
     fetchRealEstateData,
     fetchLogisticsData,
     fetchWarehouseData,
@@ -351,16 +333,6 @@ export const [DataProvider, useData] = createContextHook(() => {
       console.log('[DataContext] updateRiskData called - pending adminSave integration');
     } catch (error) {
       console.error('[DataContext] Failed to update risk data:', error);
-      throw error;
-    }
-  }, []);
-
-  const updateContractData = useCallback(async (data: ContractData) => {
-    try {
-      setContractData(data);
-      console.log('[DataContext] updateContractData called - pending adminSave integration');
-    } catch (error) {
-      console.error('[DataContext] Failed to update contract data:', error);
       throw error;
     }
   }, []);
@@ -431,7 +403,6 @@ export const [DataProvider, useData] = createContextHook(() => {
     () => ({
       salesData,
       riskData,
-      contractData,
       realEstateData,
       logisticsData,
       warehouseData,
@@ -441,7 +412,6 @@ export const [DataProvider, useData] = createContextHook(() => {
       error,
       updateSalesData,
       updateRiskData,
-      updateContractData,
       updateRealEstateData,
       updateLogisticsData,
       updateWarehouseData,
@@ -454,7 +424,6 @@ export const [DataProvider, useData] = createContextHook(() => {
     [
       salesData,
       riskData,
-      contractData,
       realEstateData,
       logisticsData,
       warehouseData,
@@ -464,7 +433,6 @@ export const [DataProvider, useData] = createContextHook(() => {
       error,
       updateSalesData,
       updateRiskData,
-      updateContractData,
       updateRealEstateData,
       updateLogisticsData,
       updateWarehouseData,
