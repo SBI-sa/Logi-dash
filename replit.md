@@ -19,7 +19,12 @@ This is a cross-platform reporting dashboard application built with Expo and Rea
 
 ## Recent Changes
 
-### November 4, 2025 (Latest)
+### November 5, 2025 (Latest)
+- **Admin Login Simplified**: Removed email field from admin login - now only requires password (Logi@2030)
+- **UI Cleanup**: Removed "Data Last Updated" timestamp element from home screen for cleaner interface
+- **Code Optimization**: Removed unused state variables and imports from home screen component
+
+### November 4, 2025
 - **Database Cleanup**: Dropped unused `contracts` table, reduced from 9 to 8 active Supabase tables
 - **Real Estate Restoration**: Re-enabled Supabase integration for Real Estate page (contracts.tsx)
 - **Realtime Subscriptions**: Updated subscription count from 7 to 8 tables (re-enabled real_estate subscription)
