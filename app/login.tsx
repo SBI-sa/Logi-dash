@@ -105,9 +105,6 @@ export default function LoginScreen() {
 
         {!isAdminMode ? (
           <View style={styles.form}>
-            <Text style={styles.welcomeText}>Welcome to LogiPoint</Text>
-            <Text style={styles.description}>View dashboards and reports</Text>
-
             <View style={styles.inputContainer}>
               <Text style={styles.label}>Viewer Code</Text>
               <View style={styles.inputWrapper}>
