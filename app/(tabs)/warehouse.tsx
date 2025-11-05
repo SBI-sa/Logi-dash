@@ -128,13 +128,16 @@ export default function WarehouseScreen() {
         input.onchange = async (e: any) => {
           const file = e.target.files[0];
           if (file) {
-            const reader = new FileReader();
-            reader.onload = async (event) => {
-              const base64 = event.target?.result as string;
-              const updatedData = { ...warehouseData, allocationImageUri: base64 };
+            const uploadResult = await uploadDashboardImage(file, "warehouse", "allocation.jpg");
+            
+            if (uploadResult.success) {
+              const { data } = supabase.storage.from("dashboard-images").getPublicUrl(uploadResult.filePath);
+              const updatedData = { ...warehouseData, allocationImageUri: data.publicUrl };
               updateWarehouseData(updatedData);
-            };
-            reader.readAsDataURL(file);
+              Alert.alert('Success', 'Image uploaded successfully to Supabase Storage!');
+            } else {
+              Alert.alert('Upload Failed', 'Failed to upload image to Supabase Storage');
+            }
           }
         };
         input.click();
@@ -155,11 +158,24 @@ export default function WarehouseScreen() {
       });
 
       if (!result.canceled && result.assets[0]) {
-        const updatedData = { ...warehouseData, allocationImageUri: result.assets[0].uri };
-        updateWarehouseData(updatedData);
+        const uri = result.assets[0].uri;
+        const response = await fetch(uri);
+        const blob = await response.blob();
+        const file = new File([blob], "allocation.jpg", { type: blob.type });
+        
+        const uploadResult = await uploadDashboardImage(file, "warehouse", "allocation.jpg");
+        
+        if (uploadResult.success) {
+          const { data } = supabase.storage.from("dashboard-images").getPublicUrl(uploadResult.filePath);
+          const updatedData = { ...warehouseData, allocationImageUri: data.publicUrl };
+          updateWarehouseData(updatedData);
+          Alert.alert('Success', 'Image uploaded successfully to Supabase Storage!');
+        } else {
+          Alert.alert('Upload Failed', 'Failed to upload image to Supabase Storage');
+        }
       }
     } catch (error) {
-      console.error('Error picking image:', error);
+      console.error('Error uploading image:', error);
       Alert.alert('Error', 'Failed to upload image');
     }
   };
