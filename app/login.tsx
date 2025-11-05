@@ -100,7 +100,7 @@ export default function LoginScreen() {
         <View style={styles.header}>
           <Shield color={LogiPointColors.primary} size={28} />
           <Text style={styles.logo}>LogiPoint</Text>
-          <Text style={styles.subtitle}>Dashboard & Reporting</Text>
+          <Text style={styles.subtitle}>Reporting Dashboard</Text>
         </View>
 
         {!isAdminMode ? (
