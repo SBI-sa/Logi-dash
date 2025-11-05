@@ -20,9 +20,6 @@ export default function HomeScreen() {
   const { logout } = useAuth();
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { lastUpdated } = useData();
-
-  const dataLastUpdated = lastUpdated['home_data_last_updated'] || '';
 
   const [actions, setActions] = useState<ActionItem[]>([
     { id: 'po', iconUri: 'https://pub-e001eb4506b145aa938b5d3badbff6a5.r2.dev/attachments/47wr6l15ryvio7ew1kip2', color: '#87CEEB', label: 'PO', route: '/(tabs)/po' },
@@ -65,13 +62,6 @@ export default function HomeScreen() {
               <LogOut size={20} color={LogiPointColors.white} />
               <Text style={styles.logoutText}>Logout</Text>
             </TouchableOpacity>
-          </View>
-        </View>
-        <View style={styles.dataLastUpdatedContainer}>
-          <View style={styles.dateDisplayRow}>
-            <Text style={styles.dataLastUpdatedText}>
-              {dataLastUpdated ? `Data Last Updated: ${dataLastUpdated}` : 'Data Last Updated: Not set'}
-            </Text>
           </View>
         </View>
         <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
@@ -241,23 +231,6 @@ const styles = StyleSheet.create({
     fontWeight: '700' as const,
     color: LogiPointColors.midnight,
     textAlign: 'center',
-  },
-  dataLastUpdatedContainer: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    backgroundColor: LogiPointColors.gray[50],
-    borderBottomWidth: 1,
-    borderBottomColor: LogiPointColors.gray[200],
-  },
-  dateDisplayRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  dataLastUpdatedText: {
-    fontSize: 11,
-    color: LogiPointColors.gray[600],
-    fontStyle: 'italic' as const,
   },
 });
 
