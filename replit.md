@@ -20,10 +20,12 @@ This is a cross-platform reporting dashboard application built with Expo and Rea
 ## Recent Changes
 
 ### November 5, 2025 (Latest)
+- **Login Screen Cleanup**: Removed "Welcome to LogiPoint" and "View dashboards and reports" text from login screen
 - **Home Screen Cleanup**: Removed "Quick Access" heading and "Long press and drag to reorder" subtitle from home screen
 - **Admin Login Simplified**: Removed email field from admin login - now only requires password (Logi@2030)
 - **UI Cleanup**: Removed "Data Last Updated" timestamp element from home screen for cleaner interface
 - **Code Optimization**: Removed unused state variables and imports from home screen component
+- **Git Branch**: Working on Draft branch for UI improvements
 
 ### November 4, 2025
 - **Database Cleanup**: Dropped unused `contracts` table, reduced from 9 to 8 active Supabase tables
