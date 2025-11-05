@@ -20,6 +20,7 @@ This is a cross-platform reporting dashboard application built with Expo and Rea
 ## Recent Changes
 
 ### November 5, 2025 (Latest)
+- **Login Screen Updates**: Changed subtitle from "Dashboard & Reporting" to "Reporting Dashboard"
 - **Login Screen Cleanup**: Removed "Welcome to LogiPoint" and "View dashboards and reports" text from login screen
 - **Home Screen Cleanup**: Removed "Quick Access" heading and "Long press and drag to reorder" subtitle from home screen
 - **Admin Login Simplified**: Removed email field from admin login - now only requires password (Logi@2030)
