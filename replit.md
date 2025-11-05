@@ -20,7 +20,6 @@ This is a cross-platform reporting dashboard application built with Expo and Rea
 ## Recent Changes
 
 ### November 5, 2025 (Latest)
-- **Logo Addition**: Added LogiPoint geometric cube logo above "LogiPoint" text on login screen (50x50px, centered)
 - **Login Screen Updates**: Changed subtitle from "Dashboard & Reporting" to "Reporting Dashboard"
 - **Shield Icon Removal**: Removed animated shield icon from login screen header for cleaner appearance
 - **Login Screen Cleanup**: Removed "Welcome to LogiPoint" and "View dashboards and reports" text from login screen

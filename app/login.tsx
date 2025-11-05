@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, Animated, Easing, Image } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, Animated, Easing } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { LogiPointColors } from '@/constants/colors';
@@ -98,11 +98,6 @@ export default function LoginScreen() {
         style={styles.content}
       >
         <View style={styles.header}>
-          <Image 
-            source={require('@/assets/images/logipoint-logo.png')} 
-            style={styles.logoImage}
-            resizeMode="contain"
-          />
           <Text style={styles.logo}>LogiPoint</Text>
           <Text style={styles.subtitle}>Reporting Dashboard</Text>
         </View>
@@ -250,11 +245,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 6,
     marginBottom: 36,
-  },
-  logoImage: {
-    width: 50,
-    height: 50,
-    marginBottom: 8,
   },
   logo: {
     fontSize: 40,
