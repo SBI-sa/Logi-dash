@@ -66,8 +66,6 @@ export default function HomeScreen() {
         </View>
         <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
           <View style={styles.quickActions}>
-            <Text style={styles.sectionTitle}>Quick Access</Text>
-            <Text style={styles.sectionSubtitle}>Long press and drag to reorder</Text>
             <View style={styles.actionGrid}>
               {actions.slice(0, -1).map((action, index) => (
                 <DraggableActionCard
