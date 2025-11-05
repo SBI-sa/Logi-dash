@@ -3,6 +3,7 @@ import { supabase } from '../supabaseClient';
 import type {
   SalesData,
   RiskData,
+  ContractData,
   RealEstateData,
   LogisticsData,
   WarehouseData,
@@ -103,6 +104,13 @@ export async function saveSalesData(data: SalesData) {
  */
 export async function saveRisksData(data: RiskData) {
   return saveToSupabase('risks', data, 'Risks Data');
+}
+
+/**
+ * Save Contracts Data
+ */
+export async function saveContractsData(data: ContractData) {
+  return saveToSupabase('contracts', data, 'Contracts Data');
 }
 
 /**

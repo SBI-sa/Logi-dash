@@ -1,4 +1,4 @@
-modules = ["nodejs-20", "postgresql-16", "bun"]
+modules = ["nodejs-20", "postgresql-16"]
 [agent]
 expertMode = true
 
@@ -26,7 +26,7 @@ outputType = "webview"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "bunx serve dist -l 5000 --single --no-compression"
+args = "bunx serve dist -l 5000 --single"
 waitForPort = 5000
 
 [[ports]]
@@ -34,12 +34,8 @@ localPort = 5000
 externalPort = 80
 
 [[ports]]
-localPort = 33673
+localPort = 40603
 externalPort = 3000
-
-[[ports]]
-localPort = 41475
-externalPort = 3001
 
 [deployment]
 deploymentTarget = "autoscale"
