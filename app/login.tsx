@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { LogiPointColors } from '@/constants/colors';
 import { useAuth } from '@/contexts/AuthContext';
-import { Shield, KeyRound } from 'lucide-react-native';
+import { KeyRound } from 'lucide-react-native';
 
 export default function LoginScreen() {
   const [isAdminMode, setIsAdminMode] = useState<boolean>(false);
@@ -98,7 +98,6 @@ export default function LoginScreen() {
         style={styles.content}
       >
         <View style={styles.header}>
-          <Shield color={LogiPointColors.primary} size={28} />
           <Text style={styles.logo}>LogiPoint</Text>
           <Text style={styles.subtitle}>Reporting Dashboard</Text>
         </View>
