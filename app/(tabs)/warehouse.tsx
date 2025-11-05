@@ -11,6 +11,7 @@ import { ZonePieChart } from '@/components/ZonePieChart';
 import { EditModal } from '@/components/EditModal';
 import { useAuth } from '@/contexts/AuthContext';
 import { useData } from '@/contexts/DataContext';
+import { uploadDashboardImage, supabase } from '@/supabaseClient';
 
 export default function WarehouseScreen() {
   const insets = useSafeAreaInsets();
