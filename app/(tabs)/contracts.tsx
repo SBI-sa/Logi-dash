@@ -11,6 +11,7 @@ import { EditModal } from '@/components/EditModal';
 import { useAuth } from '@/contexts/AuthContext';
 import { useData } from '@/contexts/DataContext';
 import { uploadDashboardImage, supabase } from '@/supabaseClient';
+import { saveRealEstateData } from '@/lib/adminSave';
 
 export default function RealEstateScreen() {
   const { isAdmin } = useAuth();
@@ -363,7 +364,8 @@ export default function RealEstateScreen() {
               const { data } = supabase.storage.from("dashboard-images").getPublicUrl(uploadResult.filePath);
               const updatedData = { ...realEstateData, landImageUri: data.publicUrl };
               updateRealEstateData(updatedData);
-              Alert.alert('Success', 'Land image uploaded successfully to Supabase Storage!');
+              await saveRealEstateData(updatedData);
+              console.log('✅ Land image saved to database');
             } else {
               Alert.alert('Upload Failed', 'Failed to upload land image to Supabase Storage');
             }
@@ -398,7 +400,8 @@ export default function RealEstateScreen() {
           const { data } = supabase.storage.from("dashboard-images").getPublicUrl(uploadResult.filePath);
           const updatedData = { ...realEstateData, landImageUri: data.publicUrl };
           updateRealEstateData(updatedData);
-          Alert.alert('Success', 'Land image uploaded successfully to Supabase Storage!');
+          await saveRealEstateData(updatedData);
+          console.log('✅ Land image saved to database');
         } else {
           Alert.alert('Upload Failed', 'Failed to upload land image to Supabase Storage');
         }
@@ -424,7 +427,8 @@ export default function RealEstateScreen() {
               const { data } = supabase.storage.from("dashboard-images").getPublicUrl(uploadResult.filePath);
               const updatedData = { ...realEstateData, jlhImageUri: data.publicUrl };
               updateRealEstateData(updatedData);
-              Alert.alert('Success', 'JLH image uploaded successfully to Supabase Storage!');
+              await saveRealEstateData(updatedData);
+              console.log('✅ JLH image saved to database');
             } else {
               Alert.alert('Upload Failed', 'Failed to upload JLH image to Supabase Storage');
             }
@@ -459,7 +463,8 @@ export default function RealEstateScreen() {
           const { data } = supabase.storage.from("dashboard-images").getPublicUrl(uploadResult.filePath);
           const updatedData = { ...realEstateData, jlhImageUri: data.publicUrl };
           updateRealEstateData(updatedData);
-          Alert.alert('Success', 'JLH image uploaded successfully to Supabase Storage!');
+          await saveRealEstateData(updatedData);
+          console.log('✅ JLH image saved to database');
         } else {
           Alert.alert('Upload Failed', 'Failed to upload JLH image to Supabase Storage');
         }
@@ -502,9 +507,10 @@ export default function RealEstateScreen() {
                 additionalImages: [...(realEstateData.additionalImages || []), newImage],
               };
               updateRealEstateData(updatedData);
+              await saveRealEstateData(updatedData);
+              console.log('✅ Additional image saved to database');
               setNewImageLabel('');
               setShowAddImageModal(false);
-              Alert.alert('Success', 'Additional image uploaded successfully to Supabase Storage!');
             } else {
               Alert.alert('Upload Failed', 'Failed to upload additional image to Supabase Storage');
             }
@@ -547,9 +553,10 @@ export default function RealEstateScreen() {
             additionalImages: [...(realEstateData.additionalImages || []), newImage],
           };
           updateRealEstateData(updatedData);
+          await saveRealEstateData(updatedData);
+          console.log('✅ Additional image saved to database');
           setNewImageLabel('');
           setShowAddImageModal(false);
-          Alert.alert('Success', 'Additional image uploaded successfully to Supabase Storage!');
         } else {
           Alert.alert('Upload Failed', 'Failed to upload additional image to Supabase Storage');
         }
