@@ -10,6 +10,7 @@ import { Card } from '@/components/Card';
 import { EditModal } from '@/components/EditModal';
 import { useAuth } from '@/contexts/AuthContext';
 import { useData } from '@/contexts/DataContext';
+import { uploadDashboardImage, supabase } from '@/supabaseClient';
 
 export default function RealEstateScreen() {
   const { isAdmin } = useAuth();
@@ -356,28 +357,16 @@ export default function RealEstateScreen() {
         input.onchange = async (e: any) => {
           const file = e.target.files[0];
           if (file) {
-            const reader = new FileReader();
-            reader.onload = async (event) => {
-              const base64 = event.target?.result as string;
-              try {
-                console.log('Land image selected, URI length:', base64.length);
-                const updatedData = { ...realEstateData, landImageUri: base64 };
-                await updateRealEstateData(updatedData);
-                console.log('Land image saved successfully');
-              } catch (storageError: any) {
-                console.error('Storage error:', storageError);
-                if (storageError?.message?.includes('quota') || storageError?.message?.includes('Storage quota exceeded')) {
-                  Alert.alert(
-                    'Storage Full',
-                    'The image is too large to save. Please try a smaller image or remove some existing images first.',
-                    [{ text: 'OK' }]
-                  );
-                } else {
-                  Alert.alert('Error', 'Failed to save image');
-                }
-              }
-            };
-            reader.readAsDataURL(file);
+            const uploadResult = await uploadDashboardImage(file, "real_estate", "land.jpg");
+            
+            if (uploadResult.success) {
+              const { data } = supabase.storage.from("dashboard-images").getPublicUrl(uploadResult.filePath);
+              const updatedData = { ...realEstateData, landImageUri: data.publicUrl };
+              updateRealEstateData(updatedData);
+              Alert.alert('Success', 'Land image uploaded successfully to Supabase Storage!');
+            } else {
+              Alert.alert('Upload Failed', 'Failed to upload land image to Supabase Storage');
+            }
           }
         };
         input.click();
@@ -394,33 +383,28 @@ export default function RealEstateScreen() {
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
-        quality: 0.2,
-        base64: false,
+        quality: 1,
       });
 
       if (!result.canceled && result.assets[0]) {
-        try {
-          console.log('Compressing land image...');
-          const compressedUri = await compressImage(result.assets[0].uri);
-          console.log('Land image compressed, URI length:', compressedUri.length);
-          const updatedData = { ...realEstateData, landImageUri: compressedUri };
-          await updateRealEstateData(updatedData);
-          console.log('Land image saved successfully');
-        } catch (storageError: any) {
-          console.error('Storage error:', storageError);
-          if (storageError?.message?.includes('quota') || storageError?.message?.includes('Storage quota exceeded')) {
-            Alert.alert(
-              'Storage Full',
-              'The image is too large to save. Please try a smaller image or remove some existing images first.',
-              [{ text: 'OK' }]
-            );
-          } else {
-            Alert.alert('Error', 'Failed to save image');
-          }
+        const uri = result.assets[0].uri;
+        const response = await fetch(uri);
+        const blob = await response.blob();
+        const file = new File([blob], "land.jpg", { type: blob.type });
+        
+        const uploadResult = await uploadDashboardImage(file, "real_estate", "land.jpg");
+        
+        if (uploadResult.success) {
+          const { data } = supabase.storage.from("dashboard-images").getPublicUrl(uploadResult.filePath);
+          const updatedData = { ...realEstateData, landImageUri: data.publicUrl };
+          updateRealEstateData(updatedData);
+          Alert.alert('Success', 'Land image uploaded successfully to Supabase Storage!');
+        } else {
+          Alert.alert('Upload Failed', 'Failed to upload land image to Supabase Storage');
         }
       }
     } catch (error) {
-      console.error('Error picking image:', error);
+      console.error('Error uploading land image:', error);
       Alert.alert('Error', 'Failed to upload image');
     }
   };
@@ -434,28 +418,16 @@ export default function RealEstateScreen() {
         input.onchange = async (e: any) => {
           const file = e.target.files[0];
           if (file) {
-            const reader = new FileReader();
-            reader.onload = async (event) => {
-              const base64 = event.target?.result as string;
-              try {
-                console.log('JLH image selected, URI length:', base64.length);
-                const updatedData = { ...realEstateData, jlhImageUri: base64 };
-                await updateRealEstateData(updatedData);
-                console.log('JLH image saved successfully');
-              } catch (storageError: any) {
-                console.error('Storage error:', storageError);
-                if (storageError?.message?.includes('quota') || storageError?.message?.includes('Storage quota exceeded')) {
-                  Alert.alert(
-                    'Storage Full',
-                    'The image is too large to save. Please try a smaller image or remove some existing images first.',
-                    [{ text: 'OK' }]
-                  );
-                } else {
-                  Alert.alert('Error', 'Failed to save image');
-                }
-              }
-            };
-            reader.readAsDataURL(file);
+            const uploadResult = await uploadDashboardImage(file, "real_estate", "jlh.jpg");
+            
+            if (uploadResult.success) {
+              const { data } = supabase.storage.from("dashboard-images").getPublicUrl(uploadResult.filePath);
+              const updatedData = { ...realEstateData, jlhImageUri: data.publicUrl };
+              updateRealEstateData(updatedData);
+              Alert.alert('Success', 'JLH image uploaded successfully to Supabase Storage!');
+            } else {
+              Alert.alert('Upload Failed', 'Failed to upload JLH image to Supabase Storage');
+            }
           }
         };
         input.click();
@@ -472,33 +444,28 @@ export default function RealEstateScreen() {
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
-        quality: 0.2,
-        base64: false,
+        quality: 1,
       });
 
       if (!result.canceled && result.assets[0]) {
-        try {
-          console.log('Compressing JLH image...');
-          const compressedUri = await compressImage(result.assets[0].uri);
-          console.log('JLH image compressed, URI length:', compressedUri.length);
-          const updatedData = { ...realEstateData, jlhImageUri: compressedUri };
-          await updateRealEstateData(updatedData);
-          console.log('JLH image saved successfully');
-        } catch (storageError: any) {
-          console.error('Storage error:', storageError);
-          if (storageError?.message?.includes('quota') || storageError?.message?.includes('Storage quota exceeded')) {
-            Alert.alert(
-              'Storage Full',
-              'The image is too large to save. Please try a smaller image or remove some existing images first.',
-              [{ text: 'OK' }]
-            );
-          } else {
-            Alert.alert('Error', 'Failed to save image');
-          }
+        const uri = result.assets[0].uri;
+        const response = await fetch(uri);
+        const blob = await response.blob();
+        const file = new File([blob], "jlh.jpg", { type: blob.type });
+        
+        const uploadResult = await uploadDashboardImage(file, "real_estate", "jlh.jpg");
+        
+        if (uploadResult.success) {
+          const { data } = supabase.storage.from("dashboard-images").getPublicUrl(uploadResult.filePath);
+          const updatedData = { ...realEstateData, jlhImageUri: data.publicUrl };
+          updateRealEstateData(updatedData);
+          Alert.alert('Success', 'JLH image uploaded successfully to Supabase Storage!');
+        } else {
+          Alert.alert('Upload Failed', 'Failed to upload JLH image to Supabase Storage');
         }
       }
     } catch (error) {
-      console.error('Error picking image:', error);
+      console.error('Error uploading JLH image:', error);
       Alert.alert('Error', 'Failed to upload image');
     }
   };
@@ -510,6 +477,10 @@ export default function RealEstateScreen() {
     }
 
     try {
+      const timestamp = Date.now();
+      const imageId = `IMG${timestamp}`;
+      const fileName = `additional_${timestamp}.jpg`;
+
       if (Platform.OS === 'web') {
         const input = document.createElement('input');
         input.type = 'file';
@@ -517,38 +488,26 @@ export default function RealEstateScreen() {
         input.onchange = async (e: any) => {
           const file = e.target.files[0];
           if (file) {
-            const reader = new FileReader();
-            reader.onload = async (event) => {
-              const base64 = event.target?.result as string;
-              try {
-                console.log('Additional image selected, URI length:', base64.length);
-                const newImage = {
-                  id: `IMG${Date.now()}`,
-                  uri: base64,
-                  label: newImageLabel,
-                };
-                const updatedData = {
-                  ...realEstateData,
-                  additionalImages: [...(realEstateData.additionalImages || []), newImage],
-                };
-                await updateRealEstateData(updatedData);
-                console.log('Additional image saved successfully');
-                setNewImageLabel('');
-                setShowAddImageModal(false);
-              } catch (storageError: any) {
-                console.error('Storage error:', storageError);
-                if (storageError?.message?.includes('quota') || storageError?.message?.includes('Storage quota exceeded')) {
-                  Alert.alert(
-                    'Storage Full',
-                    'The image is too large to save. Please try a smaller image or remove some existing images first.',
-                    [{ text: 'OK' }]
-                  );
-                } else {
-                  Alert.alert('Error', 'Failed to save image');
-                }
-              }
-            };
-            reader.readAsDataURL(file);
+            const uploadResult = await uploadDashboardImage(file, "real_estate", fileName);
+            
+            if (uploadResult.success) {
+              const { data } = supabase.storage.from("dashboard-images").getPublicUrl(uploadResult.filePath);
+              const newImage = {
+                id: imageId,
+                uri: data.publicUrl,
+                label: newImageLabel,
+              };
+              const updatedData = {
+                ...realEstateData,
+                additionalImages: [...(realEstateData.additionalImages || []), newImage],
+              };
+              updateRealEstateData(updatedData);
+              setNewImageLabel('');
+              setShowAddImageModal(false);
+              Alert.alert('Success', 'Additional image uploaded successfully to Supabase Storage!');
+            } else {
+              Alert.alert('Upload Failed', 'Failed to upload additional image to Supabase Storage');
+            }
           }
         };
         input.click();
@@ -565,43 +524,38 @@ export default function RealEstateScreen() {
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
-        quality: 0.2,
-        base64: false,
+        quality: 1,
       });
 
       if (!result.canceled && result.assets[0]) {
-        try {
-          console.log('Compressing additional image...');
-          const compressedUri = await compressImage(result.assets[0].uri);
-          console.log('Additional image compressed, URI length:', compressedUri.length);
+        const uri = result.assets[0].uri;
+        const response = await fetch(uri);
+        const blob = await response.blob();
+        const file = new File([blob], fileName, { type: blob.type });
+        
+        const uploadResult = await uploadDashboardImage(file, "real_estate", fileName);
+        
+        if (uploadResult.success) {
+          const { data } = supabase.storage.from("dashboard-images").getPublicUrl(uploadResult.filePath);
           const newImage = {
-            id: `IMG${Date.now()}`,
-            uri: compressedUri,
+            id: imageId,
+            uri: data.publicUrl,
             label: newImageLabel,
           };
           const updatedData = {
             ...realEstateData,
             additionalImages: [...(realEstateData.additionalImages || []), newImage],
           };
-          await updateRealEstateData(updatedData);
-          console.log('Additional image saved successfully');
+          updateRealEstateData(updatedData);
           setNewImageLabel('');
           setShowAddImageModal(false);
-        } catch (storageError: any) {
-          console.error('Storage error:', storageError);
-          if (storageError?.message?.includes('quota') || storageError?.message?.includes('Storage quota exceeded')) {
-            Alert.alert(
-              'Storage Full',
-              'The image is too large to save. Please try a smaller image or remove some existing images first.',
-              [{ text: 'OK' }]
-            );
-          } else {
-            Alert.alert('Error', 'Failed to save image');
-          }
+          Alert.alert('Success', 'Additional image uploaded successfully to Supabase Storage!');
+        } else {
+          Alert.alert('Upload Failed', 'Failed to upload additional image to Supabase Storage');
         }
       }
     } catch (error) {
-      console.error('Error picking image:', error);
+      console.error('Error uploading additional image:', error);
       Alert.alert('Error', 'Failed to upload image');
     }
   };
