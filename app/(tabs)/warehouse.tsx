@@ -12,6 +12,7 @@ import { EditModal } from '@/components/EditModal';
 import { useAuth } from '@/contexts/AuthContext';
 import { useData } from '@/contexts/DataContext';
 import { uploadDashboardImage, supabase } from '@/supabaseClient';
+import { saveWarehouseData } from '@/lib/adminSave';
 
 export default function WarehouseScreen() {
   const insets = useSafeAreaInsets();
@@ -134,7 +135,8 @@ export default function WarehouseScreen() {
               const { data } = supabase.storage.from("dashboard-images").getPublicUrl(uploadResult.filePath);
               const updatedData = { ...warehouseData, allocationImageUri: data.publicUrl };
               updateWarehouseData(updatedData);
-              Alert.alert('Success', 'Image uploaded successfully to Supabase Storage!');
+              await saveWarehouseData(updatedData);
+              console.log('✅ Warehouse allocation image saved to database');
             } else {
               Alert.alert('Upload Failed', 'Failed to upload image to Supabase Storage');
             }
@@ -169,7 +171,8 @@ export default function WarehouseScreen() {
           const { data } = supabase.storage.from("dashboard-images").getPublicUrl(uploadResult.filePath);
           const updatedData = { ...warehouseData, allocationImageUri: data.publicUrl };
           updateWarehouseData(updatedData);
-          Alert.alert('Success', 'Image uploaded successfully to Supabase Storage!');
+          await saveWarehouseData(updatedData);
+          console.log('✅ Warehouse allocation image saved to database');
         } else {
           Alert.alert('Upload Failed', 'Failed to upload image to Supabase Storage');
         }
