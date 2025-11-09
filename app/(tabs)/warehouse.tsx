@@ -133,7 +133,8 @@ export default function WarehouseScreen() {
             
             if (uploadResult.success) {
               const { data } = supabase.storage.from("dashboard-images").getPublicUrl(uploadResult.filePath);
-              const updatedData = { ...warehouseData, allocationImageUri: data.publicUrl };
+              const cacheBustedUrl = `${data.publicUrl}?v=${Date.now()}`;
+              const updatedData = { ...warehouseData, allocationImageUri: cacheBustedUrl };
               updateWarehouseData(updatedData);
               await saveWarehouseData(updatedData);
               console.log('✅ Warehouse allocation image saved to database');
@@ -169,7 +170,8 @@ export default function WarehouseScreen() {
         
         if (uploadResult.success) {
           const { data } = supabase.storage.from("dashboard-images").getPublicUrl(uploadResult.filePath);
-          const updatedData = { ...warehouseData, allocationImageUri: data.publicUrl };
+          const cacheBustedUrl = `${data.publicUrl}?v=${Date.now()}`;
+          const updatedData = { ...warehouseData, allocationImageUri: cacheBustedUrl };
           updateWarehouseData(updatedData);
           await saveWarehouseData(updatedData);
           console.log('✅ Warehouse allocation image saved to database');
