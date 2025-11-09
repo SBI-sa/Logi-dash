@@ -192,9 +192,11 @@ export default function WarehouseScreen() {
         {
           text: 'Remove',
           style: 'destructive',
-          onPress: () => {
+          onPress: async () => {
             const updatedData = { ...warehouseData, allocationImageUri: undefined };
             updateWarehouseData(updatedData);
+            await saveWarehouseData(updatedData);
+            console.log('✅ Warehouse allocation image removal saved to database');
           },
         },
       ]

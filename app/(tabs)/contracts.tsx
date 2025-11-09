@@ -581,7 +581,8 @@ export default function RealEstateScreen() {
               const updatedData = { ...realEstateData };
               delete updatedData.landImageUri;
               await updateRealEstateData(updatedData);
-              console.log('Land image removed successfully');
+              await saveRealEstateData(updatedData);
+              console.log('✅ Land image removal saved to database');
             } catch (error) {
               console.error('Error removing land image:', error);
               Alert.alert('Error', 'Failed to remove image');
@@ -606,7 +607,8 @@ export default function RealEstateScreen() {
               const updatedData = { ...realEstateData };
               delete updatedData.jlhImageUri;
               await updateRealEstateData(updatedData);
-              console.log('JLH image removed successfully');
+              await saveRealEstateData(updatedData);
+              console.log('✅ JLH image removal saved to database');
             } catch (error) {
               console.error('Error removing JLH image:', error);
               Alert.alert('Error', 'Failed to remove image');
@@ -633,7 +635,8 @@ export default function RealEstateScreen() {
                 additionalImages: (realEstateData.additionalImages || []).filter(img => img.id !== imageId),
               };
               await updateRealEstateData(updatedData);
-              console.log('Additional image removed successfully');
+              await saveRealEstateData(updatedData);
+              console.log('✅ Additional image removal saved to database');
             } catch (error) {
               console.error('Error removing additional image:', error);
               Alert.alert('Error', 'Failed to remove image');
