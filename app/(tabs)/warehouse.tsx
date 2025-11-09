@@ -282,10 +282,13 @@ export default function WarehouseScreen() {
           <ChartCard title="Warehouse Allocations" subtitle="Latest warehouse allocation map">
             {warehouseData.allocationImageUri ? (
               <View style={styles.allocationImageContainer}>
+                {console.log('🖼️ Warehouse allocation image URL:', warehouseData.allocationImageUri)}
                 <Image
                   source={{ uri: warehouseData.allocationImageUri }}
                   style={styles.allocationImage}
                   resizeMode="contain"
+                  onError={(error) => console.error('❌ Image load error:', error)}
+                  onLoad={() => console.log('✅ Image loaded successfully')}
                 />
                 {isAdmin && (
                   <View style={styles.imageActions}>
