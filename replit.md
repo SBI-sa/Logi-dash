@@ -19,7 +19,17 @@ This is a cross-platform reporting dashboard application built with Expo and Rea
 
 ## Recent Changes
 
-### November 5, 2025 (Latest)
+### November 9, 2025 (Latest)
+- **Image Upload Persistence Fix**: Fixed Warehouse and Real Estate screens to save uploaded images to Supabase database
+- **Database Integration**: Added `saveWarehouseData` and `saveRealEstateData` calls after all image upload operations
+- **Image Removal Persistence**: Fixed image removal functions to persist deletions to database
+- **Complete Coverage**: All image operations (upload & removal) now save to database for both screens:
+  - Warehouse: allocation image upload/removal
+  - Real Estate: land image, JLH image, and additional images upload/removal
+- **Data Persistence**: Uploaded images now persist across page refreshes and sync to all users via realtime subscriptions
+- **Supabase Storage**: Images stored in `dashboard-images` bucket under `warehouse/` and `real_estate/` folders
+
+### November 5, 2025
 - **Login Screen Updates**: Changed subtitle from "Dashboard & Reporting" to "Reporting Dashboard"
 - **Shield Icon Removal**: Removed animated shield icon from login screen header for cleaner appearance
 - **Login Screen Cleanup**: Removed "Welcome to LogiPoint" and "View dashboards and reports" text from login screen
