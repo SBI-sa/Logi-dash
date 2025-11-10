@@ -18,6 +18,13 @@ import {
 } from '@/mocks/dashboardData';
 import { supabase } from '../supabaseClient';
 import type { RealtimeChannel } from '@supabase/supabase-js';
+import {
+  saveSalesData,
+  saveRisksData,
+  saveLogisticsData,
+  saveVasData,
+  savePoData,
+} from '../lib/adminSave';
 
 export interface LastUpdatedData {
   [cardKey: string]: string;
@@ -319,8 +326,8 @@ export const [DataProvider, useData] = createContextHook(() => {
   const updateSalesData = useCallback(async (data: SalesData) => {
     try {
       setSalesData(data);
-      // TODO: Replace with adminSave helper
-      console.log('[DataContext] updateSalesData called - pending adminSave integration');
+      await saveSalesData(data);
+      console.log('[DataContext] updateSalesData - saved to Supabase');
     } catch (error) {
       console.error('[DataContext] Failed to update sales data:', error);
       throw error;
@@ -330,7 +337,8 @@ export const [DataProvider, useData] = createContextHook(() => {
   const updateRiskData = useCallback(async (data: RiskData) => {
     try {
       setRiskData(data);
-      console.log('[DataContext] updateRiskData called - pending adminSave integration');
+      await saveRisksData(data);
+      console.log('[DataContext] updateRiskData - saved to Supabase');
     } catch (error) {
       console.error('[DataContext] Failed to update risk data:', error);
       throw error;
@@ -340,7 +348,8 @@ export const [DataProvider, useData] = createContextHook(() => {
   const updateLogisticsData = useCallback(async (data: LogisticsData) => {
     try {
       setLogisticsData(data);
-      console.log('[DataContext] updateLogisticsData called - pending adminSave integration');
+      await saveLogisticsData(data);
+      console.log('[DataContext] updateLogisticsData - saved to Supabase');
     } catch (error) {
       console.error('[DataContext] Failed to update logistics data:', error);
       throw error;
@@ -370,7 +379,8 @@ export const [DataProvider, useData] = createContextHook(() => {
   const updateVasData = useCallback(async (data: VASData) => {
     try {
       setVasData(data);
-      console.log('[DataContext] updateVasData called - pending adminSave integration');
+      await saveVasData(data);
+      console.log('[DataContext] updateVasData - saved to Supabase');
     } catch (error) {
       console.error('[DataContext] Failed to update VAS data:', error);
       throw error;
@@ -380,7 +390,8 @@ export const [DataProvider, useData] = createContextHook(() => {
   const updatePoData = useCallback(async (data: POData) => {
     try {
       setPoData(data);
-      console.log('[DataContext] updatePoData called - pending adminSave integration');
+      await savePoData(data);
+      console.log('[DataContext] updatePoData - saved to Supabase');
     } catch (error) {
       console.error('[DataContext] Failed to update PO data:', error);
       throw error;
