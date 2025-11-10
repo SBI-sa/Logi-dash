@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, View, Text, TextInput, TouchableOpacity, StyleSheet, Platform, Alert } from 'react-native';
+import { Modal, View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { LogiPointColors } from '@/constants/colors';
 
 interface TimestampEditModalProps {
@@ -18,7 +18,6 @@ export const TimestampEditModal: React.FC<TimestampEditModalProps> = ({
   onClose,
 }) => {
   const [dateInput, setDateInput] = useState('');
-  const [timeInput, setTimeInput] = useState('');
 
   useEffect(() => {
     if (visible && timestamp) {
@@ -27,42 +26,35 @@ export const TimestampEditModal: React.FC<TimestampEditModalProps> = ({
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const day = String(date.getDate()).padStart(2, '0');
-        const hours = String(date.getHours()).padStart(2, '0');
-        const minutes = String(date.getMinutes()).padStart(2, '0');
         
         setDateInput(`${year}-${month}-${day}`);
-        setTimeInput(`${hours}:${minutes}`);
       }
     } else if (visible && !timestamp) {
       const now = new Date();
       const year = now.getFullYear();
       const month = String(now.getMonth() + 1).padStart(2, '0');
       const day = String(now.getDate()).padStart(2, '0');
-      const hours = String(now.getHours()).padStart(2, '0');
-      const minutes = String(now.getMinutes()).padStart(2, '0');
       
       setDateInput(`${year}-${month}-${day}`);
-      setTimeInput(`${hours}:${minutes}`);
     }
   }, [visible, timestamp]);
 
   const handleSave = () => {
-    if (!dateInput || !timeInput) {
-      Alert.alert('Invalid Input', 'Please enter both date and time.');
+    if (!dateInput) {
+      Alert.alert('Invalid Input', 'Please enter a date.');
       return;
     }
 
-    const dateTimeString = `${dateInput}T${timeInput}:00`;
+    const dateTimeString = `${dateInput}T00:00:00`;
     const parsedDate = new Date(dateTimeString);
 
     if (isNaN(parsedDate.getTime())) {
-      Alert.alert('Invalid Date', 'Please enter a valid date and time.');
+      Alert.alert('Invalid Date', 'Please enter a valid date.');
       return;
     }
 
     const isoString = parsedDate.toISOString();
     onSave(isoString);
-    onClose();
   };
 
   return (
@@ -83,19 +75,7 @@ export const TimestampEditModal: React.FC<TimestampEditModalProps> = ({
               value={dateInput}
               onChangeText={setDateInput}
               placeholder="2025-11-10"
-              placeholderTextColor={LogiPointColors.gray}
-              keyboardType="default"
-            />
-          </View>
-
-          <View style={styles.inputSection}>
-            <Text style={styles.label}>Time (HH:MM, 24-hour)</Text>
-            <TextInput
-              style={styles.input}
-              value={timeInput}
-              onChangeText={setTimeInput}
-              placeholder="14:30"
-              placeholderTextColor={LogiPointColors.gray}
+              placeholderTextColor="#9ca3af"
               keyboardType="default"
             />
           </View>
@@ -130,7 +110,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   modalContainer: {
-    backgroundColor: LogiPointColors.white,
+    backgroundColor: '#FFFFFF',
     borderRadius: 12,
     padding: 24,
     width: '100%',
@@ -144,53 +124,53 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: '700',
-    color: LogiPointColors.midnight,
+    color: '#003d4d',
     marginBottom: 20,
   },
   inputSection: {
-    marginBottom: 16,
+    marginBottom: 24,
   },
   label: {
     fontSize: 14,
     fontWeight: '600',
-    color: LogiPointColors.midnight,
+    color: '#003d4d',
     marginBottom: 8,
   },
   input: {
     borderWidth: 1,
-    borderColor: LogiPointColors.gray,
+    borderColor: '#d1d5db',
     borderRadius: 8,
     padding: 12,
     fontSize: 16,
-    color: LogiPointColors.midnight,
-    backgroundColor: LogiPointColors.white,
+    color: '#003d4d',
+    backgroundColor: '#FFFFFF',
   },
   buttonContainer: {
     flexDirection: 'row',
-    justifyContent: 'flex-end',
-    gap: 12,
+    justifyContent: 'space-between',
     marginTop: 8,
   },
   button: {
     paddingVertical: 12,
-    paddingHorizontal: 24,
+    paddingHorizontal: 32,
     borderRadius: 8,
-    minWidth: 100,
+    flex: 1,
     alignItems: 'center',
+    marginHorizontal: 6,
   },
   cancelButton: {
-    backgroundColor: LogiPointColors.lightGray,
+    backgroundColor: '#e5e7eb',
   },
   cancelButtonText: {
-    color: LogiPointColors.midnight,
+    color: '#003d4d',
     fontSize: 16,
     fontWeight: '600',
   },
   saveButton: {
-    backgroundColor: LogiPointColors.teal,
+    backgroundColor: '#00617f',
   },
   saveButtonText: {
-    color: LogiPointColors.white,
+    color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '600',
   },
