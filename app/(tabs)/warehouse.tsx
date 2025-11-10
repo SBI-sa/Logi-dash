@@ -142,6 +142,8 @@ export default function WarehouseScreen() {
                   allocationImageUri: publicData.publicUrl,
                 };
                 updateWarehouseData(updatedData);
+                console.log('🔗 Saved warehouse allocation URL:', publicData.publicUrl);
+                console.log('🔗 Full warehouseData.allocationImageUri:', updatedData.allocationImageUri);
                 await saveWarehouseData(updatedData);
                 console.log('✅ Warehouse allocation image saved to database');
               }
@@ -186,6 +188,8 @@ export default function WarehouseScreen() {
               allocationImageUri: publicData.publicUrl,
             };
             updateWarehouseData(updatedData);
+            console.log('🔗 Saved warehouse allocation URL:', publicData.publicUrl);
+            console.log('🔗 Full warehouseData.allocationImageUri:', updatedData.allocationImageUri);
             await saveWarehouseData(updatedData);
             console.log('✅ Warehouse allocation image saved to database');
           }
