@@ -20,20 +20,28 @@ This is a cross-platform reporting dashboard application built with Expo and Rea
 ## Recent Changes
 
 ### November 10, 2025 (Latest)
-- **PageHeader Component**: Created reusable PageHeader component with dark banner and last updated timestamp
-  - Dark midnight blue background with white text
-  - Page title on the left, formatted last updated date on the right
-  - Bottom border for visual separation from content
-  - Component reads from DataContext.getLastUpdated() with screen-specific keys
-- **Universal Header Deployment**: Added PageHeader to all 7 tab screens
-  - ✅ Sales Analytics
-  - ✅ Risk Management
-  - ✅ Real Estate
-  - ✅ Transportation & Logistics
-  - ✅ Warehouse Management
-  - ✅ Value Added Services (VAS)
-  - ✅ Purchase Orders (PO)
-- **Consistent UI Pattern**: All screens now have matching header banners for unified look
+- **Navigation Headers with Last Updated**: Implemented "Last Updated" timestamps in Expo Router navigation headers for all 7 tab screens
+  - Created `LastUpdatedHeaderRight.tsx` component with React.memo and useMemo optimizations
+  - Displays formatted timestamp (e.g., "Nov 10, 2025 11:45 AM") pulled from DataContext
+  - Component handles null/undefined timestamps gracefully with fallback to "N/A"
+  - Performance optimized with targeted memoization of getLastUpdated() and date formatting
+- **Universal Header Integration**: Updated `app/(tabs)/_layout.tsx` to add headerRight with LastUpdatedHeaderRight to all screens
+  - ✅ Sales Analytics (`lastUpdatedKey: 'sales'`)
+  - ✅ Risk Management (`lastUpdatedKey: 'risks'`)
+  - ✅ Real Estate (`lastUpdatedKey: 'real_estate'`)
+  - ✅ Transportation & Logistics (`lastUpdatedKey: 'logistics'`)
+  - ✅ Warehouse Management (`lastUpdatedKey: 'warehouse'`)
+  - ✅ Value Added Services (`lastUpdatedKey: 'vas'`)
+  - ✅ Purchase Orders (`lastUpdatedKey: 'po'`)
+- **Fixed Stack.Screen Override Issue**: Removed Stack components that were blocking navigation headers
+  - Removed Stack imports from 5 screens (logistics, po, vas, warehouse, contracts)
+  - Removed `<Stack.Screen options={screenOptions} />` JSX from those screens
+  - Removed unused screenOptions constants from all affected screens
+  - This fix allows Tabs.Screen header settings from _layout.tsx to render correctly
+- **Eliminated Duplicate Headers**: Removed PageHeader components from all 7 tab screens
+  - Prevents double headers (navigation header + in-screen PageHeader)
+  - Single navigation header now shows page title and last updated date
+  - Clean, consistent header appearance across all tabs
 - **Complete AdminSave Integration**: Wired all 8 screens to their respective adminSave functions in lib/adminSave.ts
 - **Realtime Data Sync**: All admin edits now save to Supabase and propagate instantly via realtime subscriptions
 - **Integration Status**:
