@@ -23,13 +23,13 @@ This is a cross-platform reporting dashboard application built with Expo and Rea
 - **Image Upload Persistence Fix**: Fixed Warehouse and Real Estate screens to save uploaded images to Supabase database
 - **Database Integration**: Added `saveWarehouseData` and `saveRealEstateData` calls after all image upload operations
 - **Image Removal Persistence**: Fixed image removal functions to persist deletions to database
-- **Cache-Busting Fix**: Added timestamp query parameter to warehouse allocation image URLs to prevent browser caching issues
+- **Public URL Fix**: Updated warehouse allocation image upload to use permanent public URLs instead of temporary signed URLs
 - **Complete Coverage**: All image operations (upload & removal) now save to database for both screens:
-  - Warehouse: allocation image upload/removal with cache-busting (`?v={timestamp}`)
+  - Warehouse: allocation image upload/removal using public URLs
   - Real Estate: land image, JLH image, and additional images upload/removal
 - **Data Persistence**: Uploaded images now persist across page refreshes and sync to all users via realtime subscriptions
 - **Supabase Storage**: Images stored in `dashboard-images` bucket under `warehouse/` and `real_estate/` folders
-- **Browser Compatibility**: Warehouse allocation images now display immediately without requiring hard refresh
+- **Pattern Consistency**: Warehouse upload now matches Real Estate pattern using `getPublicUrl()` for permanent URLs
 
 ### November 5, 2025
 - **Login Screen Updates**: Changed subtitle from "Dashboard & Reporting" to "Reporting Dashboard"

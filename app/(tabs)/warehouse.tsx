@@ -132,12 +132,19 @@ export default function WarehouseScreen() {
             const uploadResult = await uploadDashboardImage(file, "warehouse", "allocation.jpg");
             
             if (uploadResult.success) {
-              const { data } = supabase.storage.from("dashboard-images").getPublicUrl(uploadResult.filePath);
-              const cacheBustedUrl = `${data.publicUrl}?v=${Date.now()}`;
-              const updatedData = { ...warehouseData, allocationImageUri: cacheBustedUrl };
-              updateWarehouseData(updatedData);
-              await saveWarehouseData(updatedData);
-              console.log('✅ Warehouse allocation image saved to database');
+              const { data: publicData } = supabase.storage
+                .from('dashboard-images')
+                .getPublicUrl('warehouse/allocation.jpg');
+              
+              if (publicData?.publicUrl) {
+                const updatedData = {
+                  ...warehouseData,
+                  allocationImageUri: publicData.publicUrl,
+                };
+                updateWarehouseData(updatedData);
+                await saveWarehouseData(updatedData);
+                console.log('✅ Warehouse allocation image saved to database');
+              }
             } else {
               Alert.alert('Upload Failed', 'Failed to upload image to Supabase Storage');
             }
@@ -169,12 +176,19 @@ export default function WarehouseScreen() {
         const uploadResult = await uploadDashboardImage(file, "warehouse", "allocation.jpg");
         
         if (uploadResult.success) {
-          const { data } = supabase.storage.from("dashboard-images").getPublicUrl(uploadResult.filePath);
-          const cacheBustedUrl = `${data.publicUrl}?v=${Date.now()}`;
-          const updatedData = { ...warehouseData, allocationImageUri: cacheBustedUrl };
-          updateWarehouseData(updatedData);
-          await saveWarehouseData(updatedData);
-          console.log('✅ Warehouse allocation image saved to database');
+          const { data: publicData } = supabase.storage
+            .from('dashboard-images')
+            .getPublicUrl('warehouse/allocation.jpg');
+          
+          if (publicData?.publicUrl) {
+            const updatedData = {
+              ...warehouseData,
+              allocationImageUri: publicData.publicUrl,
+            };
+            updateWarehouseData(updatedData);
+            await saveWarehouseData(updatedData);
+            console.log('✅ Warehouse allocation image saved to database');
+          }
         } else {
           Alert.alert('Upload Failed', 'Failed to upload image to Supabase Storage');
         }
