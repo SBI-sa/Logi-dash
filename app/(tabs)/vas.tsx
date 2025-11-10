@@ -8,6 +8,7 @@ import { BulletChart } from '@/components/BulletChart';
 import { SmallMultiplesChart } from '@/components/SmallMultiplesChart';
 import { SimplePieChart, PieChartData } from '@/components/SimplePieChart';
 import { EditModal } from '@/components/EditModal';
+import PageHeader from '@/components/PageHeader';
 import { useAuth } from '@/contexts/AuthContext';
 import { useData } from '@/contexts/DataContext';
 
@@ -255,6 +256,7 @@ export default function VASScreen() {
           />
         </View>
         <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
+          <PageHeader title="Value Added Services (VAS)" lastUpdatedKey="vas" />
           <View style={styles.topCardsRow}>
             <View style={styles.topCard}>
               <ChartCard title="Delivery Total" subtitle="Year Comparison">

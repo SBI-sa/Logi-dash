@@ -7,7 +7,7 @@ import { ChartCard } from '@/components/ChartCard';
 import { EditModal } from '@/components/EditModal';
 import { CIYMovementChart } from '@/components/CIYMovementChart';
 import { ClusteredColumnChart } from '@/components/ClusteredColumnChart';
-
+import PageHeader from '@/components/PageHeader';
 import { useAuth } from '@/contexts/AuthContext';
 import { useData } from '@/contexts/DataContext';
 
@@ -210,6 +210,7 @@ export default function POScreen() {
           />
         </View>
         <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
+          <PageHeader title="Purchase Orders (PO)" lastUpdatedKey="po" />
           <ChartCard title="CIY Movement" subtitle="Monthly Comparison">
             <CIYMovementChart 
               data={poData.ciyMovement}

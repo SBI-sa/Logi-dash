@@ -8,6 +8,7 @@ import * as FileSystem from 'expo-file-system';
 import { LogiPointColors } from '@/constants/colors';
 import { Card } from '@/components/Card';
 import { EditModal } from '@/components/EditModal';
+import PageHeader from '@/components/PageHeader';
 import { useAuth } from '@/contexts/AuthContext';
 import { useData } from '@/contexts/DataContext';
 import { uploadDashboardImage, supabase } from '@/supabaseClient';
@@ -670,6 +671,7 @@ export default function RealEstateScreen() {
           />
         </View>
         <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
+          <PageHeader title="Real Estate" lastUpdatedKey="real_estate" />
           <Card style={styles.summaryCard}>
             <Text style={styles.summaryTitle}>JLH Parking</Text>
             <View style={styles.summaryGrid}>

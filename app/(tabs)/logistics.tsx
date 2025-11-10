@@ -9,6 +9,7 @@ import { GroupedBarChart } from '@/components/GroupedBarChart';
 import { LineChart } from '@/components/LineChart';
 import { SimplePieChart } from '@/components/SimplePieChart';
 import { EditModal } from '@/components/EditModal';
+import PageHeader from '@/components/PageHeader';
 import { useAuth } from '@/contexts/AuthContext';
 import { useData } from '@/contexts/DataContext';
 
@@ -301,6 +302,7 @@ export default function LogisticsScreen() {
           />
         </View>
         <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
+          <PageHeader title="Transportation & Logistics" lastUpdatedKey="logistics" />
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.kpiRow}>
             <View>
               <KPICard

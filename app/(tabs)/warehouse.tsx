@@ -9,6 +9,7 @@ import { KPICard } from '@/components/KPICard';
 import { ChartCard } from '@/components/ChartCard';
 import { ZonePieChart } from '@/components/ZonePieChart';
 import { EditModal } from '@/components/EditModal';
+import PageHeader from '@/components/PageHeader';
 import { useAuth } from '@/contexts/AuthContext';
 import { useData } from '@/contexts/DataContext';
 import { uploadDashboardImage, supabase } from '@/supabaseClient';
@@ -246,6 +247,7 @@ export default function WarehouseScreen() {
           />
         </View>
         <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
+          <PageHeader title="Warehouse Management" lastUpdatedKey="warehouse" />
           <View>
             <KPICard
               title="Total Occupancy"
