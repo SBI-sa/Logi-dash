@@ -408,29 +408,30 @@ export const [DataProvider, useData] = createContextHook(() => {
   }, []);
 
   const updateCardTimestamp = useCallback(async (cardKey: string, timestamp: string) => {
+    // Capture the previous value for rollback on error
+    const previousTimestamp = lastUpdated[cardKey];
+    
     try {
-      // Update local state immediately for UI responsiveness
+      // Update local state immediately for UI responsiveness (optimistic update)
       setLastUpdated(prev => ({ ...prev, [cardKey]: timestamp }));
       
       // Save to Supabase - realtime subscriptions will propagate to other users
       const result = await saveCardTimestamp(cardKey, timestamp);
       
       if (!result.success) {
-        // Revert on error
-        setLastUpdated(prev => {
-          const reverted = { ...prev };
-          delete reverted[cardKey];
-          return reverted;
-        });
+        // Restore previous value on error
+        setLastUpdated(prev => ({ ...prev, [cardKey]: previousTimestamp }));
         throw new Error(result.error || 'Failed to update timestamp');
       }
       
       console.log(`✅ [DataContext] Updated ${cardKey} timestamp to ${timestamp}`);
     } catch (error) {
       console.error('[DataContext] Failed to update card timestamp:', error);
+      // Ensure previous value is restored
+      setLastUpdated(prev => ({ ...prev, [cardKey]: previousTimestamp }));
       throw error;
     }
-  }, []);
+  }, [lastUpdated]);
 
   const getLastUpdated = useCallback((cardKey: string) => {
     return lastUpdated[cardKey] || '';
@@ -480,6 +481,6 @@ export const [DataProvider, useData] = createContextHook(() => {
       updateLastUpdated,
       updateCardTimestamp,
       getLastUpdated,
-    ]
+    ],
   );
 });

@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Text, StyleSheet, View, TouchableOpacity } from 'react-native';
+import { Text, StyleSheet, View, TouchableOpacity, Alert } from 'react-native';
 import { Pencil } from 'lucide-react-native';
 import { useData } from '@/contexts/DataContext';
 import { useAuth } from '@/contexts/AuthContext';
@@ -38,7 +38,16 @@ const LastUpdatedHeaderRight: React.FC<LastUpdatedHeaderRightProps> = React.memo
   }, [lastUpdated]);
 
   const handleSaveTimestamp = async (newTimestamp: string) => {
-    await updateCardTimestamp(lastUpdatedKey, newTimestamp);
+    try {
+      await updateCardTimestamp(lastUpdatedKey, newTimestamp);
+      setShowEditModal(false);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      Alert.alert(
+        'Update Failed',
+        `Could not update timestamp: ${errorMessage}. The previous value has been restored.`
+      );
+    }
   };
 
   const getModalTitle = () => {
@@ -71,13 +80,15 @@ const LastUpdatedHeaderRight: React.FC<LastUpdatedHeaderRightProps> = React.memo
         )}
       </View>
 
-      <TimestampEditModal
-        visible={showEditModal}
-        timestamp={lastUpdated}
-        title={getModalTitle()}
-        onSave={handleSaveTimestamp}
-        onClose={() => setShowEditModal(false)}
-      />
+      {isAdmin && (
+        <TimestampEditModal
+          visible={showEditModal}
+          timestamp={lastUpdated}
+          title={getModalTitle()}
+          onSave={handleSaveTimestamp}
+          onClose={() => setShowEditModal(false)}
+        />
+      )}
     </>
   );
 });
