@@ -24,6 +24,7 @@ import {
   saveLogisticsData,
   saveVasData,
   savePoData,
+  updateCardTimestamp as saveCardTimestamp,
 } from '../lib/adminSave';
 
 export interface LastUpdatedData {
@@ -406,6 +407,31 @@ export const [DataProvider, useData] = createContextHook(() => {
     });
   }, []);
 
+  const updateCardTimestamp = useCallback(async (cardKey: string, timestamp: string) => {
+    try {
+      // Update local state immediately for UI responsiveness
+      setLastUpdated(prev => ({ ...prev, [cardKey]: timestamp }));
+      
+      // Save to Supabase - realtime subscriptions will propagate to other users
+      const result = await saveCardTimestamp(cardKey, timestamp);
+      
+      if (!result.success) {
+        // Revert on error
+        setLastUpdated(prev => {
+          const reverted = { ...prev };
+          delete reverted[cardKey];
+          return reverted;
+        });
+        throw new Error(result.error || 'Failed to update timestamp');
+      }
+      
+      console.log(`✅ [DataContext] Updated ${cardKey} timestamp to ${timestamp}`);
+    } catch (error) {
+      console.error('[DataContext] Failed to update card timestamp:', error);
+      throw error;
+    }
+  }, []);
+
   const getLastUpdated = useCallback((cardKey: string) => {
     return lastUpdated[cardKey] || '';
   }, [lastUpdated]);
@@ -430,6 +456,7 @@ export const [DataProvider, useData] = createContextHook(() => {
       updatePoData,
       lastUpdated,
       updateLastUpdated,
+      updateCardTimestamp,
       getLastUpdated,
     }),
     [
@@ -451,6 +478,7 @@ export const [DataProvider, useData] = createContextHook(() => {
       updatePoData,
       lastUpdated,
       updateLastUpdated,
+      updateCardTimestamp,
       getLastUpdated,
     ]
   );
