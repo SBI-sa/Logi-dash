@@ -1,6 +1,5 @@
 import React, { useMemo, useState } from 'react';
 import { View, StyleSheet, ScrollView, TouchableOpacity, Text, Image } from 'react-native';
-import { Stack } from 'expo-router';
 import { Edit2, Plus, Trash2 } from 'lucide-react-native';
 import { LogiPointColors } from '@/constants/colors';
 import { ChartCard } from '@/components/ChartCard';
@@ -8,7 +7,6 @@ import { BulletChart } from '@/components/BulletChart';
 import { SmallMultiplesChart } from '@/components/SmallMultiplesChart';
 import { SimplePieChart, PieChartData } from '@/components/SimplePieChart';
 import { EditModal } from '@/components/EditModal';
-import PageHeader from '@/components/PageHeader';
 import { useAuth } from '@/contexts/AuthContext';
 import { useData } from '@/contexts/DataContext';
 
@@ -19,17 +17,6 @@ export default function VASScreen() {
   const [editField, setEditField] = useState<string>('');
   const [editValue, setEditValue] = useState<string>('');
   const [editFields, setEditFields] = useState<{ label: string; value: string; onChange: (text: string) => void; keyboardType?: 'default' | 'numeric' }[]>([]);
-
-  const screenOptions = useMemo(() => ({
-    title: 'VAS',
-    headerStyle: {
-      backgroundColor: LogiPointColors.midnight,
-    },
-    headerTintColor: LogiPointColors.white,
-    headerTitleStyle: {
-      fontWeight: '700' as const,
-    },
-  }), []);
 
   const handleEditDeliveryTotal = () => {
     setEditField('delivery_total');
@@ -235,8 +222,6 @@ export default function VASScreen() {
 
   return (
     <>
-      <Stack.Screen options={screenOptions} />
-      
       <EditModal
         visible={editModalVisible}
         title={editField}
@@ -256,7 +241,6 @@ export default function VASScreen() {
           />
         </View>
         <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
-          <PageHeader title="Value Added Services (VAS)" lastUpdatedKey="vas" />
           <View style={styles.topCardsRow}>
             <View style={styles.topCard}>
               <ChartCard title="Delivery Total" subtitle="Year Comparison">

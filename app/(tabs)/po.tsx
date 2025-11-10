@@ -1,13 +1,11 @@
 import React, { useMemo, useState } from 'react';
 import { View, StyleSheet, ScrollView, TouchableOpacity, Text, Image } from 'react-native';
-import { Stack } from 'expo-router';
 import { Edit2 } from 'lucide-react-native';
 import { LogiPointColors } from '@/constants/colors';
 import { ChartCard } from '@/components/ChartCard';
 import { EditModal } from '@/components/EditModal';
 import { CIYMovementChart } from '@/components/CIYMovementChart';
 import { ClusteredColumnChart } from '@/components/ClusteredColumnChart';
-import PageHeader from '@/components/PageHeader';
 import { useAuth } from '@/contexts/AuthContext';
 import { useData } from '@/contexts/DataContext';
 
@@ -19,17 +17,6 @@ export default function POScreen() {
   const [editValue, setEditValue] = useState<string>('');
   const [editFields, setEditFields] = useState<{ label: string; value: string; onChange: (text: string) => void; keyboardType?: 'default' | 'numeric' }[]>([]);
   const [fclLclFilter, setFclLclFilter] = useState<'all' | 'fcl' | 'lcl'>('all');
-
-  const screenOptions = useMemo(() => ({
-    title: 'PO',
-    headerStyle: {
-      backgroundColor: LogiPointColors.midnight,
-    },
-    headerTintColor: LogiPointColors.white,
-    headerTitleStyle: {
-      fontWeight: '700' as const,
-    },
-  }), []);
 
   const handleEditQuarter = (type: 'fcl' | 'lcl', quarter: 'q1' | 'q2' | 'q3' | 'q4') => {
     setEditField(`${type}_quarterly_${quarter}`);
@@ -189,8 +176,6 @@ export default function POScreen() {
 
   return (
     <>
-      <Stack.Screen options={screenOptions} />
-      
       <EditModal
         visible={editModalVisible}
         title={editField}
@@ -210,7 +195,6 @@ export default function POScreen() {
           />
         </View>
         <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
-          <PageHeader title="Purchase Orders (PO)" lastUpdatedKey="po" />
           <ChartCard title="CIY Movement" subtitle="Monthly Comparison">
             <CIYMovementChart 
               data={poData.ciyMovement}

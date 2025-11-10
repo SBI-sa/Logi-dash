@@ -11,7 +11,6 @@ import { ComboChart } from '@/components/ComboChart';
 
 
 import { EditModal } from '@/components/EditModal';
-import PageHeader from '@/components/PageHeader';
 import { useAuth } from '@/contexts/AuthContext';
 import { useData } from '@/contexts/DataContext';
 import { supabase } from '@/supabaseClient';
@@ -568,7 +567,6 @@ export default function SalesScreen() {
           />
         </View>
         <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
-          <PageHeader title="Sales Analytics" lastUpdatedKey="sales" />
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.kpiRow}>
             <View style={styles.kpiCardWrapper}>
               <View style={styles.budgetCard}>

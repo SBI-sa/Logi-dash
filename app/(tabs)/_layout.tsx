@@ -4,6 +4,7 @@ import React from "react";
 import { LogiPointColors } from "@/constants/colors";
 import { useAuth } from "@/contexts/AuthContext";
 import { ActivityIndicator, View, Image } from "react-native";
+import LastUpdatedHeaderRight from "@/components/LastUpdatedHeaderRight";
 
 export default function TabLayout() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -58,6 +59,7 @@ export default function TabLayout() {
             fontWeight: '700' as const,
           },
           headerTitle: 'Sales Revenue',
+          headerRight: () => <LastUpdatedHeaderRight lastUpdatedKey="sales" />,
         }}
       />
       <Tabs.Screen
@@ -73,6 +75,7 @@ export default function TabLayout() {
           headerTitleStyle: {
             fontWeight: '700' as const,
           },
+          headerRight: () => <LastUpdatedHeaderRight lastUpdatedKey="risks" />,
         }}
       />
       <Tabs.Screen
@@ -80,6 +83,15 @@ export default function TabLayout() {
         options={{
           title: "Real Estate",
           tabBarIcon: ({ color }) => <Building2 size={22} color={color} />,
+          headerShown: true,
+          headerStyle: {
+            backgroundColor: LogiPointColors.midnight,
+          },
+          headerTintColor: LogiPointColors.white,
+          headerTitleStyle: {
+            fontWeight: '700' as const,
+          },
+          headerRight: () => <LastUpdatedHeaderRight lastUpdatedKey="real_estate" />,
         }}
       />
       <Tabs.Screen
@@ -87,6 +99,15 @@ export default function TabLayout() {
         options={{
           title: "Transportation",
           tabBarIcon: ({ color }) => <Truck size={22} color={color} />,
+          headerShown: true,
+          headerStyle: {
+            backgroundColor: LogiPointColors.midnight,
+          },
+          headerTintColor: LogiPointColors.white,
+          headerTitleStyle: {
+            fontWeight: '700' as const,
+          },
+          headerRight: () => <LastUpdatedHeaderRight lastUpdatedKey="logistics" />,
         }}
       />
       <Tabs.Screen
@@ -94,6 +115,15 @@ export default function TabLayout() {
         options={{
           title: "Warehouse",
           tabBarIcon: ({ color }) => <Warehouse size={22} color={color} />,
+          headerShown: true,
+          headerStyle: {
+            backgroundColor: LogiPointColors.midnight,
+          },
+          headerTintColor: LogiPointColors.white,
+          headerTitleStyle: {
+            fontWeight: '700' as const,
+          },
+          headerRight: () => <LastUpdatedHeaderRight lastUpdatedKey="warehouse" />,
         }}
       />
       <Tabs.Screen
@@ -101,6 +131,15 @@ export default function TabLayout() {
         options={{
           title: "VAS",
           tabBarIcon: ({ color }) => <Tag size={22} color={color} />,
+          headerShown: true,
+          headerStyle: {
+            backgroundColor: LogiPointColors.midnight,
+          },
+          headerTintColor: LogiPointColors.white,
+          headerTitleStyle: {
+            fontWeight: '700' as const,
+          },
+          headerRight: () => <LastUpdatedHeaderRight lastUpdatedKey="vas" />,
         }}
       />
       <Tabs.Screen
@@ -114,6 +153,15 @@ export default function TabLayout() {
               resizeMode="contain"
             />
           ),
+          headerShown: true,
+          headerStyle: {
+            backgroundColor: LogiPointColors.midnight,
+          },
+          headerTintColor: LogiPointColors.white,
+          headerTitleStyle: {
+            fontWeight: '700' as const,
+          },
+          headerRight: () => <LastUpdatedHeaderRight lastUpdatedKey="po" />,
         }}
       />
     </Tabs>

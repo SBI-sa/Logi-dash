@@ -1,6 +1,5 @@
 import React, { useMemo, useState } from 'react';
 import { View, StyleSheet, ScrollView, TouchableOpacity, Text, Image } from 'react-native';
-import { Stack } from 'expo-router';
 import { Truck, Clock, Package, Edit2, Plus, Users, TrendingUp, MapPin } from 'lucide-react-native';
 import { LogiPointColors } from '@/constants/colors';
 import { KPICard } from '@/components/KPICard';
@@ -9,7 +8,6 @@ import { GroupedBarChart } from '@/components/GroupedBarChart';
 import { LineChart } from '@/components/LineChart';
 import { SimplePieChart } from '@/components/SimplePieChart';
 import { EditModal } from '@/components/EditModal';
-import PageHeader from '@/components/PageHeader';
 import { useAuth } from '@/contexts/AuthContext';
 import { useData } from '@/contexts/DataContext';
 
@@ -22,17 +20,6 @@ export default function LogisticsScreen() {
   const [editFields, setEditFields] = useState<{ label: string; value: string; onChange: (text: string) => void; keyboardType?: 'default' | 'numeric' }[]>([]);
   const [editModalTitle, setEditModalTitle] = useState<string>('');
   const [tripCategoryFilter, setTripCategoryFilter] = useState<'total' | string>('total');
-
-  const screenOptions = useMemo(() => ({
-    title: 'Transportation',
-    headerStyle: {
-      backgroundColor: LogiPointColors.midnight,
-    },
-    headerTintColor: LogiPointColors.white,
-    headerTitleStyle: {
-      fontWeight: '700' as const,
-    },
-  }), []);
 
   const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
@@ -281,8 +268,6 @@ export default function LogisticsScreen() {
 
   return (
     <>
-      <Stack.Screen options={screenOptions} />
-      
       <EditModal
         visible={editModalVisible}
         title={editModalTitle}
@@ -302,7 +287,6 @@ export default function LogisticsScreen() {
           />
         </View>
         <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
-          <PageHeader title="Transportation & Logistics" lastUpdatedKey="logistics" />
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.kpiRow}>
             <View>
               <KPICard

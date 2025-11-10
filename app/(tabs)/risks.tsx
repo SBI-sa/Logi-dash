@@ -7,7 +7,6 @@ import { ChartCard } from '@/components/ChartCard';
 
 import { Card } from '@/components/Card';
 import { EditModal } from '@/components/EditModal';
-import PageHeader from '@/components/PageHeader';
 import { useAuth } from '@/contexts/AuthContext';
 import { useData } from '@/contexts/DataContext';
 
@@ -191,7 +190,6 @@ export default function RisksScreen() {
           />
         </View>
         <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
-          <PageHeader title="Risk Management" lastUpdatedKey="risks" />
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.kpiRow}>
             <View>
               <KPICard

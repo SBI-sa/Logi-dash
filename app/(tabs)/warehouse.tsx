@@ -1,6 +1,5 @@
 import React, { useMemo, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Alert, Platform } from 'react-native';
-import { Stack } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Warehouse as WarehouseIcon, Edit2, Upload, X } from 'lucide-react-native';
 import * as ImagePicker from 'expo-image-picker';
@@ -9,7 +8,6 @@ import { KPICard } from '@/components/KPICard';
 import { ChartCard } from '@/components/ChartCard';
 import { ZonePieChart } from '@/components/ZonePieChart';
 import { EditModal } from '@/components/EditModal';
-import PageHeader from '@/components/PageHeader';
 import { useAuth } from '@/contexts/AuthContext';
 import { useData } from '@/contexts/DataContext';
 import { uploadDashboardImage, supabase } from '@/supabaseClient';
@@ -23,17 +21,6 @@ export default function WarehouseScreen() {
   const [editField, setEditField] = useState<string>('');
   const [editValue, setEditValue] = useState<string>('');
   const [editFields, setEditFields] = useState<{ label: string; value: string; onChange: (text: string) => void; keyboardType?: 'default' | 'numeric' }[]>([]);
-
-  const screenOptions = useMemo(() => ({
-    title: 'Warehouse Management',
-    headerStyle: {
-      backgroundColor: LogiPointColors.midnight,
-    },
-    headerTintColor: LogiPointColors.white,
-    headerTitleStyle: {
-      fontWeight: '700' as const,
-    },
-  }), []);
 
   const handleEdit = (field: string, currentValue: number) => {
     setEditField(field);
@@ -226,8 +213,6 @@ export default function WarehouseScreen() {
 
   return (
     <>
-      <Stack.Screen options={screenOptions} />
-      
       <EditModal
         visible={editModalVisible}
         title={editField}
@@ -247,7 +232,6 @@ export default function WarehouseScreen() {
           />
         </View>
         <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
-          <PageHeader title="Warehouse Management" lastUpdatedKey="warehouse" />
           <View>
             <KPICard
               title="Total Occupancy"
