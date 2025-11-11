@@ -273,46 +273,6 @@ export default function SalesScreen() {
     return value.toLocaleString();
   };
 
-  const syncSegmentsFromJanuary = useCallback(async () => {
-    const updatedData = { ...salesData };
-    const januarySegments = salesData.revenueBySegmentMonthly['January'] || [];
-    
-    if (januarySegments.length === 0) {
-      return;
-    }
-
-    const monthsList = ['February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-    const newMonthlySegments = { ...salesData.revenueBySegmentMonthly } as typeof salesData.revenueBySegmentMonthly;
-
-    monthsList.forEach((month) => {
-      const existingSegments = newMonthlySegments[month] || [];
-      const existingSegmentNames = new Set(existingSegments.map(s => s.segment));
-      
-      januarySegments.forEach((janSegment) => {
-        if (!existingSegmentNames.has(janSegment.segment)) {
-          existingSegments.push({
-            segment: janSegment.segment,
-            revenue: 0,
-            budget: 0,
-            lastYearRevenue: 0,
-            color: janSegment.color,
-          });
-        }
-      });
-      
-      newMonthlySegments[month] = existingSegments;
-    });
-
-    updatedData.revenueBySegmentMonthly = newMonthlySegments;
-    if (isAdmin) {
-      await saveSalesData(updatedData);
-    }
-  }, [salesData, isAdmin]);
-
-  useEffect(() => {
-    console.log('[SalesScreen] Initial syncSegmentsFromJanuary');
-    syncSegmentsFromJanuary();
-  }, []);
 
   const handleDeleteSegment = async (index: number) => {
     try {
@@ -751,17 +711,6 @@ export default function SalesScreen() {
                 </TouchableOpacity>
               ))}
             </ScrollView>
-            {isAdmin && (
-              <View style={styles.syncRow}>
-                <TouchableOpacity
-                  testID="sync-jan-segments"
-                  style={styles.syncButton}
-                  onPress={syncSegmentsFromJanuary}
-                >
-                  <Text style={styles.syncButtonText}>📋 Copy January Segments to All Months</Text>
-                </TouchableOpacity>
-              </View>
-            )}
             <YearOverYearChart 
               data={displayedSegments.map((s, i) => ({
                 label: s.segment,
@@ -1496,34 +1445,6 @@ const styles = StyleSheet.create({
   },
   changeNegative: {
     color: LogiPointColors.accent,
-  },
-  syncRow: {
-    marginBottom: 16,
-    marginTop: 8,
-    alignItems: 'center',
-    backgroundColor: LogiPointColors.gray[50],
-    padding: 12,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: LogiPointColors.primary,
-  },
-  syncButton: {
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    backgroundColor: LogiPointColors.primary,
-    borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  syncButtonText: {
-    fontSize: 15,
-    fontWeight: '700' as const,
-    color: LogiPointColors.white,
   },
   customersTable: {
     marginTop: 16,
