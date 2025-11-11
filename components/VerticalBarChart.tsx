@@ -92,16 +92,15 @@ const styles = StyleSheet.create({
   },
   chartArea: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'space-around',
     alignItems: 'flex-end',
     height: 300,
     paddingTop: 40,
-    paddingHorizontal: 20,
   },
   barGroup: {
     flex: 1,
     alignItems: 'center',
-    gap: 12,
+    gap: 8,
   },
   barsContainer: {
     flex: 1,
@@ -112,11 +111,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'flex-end',
-    gap: 8,
+    gap: 4,
     height: '100%',
   },
   barColumn: {
-    width: 36,
+    width: 28,
     alignItems: 'center',
     justifyContent: 'flex-end',
     gap: 4,
