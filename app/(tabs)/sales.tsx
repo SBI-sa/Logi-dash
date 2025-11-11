@@ -1344,7 +1344,8 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600' as const,
     color: LogiPointColors.midnight,
-    width: 50,
+    width: 130,
+    marginRight: 16,
   },
   varianceValues: {
     flex: 1,
