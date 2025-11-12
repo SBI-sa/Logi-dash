@@ -67,25 +67,11 @@ export default function SalesScreen() {
 
   const top10Customers = useMemo(() => {
     if (selectedTop10Month === 'Total') {
-      const totals = new Map<string, { sales: number; color: string }>();
-      Object.values(salesData.topCustomersMonthly).forEach(monthCustomers => {
-        monthCustomers.forEach(customer => {
-          const existing = totals.get(customer.name);
-          if (existing) {
-            existing.sales += customer.sales;
-          } else {
-            totals.set(customer.name, { sales: customer.sales, color: customer.color });
-          }
-        });
-      });
-      return Array.from(totals.entries())
-        .map(([name, data]) => ({ name, sales: data.sales, color: data.color }))
-        .sort((a, b) => b.sales - a.sales)
-        .slice(0, 10);
+      return salesData.topCustomersTotal || [];
     }
     const customers = salesData.topCustomersMonthly[selectedTop10Month] || [];
     return customers.slice(0, 10);
-  }, [selectedTop10Month, salesData.topCustomersMonthly]);
+  }, [selectedTop10Month, salesData.topCustomersMonthly, salesData.topCustomersTotal]);
 
   const top10Total = useMemo(() => {
     return top10Customers.reduce((sum, customer) => sum + customer.sales, 0);
@@ -217,7 +203,9 @@ export default function SalesScreen() {
       ];
       setEditFields(tempFields);
     } else if (field === 'top10Customers') {
-      const customers = salesData.topCustomersMonthly[selectedTop10Month] || [];
+      const customers = selectedTop10Month === 'Total' 
+        ? (salesData.topCustomersTotal || [])
+        : (salesData.topCustomersMonthly[selectedTop10Month] || []);
       const item = customers[index];
       if (!item) {
         return;
@@ -424,15 +412,25 @@ export default function SalesScreen() {
         };
         updatedData.monthlyRevenue = newMonthly;
       } else if (fieldName === 'top10Customers') {
-        const newMonthlyCustomers = { ...salesData.topCustomersMonthly };
-        const monthCustomers = [...(newMonthlyCustomers[selectedTop10Month] || [])];
-        monthCustomers[index] = {
-          name: editFields[0].value,
-          sales: parseFloat(editFields[1].value) || 0,
-          color: editFields[2].value,
-        };
-        newMonthlyCustomers[selectedTop10Month] = monthCustomers;
-        updatedData.topCustomersMonthly = newMonthlyCustomers;
+        if (selectedTop10Month === 'Total') {
+          const newTotalCustomers = [...(salesData.topCustomersTotal || [])];
+          newTotalCustomers[index] = {
+            name: editFields[0].value,
+            sales: parseFloat(editFields[1].value) || 0,
+            color: editFields[2].value,
+          };
+          updatedData.topCustomersTotal = newTotalCustomers;
+        } else {
+          const newMonthlyCustomers = { ...salesData.topCustomersMonthly };
+          const monthCustomers = [...(newMonthlyCustomers[selectedTop10Month] || [])];
+          monthCustomers[index] = {
+            name: editFields[0].value,
+            sales: parseFloat(editFields[1].value) || 0,
+            color: editFields[2].value,
+          };
+          newMonthlyCustomers[selectedTop10Month] = monthCustomers;
+          updatedData.topCustomersMonthly = newMonthlyCustomers;
+        }
       } else if (fieldName === 'accountManagers') {
         const newManagers = [...salesData.accountManagers];
         newManagers[index] = {
@@ -1033,7 +1031,7 @@ export default function SalesScreen() {
                 {isAdmin && <View style={{ width: 40 }} />}
               </View>
             </View>
-            {isAdmin && (
+            {isAdmin && selectedTop10Month !== 'Total' && (
               <TouchableOpacity
                 style={[styles.chartEditButton, styles.addButton, { marginTop: 16 }]}
                 onPress={() => {
