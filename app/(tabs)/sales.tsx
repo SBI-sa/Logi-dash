@@ -300,6 +300,54 @@ export default function SalesScreen() {
     }
   };
 
+  const handleDeleteCustomer = async (index: number) => {
+    try {
+      const updatedData = { ...salesData };
+      const customers = selectedCustomerMonth === 'All' ? displayedCustomers : (salesData.topCustomersMonthly[selectedCustomerMonth] || []);
+      const target = customers[index];
+      if (!target) {
+        return;
+      }
+      const customerName = target.name;
+
+      updatedData.topCustomers = (updatedData.topCustomers || []).filter(c => c.name !== customerName);
+
+      const monthsList = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+      const newMonthlyCustomers = { ...salesData.topCustomersMonthly };
+      
+      monthsList.forEach(m => {
+        const arr = newMonthlyCustomers[m] || [];
+        newMonthlyCustomers[m] = arr.filter(c => c.name !== customerName);
+      });
+      updatedData.topCustomersMonthly = newMonthlyCustomers;
+
+      await saveSalesData(updatedData);
+    } catch (e) {
+      console.error('Failed to delete customer:', e);
+    }
+  };
+
+  const handleDeleteTop10Customer = async (index: number) => {
+    try {
+      const updatedData = { ...salesData };
+      const customers = salesData.topCustomersMonthly[selectedTop10Month] || [];
+      const target = customers[index];
+      if (!target) {
+        return;
+      }
+
+      const newMonthlyCustomers = { ...salesData.topCustomersMonthly };
+      const monthCustomers = [...(newMonthlyCustomers[selectedTop10Month] || [])];
+      monthCustomers.splice(index, 1);
+      newMonthlyCustomers[selectedTop10Month] = monthCustomers;
+      updatedData.topCustomersMonthly = newMonthlyCustomers;
+
+      await saveSalesData(updatedData);
+    } catch (e) {
+      console.error('Failed to delete top 10 customer:', e);
+    }
+  };
+
   const handleSave = async () => {
     if (editFields.length > 0) {
       const [fieldName, indexStr] = editField.split('_');
@@ -508,13 +556,27 @@ export default function SalesScreen() {
           setEditModalVisible(false);
           setCurrentEditIndex(null);
         }}
-        onDelete={editField.startsWith('revenueBySegment_') ? () => {
-          if (currentEditIndex !== null) {
-            handleDeleteSegment(currentEditIndex);
-            setEditModalVisible(false);
-            setCurrentEditIndex(null);
-          }
-        } : undefined}
+        onDelete={
+          editField.startsWith('revenueBySegment_') ? () => {
+            if (currentEditIndex !== null) {
+              handleDeleteSegment(currentEditIndex);
+              setEditModalVisible(false);
+              setCurrentEditIndex(null);
+            }
+          } : editField.startsWith('topCustomers_') ? () => {
+            if (currentEditIndex !== null) {
+              handleDeleteCustomer(currentEditIndex);
+              setEditModalVisible(false);
+              setCurrentEditIndex(null);
+            }
+          } : editField.startsWith('top10Customers_') ? () => {
+            if (currentEditIndex !== null) {
+              handleDeleteTop10Customer(currentEditIndex);
+              setEditModalVisible(false);
+              setCurrentEditIndex(null);
+            }
+          } : undefined
+        }
         fields={editFields.length > 0 ? editFields : undefined}
       />
       
