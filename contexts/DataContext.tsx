@@ -21,7 +21,9 @@ import type { RealtimeChannel } from '@supabase/supabase-js';
 import {
   saveSalesData,
   saveRisksData,
+  saveRealEstateData,
   saveLogisticsData,
+  saveWarehouseData,
   saveVasData,
   savePoData,
   updateCardTimestamp as saveCardTimestamp,
@@ -360,7 +362,8 @@ export const [DataProvider, useData] = createContextHook(() => {
   const updateWarehouseData = useCallback(async (data: WarehouseData) => {
     try {
       setWarehouseData(data);
-      console.log('[DataContext] updateWarehouseData called - pending adminSave integration');
+      await saveWarehouseData(data);
+      console.log('[DataContext] updateWarehouseData - saved to Supabase');
     } catch (error) {
       console.error('[DataContext] Failed to update warehouse data:', error);
       throw error;
@@ -370,7 +373,8 @@ export const [DataProvider, useData] = createContextHook(() => {
   const updateRealEstateData = useCallback(async (data: RealEstateData) => {
     try {
       setRealEstateData(data);
-      console.log('[DataContext] updateRealEstateData called - pending adminSave integration');
+      await saveRealEstateData(data);
+      console.log('[DataContext] updateRealEstateData - saved to Supabase');
     } catch (error) {
       console.error('[DataContext] Failed to update real estate data:', error);
       throw error;
