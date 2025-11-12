@@ -23,7 +23,6 @@ export interface SalesData {
   };
   topProducts: { name: string; sales: number }[];
   topCustomers: { name: string; sales: number; color: string }[];
-  topCustomersTotal: { name: string; sales: number; color: string }[];
   topCustomersMonthly: { [month: string]: { name: string; sales: number; color: string }[] };
   revenueBySegment: { segment: string; revenue: number; budget?: number; lastYearRevenue?: number; color?: string }[];
   revenueBySegmentMonthly: { [month: string]: { segment: string; revenue: number; budget?: number; lastYearRevenue?: number; color?: string }[] };
@@ -214,18 +213,6 @@ export const mockSalesData: SalesData = {
     { name: 'Client Gamma', sales: 2100000, color: '#00617f' },
     { name: 'Client Delta', sales: 1900000, color: '#00617f' },
     { name: 'Client Epsilon', sales: 1450000, color: '#00617f' },
-  ],
-  topCustomersTotal: [
-    { name: 'Client Alpha', sales: 2900000, color: '#00617f' },
-    { name: 'Client Beta', sales: 2600000, color: '#00617f' },
-    { name: 'Client Gamma', sales: 2100000, color: '#00617f' },
-    { name: 'Client Delta', sales: 1910000, color: '#00617f' },
-    { name: 'Client Epsilon', sales: 1500000, color: '#00617f' },
-    { name: 'New Customer', sales: 0, color: '#00617f' },
-    { name: 'Customer 7', sales: 0, color: '#00617f' },
-    { name: 'Customer 8', sales: 0, color: '#00617f' },
-    { name: 'Customer 9', sales: 0, color: '#00617f' },
-    { name: 'Customer 10', sales: 0, color: '#00617f' },
   ],
   topCustomersMonthly: {
     'January': [
