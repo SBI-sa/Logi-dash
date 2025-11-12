@@ -1050,7 +1050,7 @@ export default function SalesScreen() {
                   };
                   const newMonthlyCustomers = { ...salesData.topCustomersMonthly };
                   const monthCustomers = [...(newMonthlyCustomers[selectedTop10Month] || [])];
-                  monthCustomers.push(newCustomer);
+                  monthCustomers.unshift(newCustomer);
                   newMonthlyCustomers[selectedTop10Month] = monthCustomers;
                   updatedData.topCustomersMonthly = newMonthlyCustomers;
                   updateSalesData(updatedData);
