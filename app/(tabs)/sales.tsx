@@ -18,7 +18,7 @@ import { saveSalesData } from '@/lib/adminSave';
 
 export default function SalesScreen() {
   const { isAdmin } = useAuth();
-  const { salesData, getLastUpdated, updateLastUpdated } = useData();
+  const { salesData, updateSalesData, getLastUpdated, updateLastUpdated } = useData();
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [editField, setEditField] = useState<string>('');
   const [editValue, setEditValue] = useState<string>('');
@@ -1048,7 +1048,7 @@ export default function SalesScreen() {
                   monthCustomers.push(newCustomer);
                   newMonthlyCustomers[selectedTop10Month] = monthCustomers;
                   updatedData.topCustomersMonthly = newMonthlyCustomers;
-                  saveSalesData(updatedData);
+                  updateSalesData(updatedData);
                 }}
               >
                 <Plus size={14} color={LogiPointColors.chart.green} />
