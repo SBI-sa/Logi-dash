@@ -1009,22 +1009,27 @@ export default function SalesScreen() {
                 <Text style={[styles.customersTableHeaderText, { width: 120, textAlign: 'right' }]}>Revenue</Text>
                 {isAdmin && <View style={{ width: 40 }} />}
               </View>
-              {top10Customers.map((customer, index) => (
-                <View key={index} style={styles.customersTableRow}>
-                  <Text style={[styles.customersTableCell, { flex: 1 }]}>{customer.name}</Text>
-                  <Text style={[styles.customersTableCell, { width: 120, textAlign: 'right', fontWeight: '700' }]}>
-                    {formatCurrency(customer.sales)}
-                  </Text>
-                  {isAdmin && (
-                    <TouchableOpacity
-                      style={styles.customersTableEditButton}
-                      onPress={() => handleEditArray('top10Customers', index)}
-                    >
-                      <Edit2 size={14} color={LogiPointColors.primary} />
-                    </TouchableOpacity>
-                  )}
-                </View>
-              ))}
+              {top10Customers.map((customer, displayIndex) => {
+                const customers = salesData.topCustomersMonthly[selectedTop10Month] || [];
+                const actualIndex = customers.findIndex(c => c.name === customer.name && c.sales === customer.sales);
+                
+                return (
+                  <View key={displayIndex} style={styles.customersTableRow}>
+                    <Text style={[styles.customersTableCell, { flex: 1 }]}>{customer.name}</Text>
+                    <Text style={[styles.customersTableCell, { width: 120, textAlign: 'right', fontWeight: '700' }]}>
+                      {formatCurrency(customer.sales)}
+                    </Text>
+                    {isAdmin && (
+                      <TouchableOpacity
+                        style={styles.customersTableEditButton}
+                        onPress={() => handleEditArray('top10Customers', actualIndex >= 0 ? actualIndex : displayIndex)}
+                      >
+                        <Edit2 size={14} color={LogiPointColors.primary} />
+                      </TouchableOpacity>
+                    )}
+                  </View>
+                );
+              })}
               <View style={styles.customersTotalRow}>
                 <Text style={[styles.customersTotalText, { flex: 1 }]}>Total</Text>
                 <Text style={[styles.customersTotalText, { width: 120, textAlign: 'right' }]}>
