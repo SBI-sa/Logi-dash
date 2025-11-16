@@ -34,8 +34,14 @@ The Sales module features two types of customer editing:
 - **Data Flow**: Total tab customers use dedicated `topCustomersTotal` array, while monthly tabs use `topCustomersMonthly` object
 - **Fallback**: If Supabase column doesn't exist, uses mock data from `mockSalesData.topCustomersTotal`
 
+### Data Entry
+The application supports **exact numeric values** without rounding or limits:
+- All revenue, budget, and sales fields accept precise values (e.g., 165300, 1246580)
+- Values are stored and displayed exactly as entered using `parseFloat()` without any abbreviation
+- No K/M formatting on input or storage - only on charts where appropriate
+
 ## External Dependencies
-- **Supabase**: Backend services for database (8 tables: `sales`, `risks`, `real_estate`, `logistics`, `warehouse`, `vas`, `po`, `last_updated`), authentication, and real-time subscriptions. Sales table includes JSONB columns: `top_customers_total` for Total tab customers, `top_customers_monthly` for monthly customer data.
+- **Supabase**: Backend services for database (8 tables: `sales`, `risks`, `real_estate`, `logistics`, `warehouse`, `vas`, `po`, `last_updated`), authentication, and real-time subscriptions. Sales table includes JSONB columns: `top_customers_total` for Total tab customers, `top_customers_monthly` for monthly customer data, `revenue_by_segment_monthly` for segment data.
 - **Expo**: For cross-platform development and build processes.
 - **@tanstack/react-query**: For server state management and data fetching.
 - **Zustand**: For client-side state management.
@@ -44,3 +50,9 @@ The Sales module features two types of customer editing:
 - **react-native-svg**: Used for rendering SVG-based charts and graphics.
 - **Metro**: JavaScript bundler for React Native.
 - **AsyncStorage**: Used for local data persistence (falls back to localStorage on web).
+
+## Recent Changes (November 16, 2025)
+- **Fixed data persistence issue**: Added missing `top_customers_total` JSONB column to Supabase sales table via SQL Editor
+- **Revenue by Segment colors**: Updated to 4-color repeating pattern (#00617f, #a7aca1, #081f2c, #9b2743) across all months
+- **Exact value display**: Removed K/M abbreviations in formatCurrency function to show precise numbers
+- All admin edits now persist correctly to Supabase with real-time synchronization
