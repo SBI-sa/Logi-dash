@@ -352,11 +352,21 @@ export default function SalesScreen() {
       } else if (fieldName === 'revenueBySegment') {
         const oldSegmentName = (selectedMonth === 'All' ? displayedSegments : (salesData.revenueBySegmentMonthly[selectedMonth] || []))[index]?.segment;
         const newSegmentName = editFields[0].value;
+        
+        const revenueValue = parseFloat(editFields[1].value) || 0;
+        const budgetValue = parseFloat(editFields[2].value) || 0;
+        const lastYearValue = parseFloat(editFields[3].value) || 0;
+        
+        console.log(`💾 Saving segment "${newSegmentName}" for ${selectedMonth}:`);
+        console.log(`  Revenue: "${editFields[1].value}" → ${revenueValue}`);
+        console.log(`  Budget: "${editFields[2].value}" → ${budgetValue}`);
+        console.log(`  Last Year: "${editFields[3].value}" → ${lastYearValue}`);
+        
         const newSegmentData = {
           segment: newSegmentName,
-          revenue: parseFloat(editFields[1].value) || 0,
-          budget: parseFloat(editFields[2].value) || 0,
-          lastYearRevenue: parseFloat(editFields[3].value) || 0,
+          revenue: revenueValue,
+          budget: budgetValue,
+          lastYearRevenue: lastYearValue,
           color: editFields[4].value,
         };
 
