@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
-import { View, StyleSheet, ScrollView, TouchableOpacity, Text, Image } from 'react-native';
+import { View, StyleSheet, ScrollView, TouchableOpacity, Text, Image, Linking } from 'react-native';
 import Alert from '@blazejkustra/react-native-alert';
-import { Truck, Clock, Package, Edit2, Plus, Users, TrendingUp, MapPin, Trash2 } from 'lucide-react-native';
+import { Truck, Clock, Package, Edit2, Plus, Users, TrendingUp, MapPin, Trash2, ExternalLink } from 'lucide-react-native';
 import { LogiPointColors } from '@/constants/colors';
 import { KPICard } from '@/components/KPICard';
 import { ChartCard } from '@/components/ChartCard';
@@ -524,6 +524,14 @@ export default function LogisticsScreen() {
             </View>
           </ScrollView>
 
+          <TouchableOpacity
+            style={styles.trackingLinkContainer}
+            onPress={() => Linking.openURL('https://portal.logipoint.sa/logipoint/DashboardTransportation')}
+          >
+            <ExternalLink size={18} color={LogiPointColors.primary} />
+            <Text style={styles.trackingLinkText}>Truck Tracking Link</Text>
+          </TouchableOpacity>
+
           <ChartCard title="Trip Categories" subtitle="Distribution by location and status">
             <View style={styles.filterContainer}>
               <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterScroll}>
@@ -949,5 +957,29 @@ const styles = StyleSheet.create({
     borderColor: LogiPointColors.error,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  trackingLinkContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    marginBottom: 16,
+    backgroundColor: LogiPointColors.white,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: LogiPointColors.primary,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  trackingLinkText: {
+    fontSize: 16,
+    fontWeight: '600' as const,
+    color: LogiPointColors.primary,
+    textDecorationLine: 'underline',
   },
 });
