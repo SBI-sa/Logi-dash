@@ -233,7 +233,7 @@ const styles = StyleSheet.create({
     fontWeight: '600' as const,
   },
   deleteButton: {
-    backgroundColor: LogiPointColors.accent,
+    backgroundColor: LogiPointColors.error,
   },
   deleteButtonText: {
     color: LogiPointColors.white,

@@ -20,6 +20,7 @@ export default function LogisticsScreen() {
   const [editFields, setEditFields] = useState<{ label: string; value: string; onChange: (text: string) => void; keyboardType?: 'default' | 'numeric' }[]>([]);
   const [editModalTitle, setEditModalTitle] = useState<string>('');
   const [tripCategoryFilter, setTripCategoryFilter] = useState<'total' | string>('total');
+  const [currentDeleteHandler, setCurrentDeleteHandler] = useState<(() => void) | null>(null);
 
   const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
@@ -28,6 +29,7 @@ export default function LogisticsScreen() {
     setEditValue(currentValue?.toString() || '0');
     setEditFields([]);
     setEditModalTitle(title || field);
+    setCurrentDeleteHandler(null);
     setEditModalVisible(true);
   };
 
@@ -46,6 +48,7 @@ export default function LogisticsScreen() {
       ];
       setEditFields(tempFields);
       setEditModalTitle(`Edit ${item.month}`);
+      setCurrentDeleteHandler(() => () => handleDeleteDeliveryPerformance(index));
     } else if (field === 'delaysByRoute') {
       const item = logisticsData.delaysByRoute[index];
       const tempFields: { label: string; value: string; onChange: (text: string) => void; keyboardType?: 'default' | 'numeric' }[] = [
@@ -61,6 +64,7 @@ export default function LogisticsScreen() {
       ];
       setEditFields(tempFields);
       setEditModalTitle(`Edit ${item.route}`);
+      setCurrentDeleteHandler(() => () => handleDeleteRoute(index));
     }
     
     setEditModalVisible(true);
@@ -81,6 +85,7 @@ export default function LogisticsScreen() {
     ];
     setEditFields(tempFields);
     setEditModalTitle('Add Route');
+    setCurrentDeleteHandler(null);
     setEditModalVisible(true);
   };
 
@@ -98,6 +103,7 @@ export default function LogisticsScreen() {
       ];
       setEditFields(tempFields);
       setEditModalTitle(`Edit ${item.name} - ${month}`);
+      setCurrentDeleteHandler(() => () => handleDeleteTripCategory(index, true, month));
     } else {
       const item = logisticsData.tripCategories[index];
       setEditField(`tripCategory_${index}`);
@@ -111,6 +117,7 @@ export default function LogisticsScreen() {
       ];
       setEditFields(tempFields);
       setEditModalTitle(`Edit ${item.name}`);
+      setCurrentDeleteHandler(() => () => handleDeleteTripCategory(index, false, undefined));
     }
     setEditModalVisible(true);
   };
@@ -127,6 +134,7 @@ export default function LogisticsScreen() {
     ];
     setEditFields(tempFields);
     setEditModalTitle('Add Trip Category');
+    setCurrentDeleteHandler(null);
     setEditModalVisible(true);
   };
 
@@ -142,6 +150,7 @@ export default function LogisticsScreen() {
     ];
     setEditFields(tempFields);
     setEditModalTitle('Edit Thresholds');
+    setCurrentDeleteHandler(null);
     setEditModalVisible(true);
   };
 
@@ -283,6 +292,7 @@ export default function LogisticsScreen() {
               newMonthlyCategories.splice(index, 1);
               updatedData.tripCategoriesMonthly[month] = newMonthlyCategories;
               updateLogisticsData(updatedData);
+              setEditModalVisible(false);
             },
           },
         ]
@@ -309,6 +319,7 @@ export default function LogisticsScreen() {
                 );
               });
               updateLogisticsData(updatedData);
+              setEditModalVisible(false);
             },
           },
         ]
@@ -332,6 +343,7 @@ export default function LogisticsScreen() {
             newPerformance.splice(index, 1);
             updatedData.deliveryPerformance = newPerformance;
             updateLogisticsData(updatedData);
+            setEditModalVisible(false);
           },
         },
       ]
@@ -354,6 +366,7 @@ export default function LogisticsScreen() {
             newRoutes.splice(index, 1);
             updatedData.delaysByRoute = newRoutes;
             updateLogisticsData(updatedData);
+            setEditModalVisible(false);
           },
         },
       ]
@@ -369,6 +382,7 @@ export default function LogisticsScreen() {
         onChangeText={setEditValue}
         onSave={handleSave}
         onCancel={() => setEditModalVisible(false)}
+        onDelete={currentDeleteHandler || undefined}
         fields={editFields.length > 0 ? editFields : undefined}
       />
       

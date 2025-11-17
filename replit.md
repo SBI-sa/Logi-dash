@@ -42,11 +42,11 @@ The application supports **exact numeric values** without rounding or limits:
 
 ### Transportation/Logistics Module Delete Functionality
 The Transportation module supports deletion of editable data entries with confirmation alerts:
-- **Trip Categories**: Delete button available for custom categories in both Total and Monthly tabs. Deleting from Total tab removes category from all months. Auto-calculated "Total Trips" category cannot be deleted.
-- **Delivery Performance**: Delete button for each monthly performance entry. Allows removing specific months from the tracking chart.
-- **Delays by Route**: Delete button for each route entry. Enables removal of routes that are no longer tracked.
-- **UI Pattern**: Delete buttons (trash icon) appear next to edit buttons for admin users. All deletions trigger confirmation alerts to prevent accidental data loss.
-- **Data Flow**: Deletions update local state, persist to Supabase, and sync in real-time to all connected clients.
+- **Trip Categories**: Delete button available inside edit modal for custom categories in both Total and Monthly tabs. Deleting from Total tab removes category from all months. Auto-calculated "Total Trips" category cannot be deleted.
+- **Delivery Performance**: Delete button inside edit modal for each monthly performance entry. Allows removing specific months from the tracking chart.
+- **Delays by Route**: Delete button inside edit modal for each route entry. Enables removal of routes that are no longer tracked.
+- **UI Pattern**: Red Delete button appears inside the edit modal footer, positioned next to Cancel and Save buttons. Only shows for edit operations (not for add operations). All deletions trigger confirmation alerts to prevent accidental data loss.
+- **Data Flow**: Deletions update local state, persist to Supabase, sync in real-time to all connected clients, and automatically close the edit modal.
 
 ## External Dependencies
 - **Supabase**: Backend services for database (8 tables: `sales`, `risks`, `real_estate`, `logistics`, `warehouse`, `vas`, `po`, `last_updated`), authentication, and real-time subscriptions. Sales table includes JSONB columns: `top_customers_total` for Total tab customers, `top_customers_monthly` for monthly customer data, `revenue_by_segment_monthly` for segment data.
