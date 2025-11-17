@@ -34,6 +34,14 @@ The Sales module features two types of customer editing:
 - **Data Flow**: Total tab customers use dedicated `topCustomersTotal` array, while monthly tabs use `topCustomersMonthly` object
 - **Fallback**: If Supabase column doesn't exist, uses mock data from `mockSalesData.topCustomersTotal`
 
+### Sales Module Bullet Graph Visualization
+The Sales module includes bullet graph visualizations on the main revenue KPI cards:
+- **YTD Revenue vs Budget Card**: Visual bullet graph shows actual YTD revenue compared to budget target. Green bar indicates over-budget performance, accent color for under-budget.
+- **Total Revenue Card**: Visual bullet graph shows current total revenue compared to last year's YTD baseline. Green bar indicates growth, accent color for decline.
+- **Component**: `BulletGraph.tsx` handles visualization with automatic scaling and edge-case handling (zero values)
+- **Integration**: KPICard component accepts optional `bulletGraph` prop with `actual` and `target` values
+- **Color Logic**: Automatically applies green for over-target performance, accent color for under-target
+
 ### Data Entry
 The application supports **exact numeric values** without rounding or limits:
 - All revenue, budget, and sales fields accept precise values (e.g., 165300, 1246580)
@@ -72,8 +80,10 @@ Image uploads use cache-busting timestamps to ensure replacements display immedi
 
 ## Recent Changes
 ### November 17, 2025
+- **Bullet Graph Visualization**: Added bullet graphs to Sales revenue KPI cards (YTD Revenue vs Budget and Total Revenue). Visual comparison shows actual vs target/baseline with automatic color-coding (green for over-target, accent for under). Component includes edge-case handling for zero values.
 - **Critical Alert fix for Web platform**: Fixed Transportation delete buttons not working on web. React Native Web doesn't support `Alert.alert()` natively - installed `@blazejkustra/react-native-alert` package to provide cross-platform alert support. Delete confirmations now work correctly on all platforms (iOS, Android, Web)
 - **Transportation delete functionality**: Added delete buttons with confirmation alerts for Trip Categories (Total and Monthly tabs), Delivery Performance entries, and Delays by Route. Deletions cascade properly (Total tab removes from all months) and sync to Supabase in real-time
+- **Truck Tracking Link**: Added external hyperlink in Transportation page middle section pointing to https://portal.logipoint.sa/logipoint/DashboardTransportation with clean UI styling
 - **Image cache-busting architecture**: Implemented dual-object pattern for image uploads - clean URLs stored in Supabase database, timestamped URLs used in UI to force browser refresh. Prevents mutation bugs and ensures future image replacements work correctly for warehouse allocation, land, and JLH images
 - **Warehouse village colors**: Updated to use only 4-color repeating pattern (#00617f, #a7aca1, #081f2c, #9b2743) across all village cards
 
