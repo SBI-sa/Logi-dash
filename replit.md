@@ -54,6 +54,7 @@ The Transportation module supports deletion of editable data entries with confir
 - **@tanstack/react-query**: For server state management and data fetching.
 - **Zustand**: For client-side state management.
 - **@supabase/supabase-js**: JavaScript client library for Supabase interaction.
+- **@blazejkustra/react-native-alert**: Cross-platform Alert implementation supporting iOS, Android, and Web. Required because React Native Web doesn't support `Alert.alert()` natively.
 - **lucide-react-native**: Icon library used for UI elements.
 - **react-native-svg**: Used for rendering SVG-based charts and graphics.
 - **Metro**: JavaScript bundler for React Native.
@@ -71,6 +72,7 @@ Image uploads use cache-busting timestamps to ensure replacements display immedi
 
 ## Recent Changes
 ### November 17, 2025
+- **Critical Alert fix for Web platform**: Fixed Transportation delete buttons not working on web. React Native Web doesn't support `Alert.alert()` natively - installed `@blazejkustra/react-native-alert` package to provide cross-platform alert support. Delete confirmations now work correctly on all platforms (iOS, Android, Web)
 - **Transportation delete functionality**: Added delete buttons with confirmation alerts for Trip Categories (Total and Monthly tabs), Delivery Performance entries, and Delays by Route. Deletions cascade properly (Total tab removes from all months) and sync to Supabase in real-time
 - **Image cache-busting architecture**: Implemented dual-object pattern for image uploads - clean URLs stored in Supabase database, timestamped URLs used in UI to force browser refresh. Prevents mutation bugs and ensures future image replacements work correctly for warehouse allocation, land, and JLH images
 - **Warehouse village colors**: Updated to use only 4-color repeating pattern (#00617f, #a7aca1, #081f2c, #9b2743) across all village cards

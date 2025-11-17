@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
-import { View, StyleSheet, ScrollView, TouchableOpacity, Text, Image, Alert } from 'react-native';
+import { View, StyleSheet, ScrollView, TouchableOpacity, Text, Image } from 'react-native';
+import Alert from '@blazejkustra/react-native-alert';
 import { Truck, Clock, Package, Edit2, Plus, Users, TrendingUp, MapPin, Trash2 } from 'lucide-react-native';
 import { LogiPointColors } from '@/constants/colors';
 import { KPICard } from '@/components/KPICard';
