@@ -15,7 +15,8 @@ export const BulletGraph = React.memo(function BulletGraph({
   color = LogiPointColors.primary,
   maxValue
 }: BulletGraphProps) {
-  const max = maxValue || Math.max(actual, target) * 1.2;
+  const calculatedMax = Math.max(actual, target) * 1.2;
+  const max = maxValue || (calculatedMax > 0 ? calculatedMax : 1);
   const actualPercentage = Math.min((actual / max) * 100, 100);
   const targetPercentage = Math.min((target / max) * 100, 100);
   const isOverTarget = actual >= target;
