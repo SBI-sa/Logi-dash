@@ -125,14 +125,18 @@ export default function WarehouseScreen() {
                 .getPublicUrl('warehouse/allocation.jpg');
               
               if (publicData?.publicUrl) {
-                const updatedData = {
+                const cleanUrl = publicData.publicUrl.split('?')[0];
+                const urlWithTimestamp = `${cleanUrl}?t=${Date.now()}`;
+                const dataForDatabase = {
                   ...warehouseData,
-                  allocationImageUri: publicData.publicUrl,
+                  allocationImageUri: cleanUrl,
                 };
-                updateWarehouseData(updatedData);
-                console.log('🔗 Saved warehouse allocation URL:', publicData.publicUrl);
-                console.log('🔗 Full warehouseData.allocationImageUri:', updatedData.allocationImageUri);
-                await saveWarehouseData(updatedData);
+                await saveWarehouseData(dataForDatabase);
+                const dataForState = {
+                  ...warehouseData,
+                  allocationImageUri: urlWithTimestamp,
+                };
+                updateWarehouseData(dataForState);
                 console.log('✅ Warehouse allocation image saved to database');
               }
             } else {
@@ -171,14 +175,18 @@ export default function WarehouseScreen() {
             .getPublicUrl('warehouse/allocation.jpg');
           
           if (publicData?.publicUrl) {
-            const updatedData = {
+            const cleanUrl = publicData.publicUrl.split('?')[0];
+            const urlWithTimestamp = `${cleanUrl}?t=${Date.now()}`;
+            const dataForDatabase = {
               ...warehouseData,
-              allocationImageUri: publicData.publicUrl,
+              allocationImageUri: cleanUrl,
             };
-            updateWarehouseData(updatedData);
-            console.log('🔗 Saved warehouse allocation URL:', publicData.publicUrl);
-            console.log('🔗 Full warehouseData.allocationImageUri:', updatedData.allocationImageUri);
-            await saveWarehouseData(updatedData);
+            await saveWarehouseData(dataForDatabase);
+            const dataForState = {
+              ...warehouseData,
+              allocationImageUri: urlWithTimestamp,
+            };
+            updateWarehouseData(dataForState);
             console.log('✅ Warehouse allocation image saved to database');
           }
         } else {

@@ -51,7 +51,19 @@ The application supports **exact numeric values** without rounding or limits:
 - **Metro**: JavaScript bundler for React Native.
 - **AsyncStorage**: Used for local data persistence (falls back to localStorage on web).
 
-## Recent Changes (November 16, 2025)
+### Image Management
+Image uploads use cache-busting timestamps to ensure replacements display immediately:
+- **Warehouse Allocation Image**: When admin replaces the warehouse allocation map, a timestamp query parameter (`?t=timestamp`) is appended to the URL
+- **Real Estate Images**: Land and JLH images use the same cache-busting mechanism
+- **Why This Matters**: Image files are uploaded to the same URL each time (e.g., `warehouse/allocation.jpg`). Without timestamps, browsers and CDNs cache the old image even when a new one is uploaded
+- **Implementation**: All image upload handlers append `?t=${Date.now()}` to public URLs before saving to database
+
+## Recent Changes
+### November 17, 2025
+- **Image cache-busting fix**: Added timestamp query parameters to all image uploads (warehouse allocation, land, JLH) to force browser refresh when images are replaced
+- **Warehouse village colors**: Updated to use only 4-color repeating pattern (#00617f, #a7aca1, #081f2c, #9b2743) across all village cards
+
+### November 16, 2025
 - **Fixed data persistence issue**: Added missing `top_customers_total` JSONB column to Supabase sales table via SQL Editor
 - **Revenue by Segment colors**: Updated to 4-color repeating pattern (#00617f, #a7aca1, #081f2c, #9b2743) across all months
 - **Exact value display**: Removed K/M abbreviations in formatCurrency function to show precise numbers

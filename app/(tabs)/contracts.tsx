@@ -350,9 +350,12 @@ export default function RealEstateScreen() {
             
             if (uploadResult.success) {
               const { data } = supabase.storage.from("dashboard-images").getPublicUrl(uploadResult.filePath);
-              const updatedData = { ...realEstateData, landImageUri: data.publicUrl };
-              updateRealEstateData(updatedData);
-              await saveRealEstateData(updatedData);
+              const cleanUrl = data.publicUrl.split('?')[0];
+              const urlWithTimestamp = `${cleanUrl}?t=${Date.now()}`;
+              const dataForDatabase = { ...realEstateData, landImageUri: cleanUrl };
+              await saveRealEstateData(dataForDatabase);
+              const dataForState = { ...realEstateData, landImageUri: urlWithTimestamp };
+              updateRealEstateData(dataForState);
               console.log('✅ Land image saved to database');
             } else {
               Alert.alert('Upload Failed', 'Failed to upload land image to Supabase Storage');
@@ -386,9 +389,12 @@ export default function RealEstateScreen() {
         
         if (uploadResult.success) {
           const { data } = supabase.storage.from("dashboard-images").getPublicUrl(uploadResult.filePath);
-          const updatedData = { ...realEstateData, landImageUri: data.publicUrl };
-          updateRealEstateData(updatedData);
-          await saveRealEstateData(updatedData);
+          const cleanUrl = data.publicUrl.split('?')[0];
+          const urlWithTimestamp = `${cleanUrl}?t=${Date.now()}`;
+          const dataForDatabase = { ...realEstateData, landImageUri: cleanUrl };
+          await saveRealEstateData(dataForDatabase);
+          const dataForState = { ...realEstateData, landImageUri: urlWithTimestamp };
+          updateRealEstateData(dataForState);
           console.log('✅ Land image saved to database');
         } else {
           Alert.alert('Upload Failed', 'Failed to upload land image to Supabase Storage');
@@ -413,9 +419,12 @@ export default function RealEstateScreen() {
             
             if (uploadResult.success) {
               const { data } = supabase.storage.from("dashboard-images").getPublicUrl(uploadResult.filePath);
-              const updatedData = { ...realEstateData, jlhImageUri: data.publicUrl };
-              updateRealEstateData(updatedData);
-              await saveRealEstateData(updatedData);
+              const cleanUrl = data.publicUrl.split('?')[0];
+              const urlWithTimestamp = `${cleanUrl}?t=${Date.now()}`;
+              const dataForDatabase = { ...realEstateData, jlhImageUri: cleanUrl };
+              await saveRealEstateData(dataForDatabase);
+              const dataForState = { ...realEstateData, jlhImageUri: urlWithTimestamp };
+              updateRealEstateData(dataForState);
               console.log('✅ JLH image saved to database');
             } else {
               Alert.alert('Upload Failed', 'Failed to upload JLH image to Supabase Storage');
@@ -449,9 +458,12 @@ export default function RealEstateScreen() {
         
         if (uploadResult.success) {
           const { data } = supabase.storage.from("dashboard-images").getPublicUrl(uploadResult.filePath);
-          const updatedData = { ...realEstateData, jlhImageUri: data.publicUrl };
-          updateRealEstateData(updatedData);
-          await saveRealEstateData(updatedData);
+          const cleanUrl = data.publicUrl.split('?')[0];
+          const urlWithTimestamp = `${cleanUrl}?t=${Date.now()}`;
+          const dataForDatabase = { ...realEstateData, jlhImageUri: cleanUrl };
+          await saveRealEstateData(dataForDatabase);
+          const dataForState = { ...realEstateData, jlhImageUri: urlWithTimestamp };
+          updateRealEstateData(dataForState);
           console.log('✅ JLH image saved to database');
         } else {
           Alert.alert('Upload Failed', 'Failed to upload JLH image to Supabase Storage');
