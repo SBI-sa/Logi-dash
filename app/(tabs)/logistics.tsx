@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
-import { View, StyleSheet, ScrollView, TouchableOpacity, Text, Image } from 'react-native';
-import { Truck, Clock, Package, Edit2, Plus, Users, TrendingUp, MapPin } from 'lucide-react-native';
+import { View, StyleSheet, ScrollView, TouchableOpacity, Text, Image, Alert } from 'react-native';
+import { Truck, Clock, Package, Edit2, Plus, Users, TrendingUp, MapPin, Trash2 } from 'lucide-react-native';
 import { LogiPointColors } from '@/constants/colors';
 import { KPICard } from '@/components/KPICard';
 import { ChartCard } from '@/components/ChartCard';
@@ -266,6 +266,100 @@ export default function LogisticsScreen() {
     setEditModalVisible(false);
   };
 
+  const handleDeleteTripCategory = (index: number, isMonthly: boolean, month?: string) => {
+    if (isMonthly && month) {
+      const item = logisticsData.tripCategoriesMonthly[month][index];
+      Alert.alert(
+        'Delete Trip Category',
+        `Are you sure you want to delete "${item.name}" from ${month}?`,
+        [
+          { text: 'Cancel', style: 'cancel' },
+          {
+            text: 'Delete',
+            style: 'destructive',
+            onPress: () => {
+              const updatedData = { ...logisticsData };
+              const newMonthlyCategories = [...logisticsData.tripCategoriesMonthly[month]];
+              newMonthlyCategories.splice(index, 1);
+              updatedData.tripCategoriesMonthly[month] = newMonthlyCategories;
+              updateLogisticsData(updatedData);
+            },
+          },
+        ]
+      );
+    } else {
+      const item = logisticsData.tripCategories[index];
+      Alert.alert(
+        'Delete Trip Category',
+        `Are you sure you want to delete "${item.name}" from all months?`,
+        [
+          { text: 'Cancel', style: 'cancel' },
+          {
+            text: 'Delete',
+            style: 'destructive',
+            onPress: () => {
+              const updatedData = { ...logisticsData };
+              const categoryName = logisticsData.tripCategories[index].name;
+              const newCategories = [...logisticsData.tripCategories];
+              newCategories.splice(index, 1);
+              updatedData.tripCategories = newCategories;
+              Object.keys(updatedData.tripCategoriesMonthly).forEach(monthKey => {
+                updatedData.tripCategoriesMonthly[monthKey] = updatedData.tripCategoriesMonthly[monthKey].filter(
+                  c => c.name !== categoryName
+                );
+              });
+              updateLogisticsData(updatedData);
+            },
+          },
+        ]
+      );
+    }
+  };
+
+  const handleDeleteDeliveryPerformance = (index: number) => {
+    const item = logisticsData.deliveryPerformance[index];
+    Alert.alert(
+      'Delete Delivery Performance Entry',
+      `Are you sure you want to delete "${item.month}"?`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: () => {
+            const updatedData = { ...logisticsData };
+            const newPerformance = [...logisticsData.deliveryPerformance];
+            newPerformance.splice(index, 1);
+            updatedData.deliveryPerformance = newPerformance;
+            updateLogisticsData(updatedData);
+          },
+        },
+      ]
+    );
+  };
+
+  const handleDeleteRoute = (index: number) => {
+    const item = logisticsData.delaysByRoute[index];
+    Alert.alert(
+      'Delete Route',
+      `Are you sure you want to delete "${item.route}"?`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: () => {
+            const updatedData = { ...logisticsData };
+            const newRoutes = [...logisticsData.delaysByRoute];
+            newRoutes.splice(index, 1);
+            updatedData.delaysByRoute = newRoutes;
+            updateLogisticsData(updatedData);
+          },
+        },
+      ]
+    );
+  };
+
   return (
     <>
       <EditModal
@@ -471,20 +565,33 @@ export default function LogisticsScreen() {
                       <Text style={styles.tripCategoryName}>{category.name}</Text>
                     </View>
                     <Text style={styles.tripCategoryValue}>{category.value.toLocaleString()}</Text>
-                    {isAdmin && category.name !== 'Total Trips' && tripCategoryFilter !== 'total' && (
-                      <TouchableOpacity
-                        style={styles.tripCategoryEditButton}
-                        onPress={() => handleEditTripCategory(index, tripCategoryFilter !== 'total', tripCategoryFilter !== 'total' ? tripCategoryFilter : undefined)}
-                      >
-                        <Edit2 size={14} color={LogiPointColors.primary} />
-                      </TouchableOpacity>
-                    )}
-                    {isAdmin && (tripCategoryFilter === 'total' || category.name === 'Total Trips') && tripCategoryFilter !== 'total' && (
-                      <View style={styles.tripCategoryEditButton}>
-                        <Text style={styles.autoCalculatedText}>Auto</Text>
+                    {isAdmin && category.name !== 'Total Trips' && tripCategoryFilter === 'total' && (
+                      <View style={styles.tripCategoryButtonGroup}>
+                        <TouchableOpacity
+                          style={styles.tripCategoryActionButton}
+                          onPress={() => handleDeleteTripCategory(index, false, undefined)}
+                        >
+                          <Trash2 size={14} color={LogiPointColors.error} />
+                        </TouchableOpacity>
                       </View>
                     )}
-                    {isAdmin && tripCategoryFilter === 'total' && (
+                    {isAdmin && category.name !== 'Total Trips' && tripCategoryFilter !== 'total' && (
+                      <View style={styles.tripCategoryButtonGroup}>
+                        <TouchableOpacity
+                          style={styles.tripCategoryActionButton}
+                          onPress={() => handleEditTripCategory(index, tripCategoryFilter !== 'total', tripCategoryFilter !== 'total' ? tripCategoryFilter : undefined)}
+                        >
+                          <Edit2 size={14} color={LogiPointColors.primary} />
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          style={styles.tripCategoryActionButton}
+                          onPress={() => handleDeleteTripCategory(index, tripCategoryFilter !== 'total', tripCategoryFilter !== 'total' ? tripCategoryFilter : undefined)}
+                        >
+                          <Trash2 size={14} color={LogiPointColors.error} />
+                        </TouchableOpacity>
+                      </View>
+                    )}
+                    {isAdmin && category.name === 'Total Trips' && tripCategoryFilter !== 'total' && (
                       <View style={styles.tripCategoryEditButton}>
                         <Text style={styles.autoCalculatedText}>Auto</Text>
                       </View>
@@ -560,14 +667,21 @@ export default function LogisticsScreen() {
             {isAdmin && (
               <View style={styles.chartEditButtons}>
                 {logisticsData.deliveryPerformance.map((perf, index) => (
-                  <TouchableOpacity
-                    key={index}
-                    style={styles.chartEditButton}
-                    onPress={() => handleEditArray('deliveryPerformance', index)}
-                  >
-                    <Edit2 size={14} color={LogiPointColors.primary} />
-                    <Text style={styles.chartEditText}>Edit {perf.month}</Text>
-                  </TouchableOpacity>
+                  <View key={index} style={styles.chartButtonGroup}>
+                    <TouchableOpacity
+                      style={styles.chartEditButton}
+                      onPress={() => handleEditArray('deliveryPerformance', index)}
+                    >
+                      <Edit2 size={14} color={LogiPointColors.primary} />
+                      <Text style={styles.chartEditText}>Edit {perf.month}</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={styles.chartDeleteButton}
+                      onPress={() => handleDeleteDeliveryPerformance(index)}
+                    >
+                      <Trash2 size={14} color={LogiPointColors.error} />
+                    </TouchableOpacity>
+                  </View>
                 ))}
                 <TouchableOpacity
                   style={[styles.chartEditButton, styles.thresholdButton]}
@@ -601,14 +715,21 @@ export default function LogisticsScreen() {
             {isAdmin && (
               <View style={styles.chartEditButtons}>
                 {logisticsData.delaysByRoute.map((route, index) => (
-                  <TouchableOpacity
-                    key={index}
-                    style={styles.chartEditButton}
-                    onPress={() => handleEditArray('delaysByRoute', index)}
-                  >
-                    <Edit2 size={14} color={LogiPointColors.primary} />
-                    <Text style={styles.chartEditText}>Edit {route.route}</Text>
-                  </TouchableOpacity>
+                  <View key={index} style={styles.chartButtonGroup}>
+                    <TouchableOpacity
+                      style={styles.chartEditButton}
+                      onPress={() => handleEditArray('delaysByRoute', index)}
+                    >
+                      <Edit2 size={14} color={LogiPointColors.primary} />
+                      <Text style={styles.chartEditText}>Edit {route.route}</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={styles.chartDeleteButton}
+                      onPress={() => handleDeleteRoute(index)}
+                    >
+                      <Trash2 size={14} color={LogiPointColors.error} />
+                    </TouchableOpacity>
+                  </View>
                 ))}
                 <TouchableOpacity
                   style={[styles.chartEditButton, styles.addButton]}
@@ -780,6 +901,16 @@ const styles = StyleSheet.create({
     right: 8,
     padding: 4,
   },
+  tripCategoryButtonGroup: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    flexDirection: 'row',
+    gap: 4,
+  },
+  tripCategoryActionButton: {
+    padding: 4,
+  },
   autoCalculatedText: {
     fontSize: 10,
     fontWeight: '600' as const,
@@ -789,5 +920,19 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: LogiPointColors.gray[200],
     marginVertical: 24,
+  },
+  chartButtonGroup: {
+    flexDirection: 'row',
+    gap: 4,
+  },
+  chartDeleteButton: {
+    paddingHorizontal: 8,
+    paddingVertical: 6,
+    backgroundColor: LogiPointColors.gray[100],
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: LogiPointColors.error,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
