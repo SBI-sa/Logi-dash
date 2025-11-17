@@ -53,14 +53,17 @@ The application supports **exact numeric values** without rounding or limits:
 
 ### Image Management
 Image uploads use cache-busting timestamps to ensure replacements display immediately:
-- **Warehouse Allocation Image**: When admin replaces the warehouse allocation map, a timestamp query parameter (`?t=timestamp`) is appended to the URL
-- **Real Estate Images**: Land and JLH images use the same cache-busting mechanism
-- **Why This Matters**: Image files are uploaded to the same URL each time (e.g., `warehouse/allocation.jpg`). Without timestamps, browsers and CDNs cache the old image even when a new one is uploaded
-- **Implementation**: All image upload handlers append `?t=${Date.now()}` to public URLs before saving to database
+- **Database Storage**: Clean URLs without query parameters are stored in Supabase (e.g., `https://.../warehouse/allocation.jpg`)
+- **UI Display**: Timestamped URLs with `?t=${Date.now()}` are used in the UI to force browser cache refresh
+- **Separate Objects**: Upload handlers create two separate objects:
+  - `dataForDatabase`: Contains clean URL, saved to Supabase
+  - `dataForState`: Contains timestamped URL, used for local state and UI display
+- **Why This Matters**: Image files are uploaded to the same path each time. Without timestamps in the UI, browsers cache the old image. Clean URLs in the database ensure future uploads work correctly
+- **Affected Images**: Warehouse allocation map, Real Estate land image, JLH image
 
 ## Recent Changes
 ### November 17, 2025
-- **Image cache-busting fix**: Added timestamp query parameters to all image uploads (warehouse allocation, land, JLH) to force browser refresh when images are replaced
+- **Image cache-busting architecture**: Implemented dual-object pattern for image uploads - clean URLs stored in Supabase database, timestamped URLs used in UI to force browser refresh. Prevents mutation bugs and ensures future image replacements work correctly for warehouse allocation, land, and JLH images
 - **Warehouse village colors**: Updated to use only 4-color repeating pattern (#00617f, #a7aca1, #081f2c, #9b2743) across all village cards
 
 ### November 16, 2025
