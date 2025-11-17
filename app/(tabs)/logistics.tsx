@@ -382,7 +382,7 @@ export default function LogisticsScreen() {
         onChangeText={setEditValue}
         onSave={handleSave}
         onCancel={() => setEditModalVisible(false)}
-        onDelete={currentDeleteHandler || undefined}
+        onDelete={currentDeleteHandler ? currentDeleteHandler() : undefined}
         fields={editFields.length > 0 ? editFields : undefined}
       />
       
