@@ -48,7 +48,7 @@ export default function LogisticsScreen() {
       ];
       setEditFields(tempFields);
       setEditModalTitle(`Edit ${item.month}`);
-      setCurrentDeleteHandler(() => () => handleDeleteDeliveryPerformance(index));
+      setCurrentDeleteHandler(() => handleDeleteDeliveryPerformance(index));
     } else if (field === 'delaysByRoute') {
       const item = logisticsData.delaysByRoute[index];
       const tempFields: { label: string; value: string; onChange: (text: string) => void; keyboardType?: 'default' | 'numeric' }[] = [
@@ -64,7 +64,7 @@ export default function LogisticsScreen() {
       ];
       setEditFields(tempFields);
       setEditModalTitle(`Edit ${item.route}`);
-      setCurrentDeleteHandler(() => () => handleDeleteRoute(index));
+      setCurrentDeleteHandler(() => handleDeleteRoute(index));
     }
     
     setEditModalVisible(true);
@@ -103,7 +103,7 @@ export default function LogisticsScreen() {
       ];
       setEditFields(tempFields);
       setEditModalTitle(`Edit ${item.name} - ${month}`);
-      setCurrentDeleteHandler(() => () => handleDeleteTripCategory(index, true, month));
+      setCurrentDeleteHandler(() => handleDeleteTripCategory(index, true, month));
     } else {
       const item = logisticsData.tripCategories[index];
       setEditField(`tripCategory_${index}`);
@@ -117,7 +117,7 @@ export default function LogisticsScreen() {
       ];
       setEditFields(tempFields);
       setEditModalTitle(`Edit ${item.name}`);
-      setCurrentDeleteHandler(() => () => handleDeleteTripCategory(index, false, undefined));
+      setCurrentDeleteHandler(() => handleDeleteTripCategory(index, false, undefined));
     }
     setEditModalVisible(true);
   };
@@ -382,7 +382,7 @@ export default function LogisticsScreen() {
         onChangeText={setEditValue}
         onSave={handleSave}
         onCancel={() => setEditModalVisible(false)}
-        onDelete={currentDeleteHandler ? currentDeleteHandler() : undefined}
+        onDelete={currentDeleteHandler || undefined}
         fields={editFields.length > 0 ? editFields : undefined}
       />
       
