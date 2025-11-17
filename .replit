@@ -27,20 +27,12 @@ outputType = "webview"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "bunx serve dist -l 5000 --single"
+args = "npx expo start --web --port 5000"
 waitForPort = 5000
 
 [[ports]]
 localPort = 5000
 externalPort = 80
-
-[[ports]]
-localPort = 32955
-externalPort = 4200
-
-[[ports]]
-localPort = 38973
-externalPort = 3001
 
 [[ports]]
 localPort = 40195
