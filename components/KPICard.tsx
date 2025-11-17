@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { LogiPointColors } from '@/constants/colors';
 import { Card } from './Card';
+import { BulletGraph } from './BulletGraph';
 import { LucideIcon } from 'lucide-react-native';
 
 interface KPICardProps {
@@ -17,9 +18,13 @@ interface KPICardProps {
   color?: string;
   lastUpdated?: string;
   onLastUpdatedChange?: (value: string) => void;
+  bulletGraph?: {
+    actual: number;
+    target: number;
+  };
 }
 
-export const KPICard = React.memo(function KPICard({ title, value, subtitle, trend, icon: Icon, color = LogiPointColors.primary, lastUpdated, onLastUpdatedChange }: KPICardProps) {
+export const KPICard = React.memo(function KPICard({ title, value, subtitle, trend, icon: Icon, color = LogiPointColors.primary, lastUpdated, onLastUpdatedChange, bulletGraph }: KPICardProps) {
   return (
     <Card style={styles.container} lastUpdated={lastUpdated} onLastUpdatedChange={onLastUpdatedChange}>
       <View style={styles.header}>
@@ -38,6 +43,14 @@ export const KPICard = React.memo(function KPICard({ title, value, subtitle, tre
           </Text>
           <Text style={styles.trendLabel}>{trend.label || 'vs previous period'}</Text>
         </View>
+      )}
+
+      {bulletGraph && (
+        <BulletGraph
+          actual={bulletGraph.actual}
+          target={bulletGraph.target}
+          color={color}
+        />
       )}
     </Card>
   );

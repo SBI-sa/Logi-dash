@@ -536,6 +536,10 @@ export default function SalesScreen() {
                   color={parseFloat(ytdBudgetVariance) >= 0 ? LogiPointColors.chart.green : LogiPointColors.accent}
                   lastUpdated={getLastUpdated('sales-ytd-revenue')}
                   onLastUpdatedChange={(value) => updateLastUpdated('sales-ytd-revenue', value)}
+                  bulletGraph={{
+                    actual: salesData.ytdRevenue,
+                    target: salesData.ytdBudget
+                  }}
                 />
                 {isAdmin && (
                   <View style={styles.budgetEditButtons}>
@@ -566,6 +570,10 @@ export default function SalesScreen() {
                 color={salesData.totalRevenueColor || LogiPointColors.primary}
                 lastUpdated={getLastUpdated('sales-total-revenue')}
                 onLastUpdatedChange={(value) => updateLastUpdated('sales-total-revenue', value)}
+                bulletGraph={{
+                  actual: salesData.totalRevenue,
+                  target: salesData.lastYearYtdRevenue
+                }}
               />
               {isAdmin && (
                 <View style={styles.kpiEditButtons}>
