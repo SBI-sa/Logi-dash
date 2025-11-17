@@ -40,6 +40,14 @@ The application supports **exact numeric values** without rounding or limits:
 - Values are stored and displayed exactly as entered using `parseFloat()` without any abbreviation
 - No K/M formatting on input or storage - only on charts where appropriate
 
+### Transportation/Logistics Module Delete Functionality
+The Transportation module supports deletion of editable data entries with confirmation alerts:
+- **Trip Categories**: Delete button available for custom categories in both Total and Monthly tabs. Deleting from Total tab removes category from all months. Auto-calculated "Total Trips" category cannot be deleted.
+- **Delivery Performance**: Delete button for each monthly performance entry. Allows removing specific months from the tracking chart.
+- **Delays by Route**: Delete button for each route entry. Enables removal of routes that are no longer tracked.
+- **UI Pattern**: Delete buttons (trash icon) appear next to edit buttons for admin users. All deletions trigger confirmation alerts to prevent accidental data loss.
+- **Data Flow**: Deletions update local state, persist to Supabase, and sync in real-time to all connected clients.
+
 ## External Dependencies
 - **Supabase**: Backend services for database (8 tables: `sales`, `risks`, `real_estate`, `logistics`, `warehouse`, `vas`, `po`, `last_updated`), authentication, and real-time subscriptions. Sales table includes JSONB columns: `top_customers_total` for Total tab customers, `top_customers_monthly` for monthly customer data, `revenue_by_segment_monthly` for segment data.
 - **Expo**: For cross-platform development and build processes.
@@ -63,6 +71,7 @@ Image uploads use cache-busting timestamps to ensure replacements display immedi
 
 ## Recent Changes
 ### November 17, 2025
+- **Transportation delete functionality**: Added delete buttons with confirmation alerts for Trip Categories (Total and Monthly tabs), Delivery Performance entries, and Delays by Route. Deletions cascade properly (Total tab removes from all months) and sync to Supabase in real-time
 - **Image cache-busting architecture**: Implemented dual-object pattern for image uploads - clean URLs stored in Supabase database, timestamped URLs used in UI to force browser refresh. Prevents mutation bugs and ensures future image replacements work correctly for warehouse allocation, land, and JLH images
 - **Warehouse village colors**: Updated to use only 4-color repeating pattern (#00617f, #a7aca1, #081f2c, #9b2743) across all village cards
 
