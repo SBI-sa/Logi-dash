@@ -39,11 +39,14 @@ export default function LoginScreen() {
   const handleViewerLogin = async () => {
     try {
       setError('');
-      if (viewerCode !== '2030') {
+      const expectedViewerCode = process.env.EXPO_PUBLIC_VIEWER_PASSWORD!;
+      const viewerUsername = process.env.EXPO_PUBLIC_VIEWER_USERNAME!;
+      
+      if (viewerCode !== expectedViewerCode) {
         setError('Invalid viewer code');
         return;
       }
-      await login('viewer', '');
+      await login(viewerUsername, expectedViewerCode);
       router.replace('/(tabs)');
     } catch {
       setError('Login failed');
@@ -53,11 +56,14 @@ export default function LoginScreen() {
   const handleAdminLogin = async () => {
     try {
       setError('');
-      if (password !== 'Logi@2030') {
+      const expectedAdminPassword = process.env.EXPO_PUBLIC_ADMIN_PASSWORD!;
+      const adminEmail = process.env.EXPO_PUBLIC_ADMIN_EMAIL!;
+      
+      if (password !== expectedAdminPassword) {
         setError('Invalid admin password');
         return;
       }
-      await login('thamir.sulimani@logipoint.sa', password);
+      await login(adminEmail, password);
       router.replace('/(tabs)');
     } catch {
       setError('Invalid admin credentials');
