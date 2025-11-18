@@ -9,7 +9,17 @@ This project is a cross-platform reporting dashboard application built with Expo
 - I prefer detailed explanations.
 
 ## System Architecture
-The application is built on **Expo SDK 54** and **React Native 0.81** with **React 19** and **TypeScript**. It utilizes **Expo Router** for file-based navigation and **Zustand** for client-side state management, complemented by **@tanstack/react-query** for server-state management. The UI/UX features a clean design with custom chart components for various data visualizations like KPI Cards, Line Charts, Bar Charts, Pie Charts, and more, integrated with `lucide-react-native` for icons and `react-native-svg` for rendering. Authentication uses hardcoded credentials for development, with distinct viewer and admin modes providing read-only and full edit permissions respectively. 
+The application is built on **Expo SDK 54** and **React Native 0.81** with **React 19** and **TypeScript**. It utilizes **Expo Router** for file-based navigation and **Zustand** for client-side state management, complemented by **@tanstack/react-query** for server-state management. The UI/UX features a clean design with custom chart components for various data visualizations like KPI Cards, Line Charts, Bar Charts, Pie Charts, and more, integrated with `lucide-react-native` for icons and `react-native-svg` for rendering.
+
+### Authentication
+The application uses a simplified single-code authentication system:
+- **Single Access Code Field**: Login screen presents one secure input field where users enter their access code
+- **Auto-Role Detection**: The system automatically determines user role based on the entered code:
+  - Viewer code (default: `2030`) → Read-only access
+  - Admin code (default: `Logi@2030`) → Full edit permissions
+- **Environment Variables**: Access codes are stored in `EXPO_PUBLIC_VIEWER_PASSWORD` and `EXPO_PUBLIC_ADMIN_PASSWORD` secrets
+- **No Username/Email Required**: Simplified from previous dual-mode system - only access codes needed
+- **Security**: Codes are validated against environment variables, user sessions persisted to AsyncStorage 
 
 ### Timestamp Management
 Admin users can edit "Last Updated" timestamps which are reflected across all tab screens:
@@ -79,6 +89,11 @@ Image uploads use cache-busting timestamps to ensure replacements display immedi
 - **Affected Images**: Warehouse allocation map, Real Estate land image, JLH image
 
 ## Recent Changes
+### November 18, 2025
+- **Simplified Authentication System**: Replaced dual-mode login (viewer/admin toggle) with single "Access Code" field. Users enter one code that auto-detects their role - no username or email required. Reduces login complexity and improves UX.
+- **Environment Variable Cleanup**: Removed `EXPO_PUBLIC_ADMIN_NAME`, `EXPO_PUBLIC_ADMIN_EMAIL`, and `EXPO_PUBLIC_VIEWER_USERNAME` - only `EXPO_PUBLIC_VIEWER_PASSWORD` and `EXPO_PUBLIC_ADMIN_PASSWORD` are needed
+- **Updated Documentation**: Refreshed `.env.example` to reflect simplified authentication variables
+
 ### November 17, 2025
 - **Bullet Graph Visualization**: Added bullet graphs to Sales revenue KPI cards (YTD Revenue vs Budget and Total Revenue). Visual comparison shows actual vs target/baseline with automatic color-coding (green for over-target, accent for under). Component includes edge-case handling for zero values.
 - **Critical Alert fix for Web platform**: Fixed Transportation delete buttons not working on web. React Native Web doesn't support `Alert.alert()` natively - installed `@blazejkustra/react-native-alert` package to provide cross-platform alert support. Delete confirmations now work correctly on all platforms (iOS, Android, Web)
