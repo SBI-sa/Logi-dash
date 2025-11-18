@@ -36,14 +36,11 @@ export const [AuthProvider, useAuth] = createContextHook(() => {
 
 
 
-  const login = useCallback(async (email: string, password: string) => {
-    const viewerUsername = process.env.EXPO_PUBLIC_VIEWER_USERNAME!;
+  const login = useCallback(async (accessCode: string) => {
     const viewerPassword = process.env.EXPO_PUBLIC_VIEWER_PASSWORD!;
-    const adminEmail = process.env.EXPO_PUBLIC_ADMIN_EMAIL!;
     const adminPassword = process.env.EXPO_PUBLIC_ADMIN_PASSWORD!;
-    const adminName = process.env.EXPO_PUBLIC_ADMIN_NAME!;
 
-    if (email === viewerUsername && password === viewerPassword) {
+    if (accessCode === viewerPassword) {
       const mockUser: User = {
         id: '2',
         name: 'Viewer User',
@@ -55,11 +52,11 @@ export const [AuthProvider, useAuth] = createContextHook(() => {
       return;
     }
     
-    if (email === adminEmail && password === adminPassword) {
+    if (accessCode === adminPassword) {
       const mockUser: User = {
         id: '1',
-        name: adminName,
-        email: adminEmail,
+        name: 'Admin User',
+        email: 'admin@logipoint.com',
         role: 'admin',
       };
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(mockUser));

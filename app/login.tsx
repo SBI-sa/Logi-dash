@@ -7,9 +7,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { KeyRound } from 'lucide-react-native';
 
 export default function LoginScreen() {
-  const [isAdminMode, setIsAdminMode] = useState<boolean>(false);
-  const [password, setPassword] = useState<string>('');
-  const [viewerCode, setViewerCode] = useState<string>('');
+  const [accessCode, setAccessCode] = useState<string>('');
   const [error, setError] = useState<string>('');
   const { login } = useAuth();
   const router = useRouter();
@@ -36,37 +34,17 @@ export default function LoginScreen() {
     ).start();
   }, [pulse, float1, float2]);
 
-  const handleViewerLogin = async () => {
+  const handleLogin = async () => {
     try {
       setError('');
-      const expectedViewerCode = process.env.EXPO_PUBLIC_VIEWER_PASSWORD!;
-      const viewerUsername = process.env.EXPO_PUBLIC_VIEWER_USERNAME!;
-      
-      if (viewerCode !== expectedViewerCode) {
-        setError('Invalid viewer code');
+      if (!accessCode.trim()) {
+        setError('Please enter your access code');
         return;
       }
-      await login(viewerUsername, expectedViewerCode);
-      router.replace('/(tabs)');
-    } catch {
-      setError('Login failed');
-    }
-  };
-
-  const handleAdminLogin = async () => {
-    try {
-      setError('');
-      const expectedAdminPassword = process.env.EXPO_PUBLIC_ADMIN_PASSWORD!;
-      const adminEmail = process.env.EXPO_PUBLIC_ADMIN_EMAIL!;
-      
-      if (password !== expectedAdminPassword) {
-        setError('Invalid admin password');
-        return;
-      }
-      await login(adminEmail, password);
-      router.replace('/(tabs)');
-    } catch {
-      setError('Invalid admin credentials');
+      await login(accessCode);
+      router.replace('/(tabs)' as any);
+    } catch (err) {
+      setError('Invalid access code');
     }
   };
 
@@ -108,106 +86,44 @@ export default function LoginScreen() {
           <Text style={styles.subtitle}>Reporting Dashboard</Text>
         </View>
 
-        {!isAdminMode ? (
-          <View style={styles.form}>
-            <View style={styles.inputContainer}>
-              <Text style={styles.label}>Viewer Code</Text>
-              <View style={styles.inputWrapper}>
-                <KeyRound color={LogiPointColors.gray[500]} size={18} />
-                <TextInput
-                  testID="login-viewer-code"
-                  style={styles.input}
-                  value={viewerCode}
-                  onChangeText={setViewerCode}
-                  placeholder="Enter viewer code"
-                  placeholderTextColor={LogiPointColors.gray[400]}
-                  keyboardType="numeric"
-                  secureTextEntry
-                />
-              </View>
+        <View style={styles.form}>
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>Access Code</Text>
+            <View style={styles.inputWrapper}>
+              <KeyRound color={LogiPointColors.gray[500]} size={18} />
+              <TextInput
+                testID="login-access-code"
+                style={styles.input}
+                value={accessCode}
+                onChangeText={setAccessCode}
+                placeholder="Enter access code"
+                placeholderTextColor={LogiPointColors.gray[400]}
+                secureTextEntry
+                autoCapitalize="none"
+                autoCorrect={false}
+              />
             </View>
-
-            <Animated.View style={{ transform: [{ scale: pressScale }] }}>
-              <TouchableOpacity
-                testID="login-viewer-button"
-                style={styles.button}
-                onPress={handleViewerLogin}
-                onPressIn={onPressIn}
-                onPressOut={onPressOut}
-                activeOpacity={0.9}
-              >
-                <Text style={styles.buttonText}>Continue as Viewer</Text>
-              </TouchableOpacity>
-            </Animated.View>
-
-            {error ? (
-              <View style={styles.errorContainer}>
-                <Text style={styles.errorText}>{error}</Text>
-              </View>
-            ) : null}
-
-            <TouchableOpacity
-              testID="login-admin-link"
-              style={styles.adminLink}
-              onPress={() => setIsAdminMode(true)}
-            >
-              <Text style={styles.adminLinkText}>Admin Login</Text>
-            </TouchableOpacity>
           </View>
-        ) : (
-          <View style={styles.form}>
-            <Text style={styles.welcomeText}>Admin Login</Text>
-            <Text style={styles.description}>Sign in to manage data</Text>
 
-            <View style={styles.inputContainer}>
-              <Text style={styles.label}>Password</Text>
-              <View style={styles.inputWrapper}>
-                <KeyRound color={LogiPointColors.gray[500]} size={18} />
-                <TextInput
-                  testID="login-admin-password"
-                  style={styles.input}
-                  value={password}
-                  onChangeText={setPassword}
-                  placeholder="Enter admin password"
-                  placeholderTextColor={LogiPointColors.gray[400]}
-                  secureTextEntry
-                />
-              </View>
+          <Animated.View style={{ transform: [{ scale: pressScale }] }}>
+            <TouchableOpacity
+              testID="login-button"
+              style={styles.button}
+              onPress={handleLogin}
+              onPressIn={onPressIn}
+              onPressOut={onPressOut}
+              activeOpacity={0.9}
+            >
+              <Text style={styles.buttonText}>Sign In</Text>
+            </TouchableOpacity>
+          </Animated.View>
+
+          {error ? (
+            <View style={styles.errorContainer}>
+              <Text style={styles.errorText}>{error}</Text>
             </View>
-
-            <Animated.View style={{ transform: [{ scale: pressScale }] }}>
-              <TouchableOpacity
-                testID="login-admin-button"
-                style={styles.button}
-                onPress={handleAdminLogin}
-                onPressIn={onPressIn}
-                onPressOut={onPressOut}
-                activeOpacity={0.9}
-              >
-                <Text style={styles.buttonText}>Sign In as Admin</Text>
-              </TouchableOpacity>
-            </Animated.View>
-
-            {error ? (
-              <View style={styles.errorContainer}>
-                <Text style={styles.errorText}>{error}</Text>
-              </View>
-            ) : null}
-
-            <TouchableOpacity
-              testID="login-back-to-viewer"
-              style={styles.backLink}
-              onPress={() => {
-                setIsAdminMode(false);
-                setPassword('');
-                setViewerCode('');
-                setError('');
-              }}
-            >
-              <Text style={styles.backLinkText}>← Back to Viewer Login</Text>
-            </TouchableOpacity>
-          </View>
-        )}
+          ) : null}
+        </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -318,27 +234,6 @@ const styles = StyleSheet.create({
     color: LogiPointColors.beige,
     textAlign: 'center',
     marginBottom: 20,
-  },
-  adminLink: {
-    marginTop: 16,
-    padding: 12,
-    alignItems: 'center',
-  },
-  adminLinkText: {
-    fontSize: 15,
-    color: LogiPointColors.primary,
-    fontWeight: '600' as const,
-    textDecorationLine: 'underline',
-  },
-  backLink: {
-    marginTop: 12,
-    padding: 10,
-    alignItems: 'center',
-  },
-  backLinkText: {
-    fontSize: 14,
-    color: LogiPointColors.beige,
-    fontWeight: '500' as const,
   },
   errorContainer: {
     backgroundColor: 'rgba(155, 39, 67, 0.2)',
