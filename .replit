@@ -56,5 +56,5 @@ externalPort = 3002
 
 [deployment]
 deploymentTarget = "autoscale"
-run = ["bunx", "serve", "dist", "-l", "5000"]
+run = ["sh", "-c", "npx expo start --web --port 5000"]
 build = ["bun", "run", "build"]
