@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Alert, Platform } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Platform } from 'react-native';
+import Alert from '@blazejkustra/react-native-alert';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Warehouse as WarehouseIcon, Edit2, Upload, X } from 'lucide-react-native';
 import * as ImagePicker from 'expo-image-picker';

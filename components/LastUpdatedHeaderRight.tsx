@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
-import { Text, StyleSheet, View, TouchableOpacity, Alert } from 'react-native';
+import { Text, StyleSheet, View, TouchableOpacity } from 'react-native';
+import Alert from '@blazejkustra/react-native-alert';
 import { Pencil } from 'lucide-react-native';
 import { useData } from '@/contexts/DataContext';
 import { useAuth } from '@/contexts/AuthContext';

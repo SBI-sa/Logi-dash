@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { Modal, View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import Alert from '@blazejkustra/react-native-alert';
 import { LogiPointColors } from '@/constants/colors';
 
 interface TimestampEditModalProps {
