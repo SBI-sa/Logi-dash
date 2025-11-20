@@ -1026,13 +1026,6 @@ export default function SalesScreen() {
                   )}
                 </View>
               ))}
-              <View style={styles.customersTotalRow}>
-                <Text style={[styles.customersTotalText, { flex: 1 }]}>Total</Text>
-                <Text style={[styles.customersTotalText, { width: 120, textAlign: 'right' }]}>
-                  {formatCurrency(top10Total)}
-                </Text>
-                {isAdmin && <View style={{ width: 40 }} />}
-              </View>
             </View>
             {isAdmin && selectedTop10Month !== 'Total' && (
               <TouchableOpacity
