@@ -160,14 +160,11 @@ const styles = StyleSheet.create({
     maxHeight: '80%',
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.6)',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.3,
-    shadowRadius: 24,
     elevation: 10,
     ...(Platform.OS === 'web' ? {
       backdropFilter: 'blur(20px)',
       WebkitBackdropFilter: 'blur(20px)',
+      boxShadow: '0 8px 24px rgba(0,0,0,0.3)',
     } : {}),
   },
   modalHeader: {
@@ -263,11 +260,8 @@ const styles = StyleSheet.create({
     marginTop: -16,
     marginBottom: 20,
     overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
     elevation: 3,
+    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
   },
   dropdownOption: {
     padding: 12,

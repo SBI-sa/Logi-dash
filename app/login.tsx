@@ -211,11 +211,8 @@ const styles = StyleSheet.create({
     padding: 18,
     alignItems: 'center',
     marginTop: 8,
-    shadowColor: '#000',
-    shadowOpacity: 0.25,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 8 },
     elevation: 6,
+    boxShadow: '0 8px 12px rgba(0,0,0,0.25)',
   },
   buttonText: {
     color: LogiPointColors.white,
