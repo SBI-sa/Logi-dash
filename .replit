@@ -54,6 +54,10 @@ externalPort = 3001
 localPort = 44391
 externalPort = 3002
 
+[[ports]]
+localPort = 44757
+externalPort = 5000
+
 [deployment]
 deploymentTarget = "autoscale"
 run = ["sh", "-c", "npx expo start --web --port 5000"]
