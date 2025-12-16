@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
-import { View, StyleSheet, ScrollView, TouchableOpacity, Text, Image } from 'react-native';
-import { Edit2 } from 'lucide-react-native';
+import { View, StyleSheet, ScrollView, TouchableOpacity, Text, Image, Linking } from 'react-native';
+import { Edit2, ExternalLink } from 'lucide-react-native';
 import { LogiPointColors } from '@/constants/colors';
 import { ChartCard } from '@/components/ChartCard';
 import { EditModal } from '@/components/EditModal';
@@ -332,6 +332,14 @@ export default function POScreen() {
               </View>
             )}
           </ChartCard>
+
+          <TouchableOpacity
+            style={styles.trackingLinkContainer}
+            onPress={() => Linking.openURL('https://portal.logipoint.sa/logipoint/Dashboardcts')}
+          >
+            <ExternalLink size={18} color={LogiPointColors.primary} />
+            <Text style={styles.trackingLinkText}>PO Portal Link</Text>
+          </TouchableOpacity>
         </ScrollView>
       </View>
     </>
@@ -473,5 +481,28 @@ const styles = StyleSheet.create({
     fontSize: 9,
     color: LogiPointColors.gray[600],
     fontWeight: '500' as const,
+  },
+  trackingLinkContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    marginBottom: 16,
+    backgroundColor: LogiPointColors.white,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: LogiPointColors.primary,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  trackingLinkText: {
+    fontSize: 16,
+    fontWeight: '600' as const,
+    color: LogiPointColors.primary,
+    textDecorationLine: 'underline',
   },
 });
