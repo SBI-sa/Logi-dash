@@ -195,6 +195,14 @@ export default function POScreen() {
           />
         </View>
         <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
+          <TouchableOpacity
+            style={styles.trackingLinkContainer}
+            onPress={() => Linking.openURL('https://portal.logipoint.sa/logipoint/Dashboardcts')}
+          >
+            <ExternalLink size={18} color={LogiPointColors.primary} />
+            <Text style={styles.trackingLinkText}>Container Yard Dashboard</Text>
+          </TouchableOpacity>
+
           <ChartCard title="CIY Movement" subtitle="Monthly Comparison">
             <CIYMovementChart 
               data={poData.ciyMovement}
@@ -332,14 +340,6 @@ export default function POScreen() {
               </View>
             )}
           </ChartCard>
-
-          <TouchableOpacity
-            style={styles.trackingLinkContainer}
-            onPress={() => Linking.openURL('https://portal.logipoint.sa/logipoint/Dashboardcts')}
-          >
-            <ExternalLink size={18} color={LogiPointColors.primary} />
-            <Text style={styles.trackingLinkText}>PO Portal Link</Text>
-          </TouchableOpacity>
         </ScrollView>
       </View>
     </>
