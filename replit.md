@@ -12,13 +12,18 @@ This project is a cross-platform reporting dashboard application built with Expo
 The application is built on **Expo SDK 54** and **React Native 0.81** with **React 19** and **TypeScript**. It utilizes **Expo Router** for file-based navigation and **Zustand** for client-side state management, complemented by **@tanstack/react-query** for server-state management. The UI/UX features a clean design with custom chart components for various data visualizations like KPI Cards, Line Charts, Bar Charts, Pie Charts, and more, integrated with `lucide-react-native` for icons and `react-native-svg` for rendering.
 
 ### Authentication
-The application uses a simplified single-code authentication system:
+The application uses a 3-tier access code authentication system:
 - **Single Access Code Field**: Login screen presents one secure input field where users enter their access code
 - **Auto-Role Detection**: The system automatically determines user role based on the entered code:
-  - Viewer code (default: `2030`) → Read-only access
-  - Admin code (default: `Logi@2030`) → Full edit permissions
-- **Environment Variables**: Access codes are stored in `EXPO_PUBLIC_VIEWER_PASSWORD` and `EXPO_PUBLIC_ADMIN_PASSWORD` secrets
-- **No Username/Email Required**: Simplified from previous dual-mode system - only access codes needed
+  - Limited Viewer code (`2030`) → PO, Transportation, VAS tabs only (read-only)
+  - Full Viewer code (`2580`) → All tabs (read-only)
+  - Admin code (`Logi@2030`) → All tabs with edit permissions
+- **Environment Variables**: 
+  - `EXPO_PUBLIC_VIEWER_PASSWORD` - Limited viewer access code
+  - `EXPO_PUBLIC_FULL_VIEWER_PASSWORD` - Full viewer access code
+  - `EXPO_PUBLIC_ADMIN_PASSWORD` - Admin access code
+- **Tab Visibility**: Limited viewers cannot see Sales, Risk, Real Estate, or Warehouse tabs
+- **No Username/Email Required**: Only access codes needed for authentication
 - **Security**: Codes are validated against environment variables, user sessions persisted to AsyncStorage 
 
 ### Timestamp Management
