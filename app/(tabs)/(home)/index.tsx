@@ -27,7 +27,7 @@ export default function HomeScreen() {
   const insets = useSafeAreaInsets();
 
   const [actions, setActions] = useState<ActionItem[]>([
-    { id: 'po', iconUri: 'https://pub-e001eb4506b145aa938b5d3badbff6a5.r2.dev/attachments/47wr6l15ryvio7ew1kip2', color: '#87CEEB', label: 'PO', route: '/(tabs)/po' },
+    { id: 'po', iconUri: 'https://pub-e001eb4506b145aa938b5d3badbff6a5.r2.dev/attachments/47wr6l15ryvio7ew1kip2', color: '#87CEEB', label: 'Yard/PO', route: '/(tabs)/po' },
     { id: 'risks', icon: AlertCircle, color: LogiPointColors.accent, label: 'Risk Updates', route: '/(tabs)/risks' },
     { id: 'realestate', icon: Building2, color: LogiPointColors.warning, label: 'Real Estate', route: '/(tabs)/contracts' },
     { id: 'logistics', icon: TruckIcon, color: LogiPointColors.chart.blue, label: 'Transportation', route: '/(tabs)/logistics' },
