@@ -94,6 +94,10 @@ Image uploads use cache-busting timestamps to ensure replacements display immedi
 - **Affected Images**: Warehouse allocation map, Real Estate land image, JLH image
 
 ## Recent Changes
+### December 23, 2025
+- **Limited Viewer UI Improvements**: Hidden Home tab for limited viewers (code `2030`) - they now bypass home screen and go directly to PO tab on login. Added logout button in PO page header (top right next to "Last Updated") for limited viewers to easily end sessions. Created new `POHeaderRight.tsx` component that displays last updated info with admin edit capabilities and limited viewer logout functionality.
+- **Navigation Refinement**: Limited viewers now have a seamless experience with only accessible tabs (PO, Transportation, VAS) visible and no redirect delays.
+
 ### November 18, 2025
 - **Simplified Authentication System**: Replaced dual-mode login (viewer/admin toggle) with single "Access Code" field. Users enter one code that auto-detects their role - no username or email required. Reduces login complexity and improves UX.
 - **Environment Variable Cleanup**: Removed `EXPO_PUBLIC_ADMIN_NAME`, `EXPO_PUBLIC_ADMIN_EMAIL`, and `EXPO_PUBLIC_VIEWER_USERNAME` - only `EXPO_PUBLIC_VIEWER_PASSWORD` and `EXPO_PUBLIC_ADMIN_PASSWORD` are needed

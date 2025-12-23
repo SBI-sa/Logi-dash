@@ -5,6 +5,7 @@ import { LogiPointColors } from "@/constants/colors";
 import { useAuth } from "@/contexts/AuthContext";
 import { ActivityIndicator, View, Image } from "react-native";
 import LastUpdatedHeaderRight from "@/components/LastUpdatedHeaderRight";
+import POHeaderRight from "@/components/POHeaderRight";
 
 export default function TabLayout() {
   const { isAuthenticated, isLoading, hasFullAccess } = useAuth();
@@ -166,7 +167,7 @@ export default function TabLayout() {
           headerTitleStyle: {
             fontWeight: '700' as const,
           },
-          headerRight: () => <LastUpdatedHeaderRight lastUpdatedKey="po" />,
+          headerRight: () => <POHeaderRight />,
         }}
       />
     </Tabs>
