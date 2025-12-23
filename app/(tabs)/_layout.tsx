@@ -42,6 +42,7 @@ export default function TabLayout() {
         name="(home)"
         options={{
           title: "Home",
+          href: hasFullAccess ? undefined : null,
           tabBarIcon: ({ color }) => <Home size={22} color={color} />,
         }}
       />

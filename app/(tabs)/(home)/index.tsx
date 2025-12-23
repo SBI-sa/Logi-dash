@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, PanResponder, Animated } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, Redirect } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LogOut, TrendingUp, AlertCircle, Building2, Truck as TruckIcon, Warehouse as WarehouseIcon, Tag } from 'lucide-react-native';
 import { LogiPointColors } from '@/constants/colors';
@@ -17,7 +17,12 @@ type ActionItem = {
 };
 
 export default function HomeScreen() {
-  const { logout } = useAuth();
+  const { logout, isLimitedViewer } = useAuth();
+  
+  // Redirect limited viewers directly to PO tab
+  if (isLimitedViewer) {
+    return <Redirect href="/(tabs)/po" />;
+  }
   const router = useRouter();
   const insets = useSafeAreaInsets();
 
