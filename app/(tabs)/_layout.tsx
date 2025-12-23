@@ -7,7 +7,7 @@ import { ActivityIndicator, View, Image } from "react-native";
 import LastUpdatedHeaderRight from "@/components/LastUpdatedHeaderRight";
 
 export default function TabLayout() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, hasFullAccess } = useAuth();
 
   if (isLoading) {
     return (
@@ -49,6 +49,7 @@ export default function TabLayout() {
         name="sales"
         options={{
           title: "Sales",
+          href: hasFullAccess ? undefined : null,
           tabBarIcon: ({ color }) => <DollarSign size={22} color={color} />,
           headerShown: true,
           headerStyle: {
@@ -66,6 +67,7 @@ export default function TabLayout() {
         name="risks"
         options={{
           title: "Risk Updates",
+          href: hasFullAccess ? undefined : null,
           tabBarIcon: ({ color }) => <AlertTriangle size={22} color={color} />,
           headerShown: true,
           headerStyle: {
@@ -82,6 +84,7 @@ export default function TabLayout() {
         name="contracts"
         options={{
           title: "Real Estate",
+          href: hasFullAccess ? undefined : null,
           tabBarIcon: ({ color }) => <Building2 size={22} color={color} />,
           headerShown: true,
           headerStyle: {
@@ -114,6 +117,7 @@ export default function TabLayout() {
         name="warehouse"
         options={{
           title: "Warehouse",
+          href: hasFullAccess ? undefined : null,
           tabBarIcon: ({ color }) => <Warehouse size={22} color={color} />,
           headerShown: true,
           headerStyle: {

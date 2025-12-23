@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import createContextHook from '@nkzw/create-context-hook';
 
-export type UserRole = 'admin' | 'viewer';
+export type UserRole = 'admin' | 'fullViewer' | 'limitedViewer';
 
 export interface User {
   id: string;
@@ -37,15 +37,28 @@ export const [AuthProvider, useAuth] = createContextHook(() => {
 
 
   const login = useCallback(async (accessCode: string) => {
-    const viewerPassword = process.env.EXPO_PUBLIC_VIEWER_PASSWORD!;
+    const limitedViewerPassword = process.env.EXPO_PUBLIC_VIEWER_PASSWORD!;
+    const fullViewerPassword = process.env.EXPO_PUBLIC_FULL_VIEWER_PASSWORD!;
     const adminPassword = process.env.EXPO_PUBLIC_ADMIN_PASSWORD!;
 
-    if (accessCode === viewerPassword) {
+    if (accessCode === limitedViewerPassword) {
+      const mockUser: User = {
+        id: '3',
+        name: 'Limited Viewer',
+        email: 'limited@logipoint.com',
+        role: 'limitedViewer',
+      };
+      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(mockUser));
+      setUser(mockUser);
+      return;
+    }
+
+    if (accessCode === fullViewerPassword) {
       const mockUser: User = {
         id: '2',
-        name: 'Viewer User',
+        name: 'Full Viewer',
         email: 'viewer@logipoint.com',
-        role: 'viewer',
+        role: 'fullViewer',
       };
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(mockUser));
       setUser(mockUser);
@@ -73,13 +86,19 @@ export const [AuthProvider, useAuth] = createContextHook(() => {
   }, []);
 
   const isAdmin = user?.role === 'admin';
+  const isFullViewer = user?.role === 'fullViewer';
+  const isLimitedViewer = user?.role === 'limitedViewer';
+  const hasFullAccess = isAdmin || isFullViewer;
 
   return useMemo(() => ({
     user,
     isLoading,
     isAuthenticated: !!user,
     isAdmin,
+    isFullViewer,
+    isLimitedViewer,
+    hasFullAccess,
     login,
     logout,
-  }), [user, isLoading, isAdmin, login, logout]);
+  }), [user, isLoading, isAdmin, isFullViewer, isLimitedViewer, hasFullAccess, login, logout]);
 });
