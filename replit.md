@@ -1,7 +1,7 @@
 # LogiPoint Reporting Dashboard
 
 ## Overview
-This project is a cross-platform reporting dashboard application built with Expo and React Native, providing comprehensive business analytics for LogiPoint. It supports iOS, Android, and Web platforms, with a primary focus on the web environment within Replit. The application offers various reporting modules including Sales, Warehouse, Logistics, Contracts, Risks, Real Estate, VAS, and Purchase Orders, all powered by a Supabase backend with real-time data synchronization. The vision is to provide a robust, real-time analytics platform for critical business insights.
+This project is a cross-platform reporting dashboard application built with Expo and React Native. It provides comprehensive business analytics for LogiPoint across iOS, Android, and Web platforms, with a primary focus on the web environment within Replit. The application offers various reporting modules including Sales, Warehouse, Logistics, Contracts, Risks, Real Estate, VAS, Purchase Orders, and Marketing & Leads. It is powered by a Supabase backend with real-time data synchronization, aiming to deliver a robust, real-time analytics platform for critical business insights.
 
 ## User Preferences
 - I want iterative development.
@@ -9,135 +9,57 @@ This project is a cross-platform reporting dashboard application built with Expo
 - I prefer detailed explanations.
 
 ## System Architecture
-The application is built on **Expo SDK 54** and **React Native 0.81** with **React 19** and **TypeScript**. It utilizes **Expo Router** for file-based navigation and **Zustand** for client-side state management, complemented by **@tanstack/react-query** for server-state management. The UI/UX features a clean design with custom chart components for various data visualizations like KPI Cards, Line Charts, Bar Charts, Pie Charts, and more, integrated with `lucide-react-native` for icons and `react-native-svg` for rendering.
+The application is built on Expo SDK 54, React Native 0.81, and React 19, utilizing TypeScript. It employs Expo Router for file-based navigation, Zustand for client-side state management, and @tanstack/react-query for server-state management. The UI/UX features a clean design with custom chart components for KPI Cards, Line Charts, Bar Charts, Pie Charts, and more, integrated with `lucide-react-native` for icons and `react-native-svg` for rendering. Data entry supports exact numeric values without rounding.
 
 ### Authentication
-The application uses a 3-tier access code authentication system:
-- **Single Access Code Field**: Login screen presents one secure input field where users enter their access code
-- **Auto-Role Detection**: The system automatically determines user role based on the entered code:
-  - Limited Viewer code (`2030`) → PO, Transportation, VAS tabs only (read-only)
-  - Full Viewer code (`2580`) → All tabs (read-only)
-  - Admin code (`Logi@2030`) → All tabs with edit permissions
-- **Environment Variables**: 
-  - `EXPO_PUBLIC_VIEWER_PASSWORD` - Limited viewer access code
-  - `EXPO_PUBLIC_FULL_VIEWER_PASSWORD` - Full viewer access code
-  - `EXPO_PUBLIC_ADMIN_PASSWORD` - Admin access code
-- **Tab Visibility**: Limited viewers cannot see Sales, Risk, Real Estate, or Warehouse tabs
-- **No Username/Email Required**: Only access codes needed for authentication
-- **Security**: Codes are validated against environment variables, user sessions persisted to AsyncStorage 
+A 3-tier access code authentication system is implemented:
+- Users enter a single access code on the login screen.
+- The system automatically determines the user role (Limited Viewer, Full Viewer, Admin) based on the code.
+- Access codes are stored as environment variables (`EXPO_PUBLIC_VIEWER_PASSWORD`, `EXPO_PUBLIC_FULL_VIEWER_PASSWORD`, `EXPO_PUBLIC_ADMIN_PASSWORD`).
+- Tab visibility is restricted based on the user's role (e.g., Limited Viewers cannot see Sales, Risk, Real Estate, or Warehouse tabs).
+- User sessions are persisted using AsyncStorage.
 
 ### Timestamp Management
-Admin users can edit "Last Updated" timestamps which are reflected across all tab screens:
-- **Display**: Timestamps shown as date-only format (e.g., "Nov 10, 2025") without time
-- **Components**: `LastUpdatedHeaderRight.tsx` (header display) and `PageHeader.tsx` (page headers)
-- **Editing**: Admin-only pencil icon opens `TimestampEditModal.tsx` with date-only input (YYYY-MM-DD format)
-- **Storage**: Time automatically set to midnight (00:00) when saved
-- **Synchronization**: Updates saved to Supabase `last_updated` table with real-time broadcast to all clients
-- **Error Handling**: Failed updates roll back to previous value with alert notification to admin
+Admin users can edit "Last Updated" timestamps:
+- Timestamps are displayed in a date-only format (e.g., "Nov 10, 2025").
+- Editing is available via an admin-only pencil icon, opening a modal for date-only input (YYYY-MM-DD).
+- Updates are saved to Supabase's `last_updated` table and broadcast in real-time to all clients.
 
-The system design ensures real-time data updates across all clients when admin edits are made, following a pattern of local state update, Supabase save, and real-time broadcast.
-
-### Sales Module Customer Management
-The Sales module features two types of customer editing:
-- **Monthly Tabs**: Each month (January-December) has its own customer list that can be edited independently. Customers can be added, edited, or removed per month.
-- **Total Tab**: Fixed list of exactly 10 customers (`topCustomersTotal`) that represents the overall top customers. Unlike monthly tabs, the Total tab:
-  - Has exactly 10 customer slots (Client 1-10 by default)
-  - Cannot add new customers (button is hidden)
-  - All 10 customers are fully editable (name, revenue, color)
-  - Stored separately from monthly customer data in `topCustomersTotal` array
-  - Persists to Supabase `top_customers_total` JSONB column
-- **Data Flow**: Total tab customers use dedicated `topCustomersTotal` array, while monthly tabs use `topCustomersMonthly` object
-- **Fallback**: If Supabase column doesn't exist, uses mock data from `mockSalesData.topCustomersTotal`
-
-### Sales Module Bullet Graph Visualization
-The Sales module includes bullet graph visualizations on the main revenue KPI cards:
-- **YTD Revenue vs Budget Card**: Visual bullet graph shows actual YTD revenue compared to budget target. Green bar indicates over-budget performance, accent color for under-budget.
-- **Total Revenue Card**: Visual bullet graph shows current total revenue compared to last year's YTD baseline. Green bar indicates growth, accent color for decline.
-- **Component**: `BulletGraph.tsx` handles visualization with automatic scaling and edge-case handling (zero values)
-- **Integration**: KPICard component accepts optional `bulletGraph` prop with `actual` and `target` values
-- **Color Logic**: Automatically applies green for over-target performance, accent color for under-target
-
-### Data Entry
-The application supports **exact numeric values** without rounding or limits:
-- All revenue, budget, and sales fields accept precise values (e.g., 165300, 1246580)
-- Values are stored and displayed exactly as entered using `parseFloat()` without any abbreviation
-- No K/M formatting on input or storage - only on charts where appropriate
+### Sales Module
+The Sales module includes:
+- **Customer Management**: Supports independent editing of customer lists for each monthly tab, and a fixed list of 10 top customers on a "Total" tab. The "Total" tab customers are stored separately and have specific editing rules (e.g., no adding new customers, always 10 slots).
+- **Bullet Graph Visualization**: KPI cards (YTD Revenue vs Budget, Total Revenue) feature bullet graphs comparing actual performance against targets or baselines, with automatic color-coding for performance (green for over-target, accent for under-target).
 
 ### Marketing & Leads Module
-The Marketing module provides comprehensive marketing analytics with year-driven data structure:
-- **Year Selector**: Dynamic dropdown to switch between years (e.g., 2025, 2026) - not hardcoded
-- **7 Marketing Channels**: Website, LinkedIn Organic, LinkedIn Paid, Instagram Organic, Instagram Paid, Facebook Organic, Facebook Paid
-- **KPI Cards**: MTD Leads, YTD Leads, Conversion Rate, Converted Leads, Total Revenue, Avg Revenue/Lead, CPL, Active Campaigns
-- **Visualizations**:
-  - Stacked bar chart showing leads by channel per month
-  - Channel performance table with leads, spend, and CPL
-  - Campaign performance table with status, leads, revenue, CPL, ROAS
-  - Custom Gantt chart timeline for campaign duration visualization
-- **Campaign Management**: 
-  - Full CRUD operations for campaigns (add, edit, delete)
-  - Monthly allocations per campaign (`campaignMonthly`) for accurate CPL/ROAS calculations
-  - Fields: name, type, startMonth, endMonth, budgetSar, status
-- **Data Structure**: Single `marketing` table with JSONB `years` column containing per-year data (monthly metrics + campaigns + campaignMonthly allocations)
-- **Admin Editing**: Edit monthly channel data, add/edit/delete campaigns with confirmation alerts
-- **Tab Access**: Restricted to Full Viewer and Admin users (hasFullAccess check)
-- **Database Migration**: `db/migrations/003_marketing_schema.sql` (run via Supabase SQL Editor)
+This module provides comprehensive marketing analytics with a year-driven data structure:
+- **Year Selector**: Dynamic dropdown to switch between years.
+- **9 Marketing Channels**: Tracks Website, LinkedIn (Organic/Paid), Instagram (Organic/Paid), Facebook (Organic/Paid), Email, and Referral channels.
+- **KPI Cards**: Displays MTD Leads, YTD Leads, Conversion Rate, Converted Leads, Total Revenue, Avg Revenue/Lead, CPL, and Active Campaigns.
+- **Visualizations**: Stacked bar chart for leads by channel, channel performance table, campaign performance table, and a custom Gantt chart for campaign duration.
+- **Campaign Management**: Full CRUD operations for campaigns, including monthly allocations for accurate CPL/ROAS calculations.
+- **Data Structure**: A single `marketing` table in Supabase with a JSONB `years` column stores per-year data.
+- **Access**: Restricted to Full Viewer and Admin users.
 
-### Transportation/Logistics Module Delete Functionality
-The Transportation module supports deletion of editable data entries with confirmation alerts:
-- **Trip Categories**: Delete button available inside edit modal for custom categories in both Total and Monthly tabs. Deleting from Total tab removes category from all months. Auto-calculated "Total Trips" category cannot be deleted.
-- **Delivery Performance**: Delete button inside edit modal for each monthly performance entry. Allows removing specific months from the tracking chart.
-- **Delays by Route**: Delete button inside edit modal for each route entry. Enables removal of routes that are no longer tracked.
-- **UI Pattern**: Red Delete button appears inside the edit modal footer, positioned next to Cancel and Save buttons. Only shows for edit operations (not for add operations). All deletions trigger confirmation alerts to prevent accidental data loss.
-- **Data Flow**: Deletions update local state, persist to Supabase, sync in real-time to all connected clients, and automatically close the edit modal.
+### Transportation/Logistics Module
+This module supports deletion of editable data entries with confirmation alerts for:
+- **Trip Categories**: Deletion from Total tab removes categories from all months.
+- **Delivery Performance**: Allows removal of specific monthly performance entries.
+- **Delays by Route**: Enables removal of routes no longer tracked.
+- Deletions update local state, persist to Supabase, and sync in real-time.
+
+### Image Management
+Image uploads use a cache-busting mechanism:
+- Clean URLs are stored in Supabase.
+- Timestamped URLs (`?t=${Date.now()}`) are used in the UI to force browser cache refreshes, ensuring immediate display of updated images.
+- This applies to images such as the Warehouse allocation map, Real Estate land image, and JLH image.
 
 ## External Dependencies
-- **Supabase**: Backend services for database (9 tables: `sales`, `risks`, `real_estate`, `logistics`, `warehouse`, `vas`, `po`, `last_updated`, `marketing`), authentication, and real-time subscriptions. Sales table includes JSONB columns: `top_customers_total` for Total tab customers, `top_customers_monthly` for monthly customer data, `revenue_by_segment_monthly` for segment data. Marketing table uses year-driven JSONB structure for multi-year data.
+- **Supabase**: Backend services for database (9 tables: `sales`, `risks`, `real_estate`, `logistics`, `warehouse`, `vas`, `po`, `last_updated`, `marketing`), authentication, and real-time subscriptions.
 - **Expo**: For cross-platform development and build processes.
 - **@tanstack/react-query**: For server state management and data fetching.
 - **Zustand**: For client-side state management.
 - **@supabase/supabase-js**: JavaScript client library for Supabase interaction.
-- **@blazejkustra/react-native-alert**: Cross-platform Alert implementation supporting iOS, Android, and Web. Required because React Native Web doesn't support `Alert.alert()` natively.
-- **lucide-react-native**: Icon library used for UI elements.
+- **@blazejkustra/react-native-alert**: Cross-platform Alert implementation (for iOS, Android, and Web).
+- **lucide-react-native**: Icon library.
 - **react-native-svg**: Used for rendering SVG-based charts and graphics.
-- **Metro**: JavaScript bundler for React Native.
-- **AsyncStorage**: Used for local data persistence (falls back to localStorage on web).
-
-### Image Management
-Image uploads use cache-busting timestamps to ensure replacements display immediately:
-- **Database Storage**: Clean URLs without query parameters are stored in Supabase (e.g., `https://.../warehouse/allocation.jpg`)
-- **UI Display**: Timestamped URLs with `?t=${Date.now()}` are used in the UI to force browser cache refresh
-- **Separate Objects**: Upload handlers create two separate objects:
-  - `dataForDatabase`: Contains clean URL, saved to Supabase
-  - `dataForState`: Contains timestamped URL, used for local state and UI display
-- **Why This Matters**: Image files are uploaded to the same path each time. Without timestamps in the UI, browsers cache the old image. Clean URLs in the database ensure future uploads work correctly
-- **Affected Images**: Warehouse allocation map, Real Estate land image, JLH image
-
-## Recent Changes
-### December 31, 2025
-- **Marketing & Leads Module**: Added comprehensive marketing analytics module with year-driven data structure supporting dynamic year selection. Features 7 marketing channel tracking (website, LinkedIn organic/paid, Instagram organic/paid, Facebook organic/paid), 8 KPI cards, stacked bar chart for leads by channel, channel performance table, campaign management with full CRUD, custom SVG Gantt chart for campaign timelines, and campaignMonthly allocations for accurate CPL/ROAS calculations.
-- **Database Schema**: Added `marketing` table with JSONB `years` column (migration: `db/migrations/003_marketing_schema.sql`)
-- **Real-time Subscriptions**: Extended from 8 to 9 tables with marketing data synchronization
-- **Mock Data**: Complete sample data for 2025 and 2026 with all 7 channels, campaigns, and monthly allocations
-
-### December 23, 2025
-- **Limited Viewer UI Improvements**: Hidden Home tab for limited viewers (code `2030`) - they now bypass home screen and go directly to PO tab on login. Added logout button in PO page header (top right next to "Last Updated") for limited viewers to easily end sessions. Created new `POHeaderRight.tsx` component that displays last updated info with admin edit capabilities and limited viewer logout functionality.
-- **Navigation Refinement**: Limited viewers now have a seamless experience with only accessible tabs (PO, Transportation, VAS) visible and no redirect delays.
-
-### November 18, 2025
-- **Simplified Authentication System**: Replaced dual-mode login (viewer/admin toggle) with single "Access Code" field. Users enter one code that auto-detects their role - no username or email required. Reduces login complexity and improves UX.
-- **Environment Variable Cleanup**: Removed `EXPO_PUBLIC_ADMIN_NAME`, `EXPO_PUBLIC_ADMIN_EMAIL`, and `EXPO_PUBLIC_VIEWER_USERNAME` - only `EXPO_PUBLIC_VIEWER_PASSWORD` and `EXPO_PUBLIC_ADMIN_PASSWORD` are needed
-- **Updated Documentation**: Refreshed `.env.example` to reflect simplified authentication variables
-
-### November 17, 2025
-- **Bullet Graph Visualization**: Added bullet graphs to Sales revenue KPI cards (YTD Revenue vs Budget and Total Revenue). Visual comparison shows actual vs target/baseline with automatic color-coding (green for over-target, accent for under). Component includes edge-case handling for zero values.
-- **Critical Alert fix for Web platform**: Fixed Transportation delete buttons not working on web. React Native Web doesn't support `Alert.alert()` natively - installed `@blazejkustra/react-native-alert` package to provide cross-platform alert support. Delete confirmations now work correctly on all platforms (iOS, Android, Web)
-- **Transportation delete functionality**: Added delete buttons with confirmation alerts for Trip Categories (Total and Monthly tabs), Delivery Performance entries, and Delays by Route. Deletions cascade properly (Total tab removes from all months) and sync to Supabase in real-time
-- **Truck Tracking Link**: Added external hyperlink in Transportation page middle section pointing to https://portal.logipoint.sa/logipoint/DashboardTransportation with clean UI styling
-- **Image cache-busting architecture**: Implemented dual-object pattern for image uploads - clean URLs stored in Supabase database, timestamped URLs used in UI to force browser refresh. Prevents mutation bugs and ensures future image replacements work correctly for warehouse allocation, land, and JLH images
-- **Warehouse village colors**: Updated to use only 4-color repeating pattern (#00617f, #a7aca1, #081f2c, #9b2743) across all village cards
-
-### November 16, 2025
-- **Fixed data persistence issue**: Added missing `top_customers_total` JSONB column to Supabase sales table via SQL Editor
-- **Revenue by Segment colors**: Updated to 4-color repeating pattern (#00617f, #a7aca1, #081f2c, #9b2743) across all months
-- **Exact value display**: Removed K/M abbreviations in formatCurrency function to show precise numbers
-- All admin edits now persist correctly to Supabase with real-time synchronization
+- **AsyncStorage**: Used for local data persistence.
