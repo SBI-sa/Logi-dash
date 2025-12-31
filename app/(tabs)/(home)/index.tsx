@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, PanResponder, Animated } from 'react-native';
 import { useRouter, Redirect } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { LogOut, TrendingUp, AlertCircle, Building2, Truck as TruckIcon, Warehouse as WarehouseIcon, Tag } from 'lucide-react-native';
+import { LogOut, TrendingUp, AlertCircle, Building2, Truck as TruckIcon, Warehouse as WarehouseIcon, Tag, Magnet } from 'lucide-react-native';
 import { LogiPointColors } from '@/constants/colors';
 import { useAuth } from '@/contexts/AuthContext';
 import { useData } from '@/contexts/DataContext';
@@ -33,6 +33,7 @@ export default function HomeScreen() {
     { id: 'logistics', icon: TruckIcon, color: LogiPointColors.chart.blue, label: 'Transportation', route: '/(tabs)/logistics' },
     { id: 'warehouse', icon: WarehouseIcon, color: LogiPointColors.chart.green, label: 'Warehouse', route: '/(tabs)/warehouse' },
     { id: 'vas', icon: Tag, color: LogiPointColors.chart.purple, label: 'VAS', route: '/(tabs)/vas' },
+    { id: 'marketing', icon: Magnet, color: '#FF9800', label: 'Marketing', route: '/(tabs)/marketing' },
     { id: 'sales', icon: TrendingUp, color: LogiPointColors.primary, label: 'Sales Report', route: '/(tabs)/sales' },
   ]);
 
@@ -281,7 +282,7 @@ function DraggableActionCard({ action, index, onPress, onDragStart, onDragEnd, o
         
         newIndex += horizontalMove + (verticalMove * 2);
         
-        if (newIndex !== index && newIndex >= 0 && newIndex < 7) {
+        if (newIndex !== index && newIndex >= 0 && newIndex < 8) {
           onSwap(index, newIndex);
         }
         

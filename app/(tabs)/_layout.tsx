@@ -1,5 +1,5 @@
 import { Tabs, Redirect } from "expo-router";
-import { Home, DollarSign, AlertTriangle, Building2, Truck, Warehouse, Tag, TrendingUp } from "lucide-react-native";
+import { Home, DollarSign, AlertTriangle, Building2, Truck, Warehouse, Tag, Magnet } from "lucide-react-native";
 import React from "react";
 import { LogiPointColors } from "@/constants/colors";
 import { useAuth } from "@/contexts/AuthContext";
@@ -153,7 +153,7 @@ export default function TabLayout() {
         options={{
           title: "Marketing",
           href: hasFullAccess ? undefined : null,
-          tabBarIcon: ({ color }) => <TrendingUp size={22} color={color} />,
+          tabBarIcon: ({ color }) => <Magnet size={22} color={color} />,
           headerShown: true,
           headerStyle: {
             backgroundColor: LogiPointColors.midnight,
