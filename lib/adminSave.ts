@@ -8,6 +8,7 @@ import type {
   WarehouseData,
   VASData,
   POData,
+  MarketingData,
 } from '@/mocks/dashboardData';
 import type { LastUpdatedData } from '../contexts/DataContext';
 
@@ -138,6 +139,13 @@ export async function saveVasData(data: VASData) {
  */
 export async function savePoData(data: POData) {
   return saveToSupabase('po', data, 'PO Data');
+}
+
+/**
+ * Save Marketing Data
+ */
+export async function saveMarketingData(data: MarketingData) {
+  return saveToSupabase('marketing', data, 'Marketing Data');
 }
 
 /**

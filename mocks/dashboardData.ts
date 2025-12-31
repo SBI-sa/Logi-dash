@@ -842,3 +842,424 @@ export const mockVASData: VASData = {
     q4: { current: 10500, lastYear: 9500, color: '#9b2743' },
   },
 };
+
+// ============================================================================
+// MARKETING DATA TYPES
+// ============================================================================
+
+export const MARKETING_CHANNELS = [
+  'website',
+  'linkedinOrganic',
+  'linkedinPaid',
+  'instagramOrganic',
+  'instagramPaid',
+  'facebookOrganic',
+  'facebookPaid',
+] as const;
+
+export type MarketingChannel = typeof MARKETING_CHANNELS[number];
+
+export interface ChannelMetrics {
+  website: number;
+  linkedinOrganic: number;
+  linkedinPaid: number;
+  instagramOrganic: number;
+  instagramPaid: number;
+  facebookOrganic: number;
+  facebookPaid: number;
+}
+
+export interface MarketingMonthlyData {
+  month: string;
+  leadsByChannel: ChannelMetrics;
+  spendByChannelSar: ChannelMetrics;
+  convertedLeads: number;
+  attributedRevenueSar: number;
+}
+
+export interface MarketingCampaign {
+  id: string;
+  name: string;
+  startDate: string;
+  endDate: string;
+  channels: MarketingChannel[];
+}
+
+export interface CampaignMonthlyAllocation {
+  month: string;
+  leads: number;
+  convertedLeads: number;
+  attributedRevenueSar: number;
+  spendSar: number;
+}
+
+export interface MarketingYearData {
+  monthly: MarketingMonthlyData[];
+  campaigns: MarketingCampaign[];
+  campaignMonthly: { [campaignId: string]: CampaignMonthlyAllocation[] };
+}
+
+export interface MarketingData {
+  years: { [year: string]: MarketingYearData };
+}
+
+// Helper to create empty channel metrics
+export const createEmptyChannelMetrics = (): ChannelMetrics => ({
+  website: 0,
+  linkedinOrganic: 0,
+  linkedinPaid: 0,
+  instagramOrganic: 0,
+  instagramPaid: 0,
+  facebookOrganic: 0,
+  facebookPaid: 0,
+});
+
+// ============================================================================
+// MARKETING MOCK DATA
+// ============================================================================
+
+const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+const create2025MonthlyData = (): MarketingMonthlyData[] => [
+  {
+    month: 'January',
+    leadsByChannel: { website: 45, linkedinOrganic: 12, linkedinPaid: 28, instagramOrganic: 8, instagramPaid: 15, facebookOrganic: 6, facebookPaid: 10 },
+    spendByChannelSar: { website: 0, linkedinOrganic: 0, linkedinPaid: 8500, instagramOrganic: 0, instagramPaid: 4200, facebookOrganic: 0, facebookPaid: 3100 },
+    convertedLeads: 18,
+    attributedRevenueSar: 145000,
+  },
+  {
+    month: 'February',
+    leadsByChannel: { website: 52, linkedinOrganic: 15, linkedinPaid: 32, instagramOrganic: 10, instagramPaid: 18, facebookOrganic: 8, facebookPaid: 12 },
+    spendByChannelSar: { website: 0, linkedinOrganic: 0, linkedinPaid: 9200, instagramOrganic: 0, instagramPaid: 4800, facebookOrganic: 0, facebookPaid: 3500 },
+    convertedLeads: 22,
+    attributedRevenueSar: 178000,
+  },
+  {
+    month: 'March',
+    leadsByChannel: { website: 58, linkedinOrganic: 18, linkedinPaid: 35, instagramOrganic: 12, instagramPaid: 22, facebookOrganic: 10, facebookPaid: 14 },
+    spendByChannelSar: { website: 0, linkedinOrganic: 0, linkedinPaid: 10500, instagramOrganic: 0, instagramPaid: 5500, facebookOrganic: 0, facebookPaid: 4000 },
+    convertedLeads: 26,
+    attributedRevenueSar: 212000,
+  },
+  {
+    month: 'April',
+    leadsByChannel: { website: 48, linkedinOrganic: 14, linkedinPaid: 30, instagramOrganic: 9, instagramPaid: 17, facebookOrganic: 7, facebookPaid: 11 },
+    spendByChannelSar: { website: 0, linkedinOrganic: 0, linkedinPaid: 8800, instagramOrganic: 0, instagramPaid: 4500, facebookOrganic: 0, facebookPaid: 3300 },
+    convertedLeads: 20,
+    attributedRevenueSar: 162000,
+  },
+  {
+    month: 'May',
+    leadsByChannel: { website: 62, linkedinOrganic: 20, linkedinPaid: 38, instagramOrganic: 14, instagramPaid: 25, facebookOrganic: 11, facebookPaid: 16 },
+    spendByChannelSar: { website: 0, linkedinOrganic: 0, linkedinPaid: 11200, instagramOrganic: 0, instagramPaid: 6200, facebookOrganic: 0, facebookPaid: 4500 },
+    convertedLeads: 28,
+    attributedRevenueSar: 235000,
+  },
+  {
+    month: 'June',
+    leadsByChannel: { website: 55, linkedinOrganic: 16, linkedinPaid: 33, instagramOrganic: 11, instagramPaid: 20, facebookOrganic: 9, facebookPaid: 13 },
+    spendByChannelSar: { website: 0, linkedinOrganic: 0, linkedinPaid: 9800, instagramOrganic: 0, instagramPaid: 5100, facebookOrganic: 0, facebookPaid: 3800 },
+    convertedLeads: 24,
+    attributedRevenueSar: 195000,
+  },
+  {
+    month: 'July',
+    leadsByChannel: { website: 50, linkedinOrganic: 13, linkedinPaid: 28, instagramOrganic: 8, instagramPaid: 16, facebookOrganic: 6, facebookPaid: 10 },
+    spendByChannelSar: { website: 0, linkedinOrganic: 0, linkedinPaid: 8200, instagramOrganic: 0, instagramPaid: 4000, facebookOrganic: 0, facebookPaid: 2900 },
+    convertedLeads: 19,
+    attributedRevenueSar: 152000,
+  },
+  {
+    month: 'August',
+    leadsByChannel: { website: 47, linkedinOrganic: 11, linkedinPaid: 26, instagramOrganic: 7, instagramPaid: 14, facebookOrganic: 5, facebookPaid: 9 },
+    spendByChannelSar: { website: 0, linkedinOrganic: 0, linkedinPaid: 7500, instagramOrganic: 0, instagramPaid: 3600, facebookOrganic: 0, facebookPaid: 2600 },
+    convertedLeads: 17,
+    attributedRevenueSar: 138000,
+  },
+  {
+    month: 'September',
+    leadsByChannel: { website: 60, linkedinOrganic: 19, linkedinPaid: 36, instagramOrganic: 13, instagramPaid: 23, facebookOrganic: 10, facebookPaid: 15 },
+    spendByChannelSar: { website: 0, linkedinOrganic: 0, linkedinPaid: 10800, instagramOrganic: 0, instagramPaid: 5800, facebookOrganic: 0, facebookPaid: 4200 },
+    convertedLeads: 27,
+    attributedRevenueSar: 225000,
+  },
+  {
+    month: 'October',
+    leadsByChannel: { website: 68, linkedinOrganic: 22, linkedinPaid: 42, instagramOrganic: 16, instagramPaid: 28, facebookOrganic: 13, facebookPaid: 18 },
+    spendByChannelSar: { website: 0, linkedinOrganic: 0, linkedinPaid: 12500, instagramOrganic: 0, instagramPaid: 7000, facebookOrganic: 0, facebookPaid: 5200 },
+    convertedLeads: 32,
+    attributedRevenueSar: 268000,
+  },
+  {
+    month: 'November',
+    leadsByChannel: { website: 72, linkedinOrganic: 24, linkedinPaid: 45, instagramOrganic: 18, instagramPaid: 30, facebookOrganic: 14, facebookPaid: 20 },
+    spendByChannelSar: { website: 0, linkedinOrganic: 0, linkedinPaid: 13500, instagramOrganic: 0, instagramPaid: 7500, facebookOrganic: 0, facebookPaid: 5800 },
+    convertedLeads: 35,
+    attributedRevenueSar: 295000,
+  },
+  {
+    month: 'December',
+    leadsByChannel: { website: 65, linkedinOrganic: 21, linkedinPaid: 40, instagramOrganic: 15, instagramPaid: 26, facebookOrganic: 12, facebookPaid: 17 },
+    spendByChannelSar: { website: 0, linkedinOrganic: 0, linkedinPaid: 11800, instagramOrganic: 0, instagramPaid: 6500, facebookOrganic: 0, facebookPaid: 4800 },
+    convertedLeads: 30,
+    attributedRevenueSar: 252000,
+  },
+];
+
+const create2026MonthlyData = (): MarketingMonthlyData[] => [
+  {
+    month: 'January',
+    leadsByChannel: { website: 55, linkedinOrganic: 18, linkedinPaid: 35, instagramOrganic: 12, instagramPaid: 22, facebookOrganic: 10, facebookPaid: 15 },
+    spendByChannelSar: { website: 0, linkedinOrganic: 0, linkedinPaid: 10200, instagramOrganic: 0, instagramPaid: 5500, facebookOrganic: 0, facebookPaid: 4000 },
+    convertedLeads: 25,
+    attributedRevenueSar: 198000,
+  },
+  {
+    month: 'February',
+    leadsByChannel: { website: 62, linkedinOrganic: 20, linkedinPaid: 40, instagramOrganic: 14, instagramPaid: 26, facebookOrganic: 12, facebookPaid: 18 },
+    spendByChannelSar: { website: 0, linkedinOrganic: 0, linkedinPaid: 11500, instagramOrganic: 0, instagramPaid: 6200, facebookOrganic: 0, facebookPaid: 4600 },
+    convertedLeads: 28,
+    attributedRevenueSar: 225000,
+  },
+  {
+    month: 'March',
+    leadsByChannel: { website: 70, linkedinOrganic: 23, linkedinPaid: 45, instagramOrganic: 16, instagramPaid: 30, facebookOrganic: 14, facebookPaid: 21 },
+    spendByChannelSar: { website: 0, linkedinOrganic: 0, linkedinPaid: 13200, instagramOrganic: 0, instagramPaid: 7200, facebookOrganic: 0, facebookPaid: 5400 },
+    convertedLeads: 33,
+    attributedRevenueSar: 275000,
+  },
+  {
+    month: 'April',
+    leadsByChannel: { website: 58, linkedinOrganic: 17, linkedinPaid: 38, instagramOrganic: 11, instagramPaid: 24, facebookOrganic: 9, facebookPaid: 16 },
+    spendByChannelSar: { website: 0, linkedinOrganic: 0, linkedinPaid: 10800, instagramOrganic: 0, instagramPaid: 5800, facebookOrganic: 0, facebookPaid: 4200 },
+    convertedLeads: 26,
+    attributedRevenueSar: 210000,
+  },
+  {
+    month: 'May',
+    leadsByChannel: { website: 75, linkedinOrganic: 25, linkedinPaid: 48, instagramOrganic: 18, instagramPaid: 32, facebookOrganic: 15, facebookPaid: 23 },
+    spendByChannelSar: { website: 0, linkedinOrganic: 0, linkedinPaid: 14000, instagramOrganic: 0, instagramPaid: 7800, facebookOrganic: 0, facebookPaid: 5800 },
+    convertedLeads: 36,
+    attributedRevenueSar: 302000,
+  },
+  {
+    month: 'June',
+    leadsByChannel: { website: 68, linkedinOrganic: 22, linkedinPaid: 42, instagramOrganic: 15, instagramPaid: 28, facebookOrganic: 13, facebookPaid: 19 },
+    spendByChannelSar: { website: 0, linkedinOrganic: 0, linkedinPaid: 12200, instagramOrganic: 0, instagramPaid: 6600, facebookOrganic: 0, facebookPaid: 4900 },
+    convertedLeads: 31,
+    attributedRevenueSar: 258000,
+  },
+  {
+    month: 'July',
+    leadsByChannel: { website: 60, linkedinOrganic: 19, linkedinPaid: 36, instagramOrganic: 12, instagramPaid: 23, facebookOrganic: 10, facebookPaid: 15 },
+    spendByChannelSar: { website: 0, linkedinOrganic: 0, linkedinPaid: 10500, instagramOrganic: 0, instagramPaid: 5600, facebookOrganic: 0, facebookPaid: 4000 },
+    convertedLeads: 27,
+    attributedRevenueSar: 218000,
+  },
+  {
+    month: 'August',
+    leadsByChannel: { website: 56, linkedinOrganic: 16, linkedinPaid: 33, instagramOrganic: 10, instagramPaid: 20, facebookOrganic: 8, facebookPaid: 13 },
+    spendByChannelSar: { website: 0, linkedinOrganic: 0, linkedinPaid: 9600, instagramOrganic: 0, instagramPaid: 4900, facebookOrganic: 0, facebookPaid: 3500 },
+    convertedLeads: 24,
+    attributedRevenueSar: 195000,
+  },
+  {
+    month: 'September',
+    leadsByChannel: { website: 72, linkedinOrganic: 24, linkedinPaid: 46, instagramOrganic: 17, instagramPaid: 31, facebookOrganic: 14, facebookPaid: 21 },
+    spendByChannelSar: { website: 0, linkedinOrganic: 0, linkedinPaid: 13500, instagramOrganic: 0, instagramPaid: 7400, facebookOrganic: 0, facebookPaid: 5500 },
+    convertedLeads: 34,
+    attributedRevenueSar: 285000,
+  },
+  {
+    month: 'October',
+    leadsByChannel: { website: 80, linkedinOrganic: 27, linkedinPaid: 52, instagramOrganic: 20, instagramPaid: 36, facebookOrganic: 17, facebookPaid: 25 },
+    spendByChannelSar: { website: 0, linkedinOrganic: 0, linkedinPaid: 15200, instagramOrganic: 0, instagramPaid: 8500, facebookOrganic: 0, facebookPaid: 6400 },
+    convertedLeads: 40,
+    attributedRevenueSar: 338000,
+  },
+  {
+    month: 'November',
+    leadsByChannel: { website: 0, linkedinOrganic: 0, linkedinPaid: 0, instagramOrganic: 0, instagramPaid: 0, facebookOrganic: 0, facebookPaid: 0 },
+    spendByChannelSar: { website: 0, linkedinOrganic: 0, linkedinPaid: 0, instagramOrganic: 0, instagramPaid: 0, facebookOrganic: 0, facebookPaid: 0 },
+    convertedLeads: 0,
+    attributedRevenueSar: 0,
+  },
+  {
+    month: 'December',
+    leadsByChannel: { website: 0, linkedinOrganic: 0, linkedinPaid: 0, instagramOrganic: 0, instagramPaid: 0, facebookOrganic: 0, facebookPaid: 0 },
+    spendByChannelSar: { website: 0, linkedinOrganic: 0, linkedinPaid: 0, instagramOrganic: 0, instagramPaid: 0, facebookOrganic: 0, facebookPaid: 0 },
+    convertedLeads: 0,
+    attributedRevenueSar: 0,
+  },
+];
+
+const create2025Campaigns = (): MarketingCampaign[] => [
+  {
+    id: 'camp-2025-001',
+    name: 'Q1 Brand Awareness',
+    startDate: '2025-01-15',
+    endDate: '2025-03-31',
+    channels: ['linkedinPaid', 'instagramPaid'],
+  },
+  {
+    id: 'camp-2025-002',
+    name: 'Logistics Solutions Push',
+    startDate: '2025-02-01',
+    endDate: '2025-04-30',
+    channels: ['linkedinPaid', 'facebookPaid'],
+  },
+  {
+    id: 'camp-2025-003',
+    name: 'Summer Warehouse Promo',
+    startDate: '2025-05-15',
+    endDate: '2025-07-31',
+    channels: ['instagramPaid', 'facebookPaid'],
+  },
+  {
+    id: 'camp-2025-004',
+    name: 'LinkedIn Thought Leadership',
+    startDate: '2025-03-01',
+    endDate: '2025-12-31',
+    channels: ['linkedinOrganic'],
+  },
+  {
+    id: 'camp-2025-005',
+    name: 'Q4 Lead Generation',
+    startDate: '2025-10-01',
+    endDate: '2025-12-15',
+    channels: ['linkedinPaid', 'instagramPaid', 'facebookPaid'],
+  },
+];
+
+const create2026Campaigns = (): MarketingCampaign[] => [
+  {
+    id: 'camp-2026-001',
+    name: 'New Year Launch',
+    startDate: '2026-01-05',
+    endDate: '2026-02-28',
+    channels: ['linkedinPaid', 'instagramPaid'],
+  },
+  {
+    id: 'camp-2026-002',
+    name: 'Industry Conference Push',
+    startDate: '2026-03-01',
+    endDate: '2026-05-15',
+    channels: ['linkedinPaid'],
+  },
+  {
+    id: 'camp-2026-003',
+    name: 'Social Media Expansion',
+    startDate: '2026-04-01',
+    endDate: '2026-06-30',
+    channels: ['instagramOrganic', 'facebookOrganic', 'instagramPaid'],
+  },
+  {
+    id: 'camp-2026-004',
+    name: 'Mid-Year Boost',
+    startDate: '2026-06-01',
+    endDate: '2026-08-31',
+    channels: ['linkedinPaid', 'facebookPaid'],
+  },
+  {
+    id: 'camp-2026-005',
+    name: 'LinkedIn B2B Focus',
+    startDate: '2026-01-01',
+    endDate: '2026-12-31',
+    channels: ['linkedinOrganic'],
+  },
+  {
+    id: 'camp-2026-006',
+    name: 'Q4 Revenue Push',
+    startDate: '2026-10-01',
+    endDate: '2026-12-20',
+    channels: ['linkedinPaid', 'instagramPaid', 'facebookPaid'],
+  },
+];
+
+const create2025CampaignMonthly = (): { [campaignId: string]: CampaignMonthlyAllocation[] } => ({
+  'camp-2025-001': [
+    { month: 'January', leads: 22, convertedLeads: 8, attributedRevenueSar: 65000, spendSar: 6400 },
+    { month: 'February', leads: 28, convertedLeads: 10, attributedRevenueSar: 82000, spendSar: 7200 },
+    { month: 'March', leads: 32, convertedLeads: 12, attributedRevenueSar: 98000, spendSar: 8000 },
+  ],
+  'camp-2025-002': [
+    { month: 'February', leads: 18, convertedLeads: 6, attributedRevenueSar: 48000, spendSar: 5500 },
+    { month: 'March', leads: 24, convertedLeads: 9, attributedRevenueSar: 72000, spendSar: 6500 },
+    { month: 'April', leads: 20, convertedLeads: 7, attributedRevenueSar: 56000, spendSar: 5800 },
+  ],
+  'camp-2025-003': [
+    { month: 'May', leads: 26, convertedLeads: 10, attributedRevenueSar: 85000, spendSar: 7000 },
+    { month: 'June', leads: 22, convertedLeads: 8, attributedRevenueSar: 68000, spendSar: 5800 },
+    { month: 'July', leads: 18, convertedLeads: 6, attributedRevenueSar: 52000, spendSar: 4800 },
+  ],
+  'camp-2025-004': [
+    { month: 'March', leads: 8, convertedLeads: 2, attributedRevenueSar: 18000, spendSar: 0 },
+    { month: 'April', leads: 6, convertedLeads: 2, attributedRevenueSar: 15000, spendSar: 0 },
+    { month: 'May', leads: 10, convertedLeads: 3, attributedRevenueSar: 25000, spendSar: 0 },
+    { month: 'June', leads: 8, convertedLeads: 2, attributedRevenueSar: 18000, spendSar: 0 },
+    { month: 'July', leads: 6, convertedLeads: 2, attributedRevenueSar: 14000, spendSar: 0 },
+    { month: 'August', leads: 5, convertedLeads: 1, attributedRevenueSar: 10000, spendSar: 0 },
+    { month: 'September', leads: 9, convertedLeads: 3, attributedRevenueSar: 22000, spendSar: 0 },
+    { month: 'October', leads: 12, convertedLeads: 4, attributedRevenueSar: 32000, spendSar: 0 },
+    { month: 'November', leads: 14, convertedLeads: 5, attributedRevenueSar: 40000, spendSar: 0 },
+    { month: 'December', leads: 11, convertedLeads: 4, attributedRevenueSar: 30000, spendSar: 0 },
+  ],
+  'camp-2025-005': [
+    { month: 'October', leads: 45, convertedLeads: 16, attributedRevenueSar: 135000, spendSar: 12500 },
+    { month: 'November', leads: 52, convertedLeads: 19, attributedRevenueSar: 158000, spendSar: 14200 },
+    { month: 'December', leads: 48, convertedLeads: 17, attributedRevenueSar: 142000, spendSar: 13000 },
+  ],
+});
+
+const create2026CampaignMonthly = (): { [campaignId: string]: CampaignMonthlyAllocation[] } => ({
+  'camp-2026-001': [
+    { month: 'January', leads: 35, convertedLeads: 13, attributedRevenueSar: 105000, spendSar: 8200 },
+    { month: 'February', leads: 42, convertedLeads: 15, attributedRevenueSar: 125000, spendSar: 9500 },
+  ],
+  'camp-2026-002': [
+    { month: 'March', leads: 38, convertedLeads: 14, attributedRevenueSar: 115000, spendSar: 10500 },
+    { month: 'April', leads: 32, convertedLeads: 11, attributedRevenueSar: 92000, spendSar: 8800 },
+    { month: 'May', leads: 45, convertedLeads: 17, attributedRevenueSar: 142000, spendSar: 11500 },
+  ],
+  'camp-2026-003': [
+    { month: 'April', leads: 20, convertedLeads: 6, attributedRevenueSar: 48000, spendSar: 3200 },
+    { month: 'May', leads: 28, convertedLeads: 9, attributedRevenueSar: 72000, spendSar: 4500 },
+    { month: 'June', leads: 32, convertedLeads: 11, attributedRevenueSar: 88000, spendSar: 5200 },
+  ],
+  'camp-2026-004': [
+    { month: 'June', leads: 25, convertedLeads: 9, attributedRevenueSar: 75000, spendSar: 6800 },
+    { month: 'July', leads: 30, convertedLeads: 11, attributedRevenueSar: 92000, spendSar: 7500 },
+    { month: 'August', leads: 28, convertedLeads: 10, attributedRevenueSar: 82000, spendSar: 7000 },
+  ],
+  'camp-2026-005': [
+    { month: 'January', leads: 10, convertedLeads: 3, attributedRevenueSar: 28000, spendSar: 0 },
+    { month: 'February', leads: 12, convertedLeads: 4, attributedRevenueSar: 35000, spendSar: 0 },
+    { month: 'March', leads: 14, convertedLeads: 5, attributedRevenueSar: 42000, spendSar: 0 },
+    { month: 'April', leads: 10, convertedLeads: 3, attributedRevenueSar: 28000, spendSar: 0 },
+    { month: 'May', leads: 15, convertedLeads: 5, attributedRevenueSar: 45000, spendSar: 0 },
+    { month: 'June', leads: 13, convertedLeads: 4, attributedRevenueSar: 38000, spendSar: 0 },
+    { month: 'July', leads: 11, convertedLeads: 4, attributedRevenueSar: 32000, spendSar: 0 },
+    { month: 'August', leads: 9, convertedLeads: 3, attributedRevenueSar: 25000, spendSar: 0 },
+    { month: 'September', leads: 14, convertedLeads: 5, attributedRevenueSar: 42000, spendSar: 0 },
+    { month: 'October', leads: 16, convertedLeads: 6, attributedRevenueSar: 52000, spendSar: 0 },
+  ],
+  'camp-2026-006': [
+    { month: 'October', leads: 55, convertedLeads: 20, attributedRevenueSar: 168000, spendSar: 15800 },
+  ],
+});
+
+export const mockMarketingData: MarketingData = {
+  years: {
+    '2025': {
+      monthly: create2025MonthlyData(),
+      campaigns: create2025Campaigns(),
+      campaignMonthly: create2025CampaignMonthly(),
+    },
+    '2026': {
+      monthly: create2026MonthlyData(),
+      campaigns: create2026Campaigns(),
+      campaignMonthly: create2026CampaignMonthly(),
+    },
+  },
+};

@@ -8,6 +8,7 @@ import {
   WarehouseData,
   VASData,
   POData,
+  MarketingData,
   mockSalesData,
   mockRiskData,
   mockRealEstateData,
@@ -15,6 +16,7 @@ import {
   mockWarehouseData,
   mockVASData,
   mockPOData,
+  mockMarketingData,
 } from '@/mocks/dashboardData';
 import { supabase } from '../supabaseClient';
 import type { RealtimeChannel } from '@supabase/supabase-js';
@@ -26,6 +28,7 @@ import {
   saveWarehouseData,
   saveVasData,
   savePoData,
+  saveMarketingData,
   updateCardTimestamp as saveCardTimestamp,
 } from '../lib/adminSave';
 
@@ -72,6 +75,7 @@ export const [DataProvider, useData] = createContextHook(() => {
   const [warehouseData, setWarehouseData] = useState<WarehouseData>(mockWarehouseData);
   const [vasData, setVasData] = useState<VASData>(mockVASData);
   const [poData, setPoData] = useState<POData>(mockPOData);
+  const [marketingData, setMarketingData] = useState<MarketingData>(mockMarketingData);
   const [lastUpdated, setLastUpdated] = useState<LastUpdatedData>({});
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -171,6 +175,19 @@ export const [DataProvider, useData] = createContextHook(() => {
     }
   }, []);
 
+  const fetchMarketingData = useCallback(async () => {
+    try {
+      const { data, error } = await supabase.from('marketing').select('*').single();
+      if (error) throw error;
+      const mapped = mapDbToUi<MarketingData>(data, mockMarketingData);
+      setMarketingData(mapped);
+      console.log('✅ Loaded marketing from Supabase');
+    } catch (err) {
+      console.warn('⚠️ Marketing fetch failed, using mock data:', err);
+      setMarketingData(mockMarketingData);
+    }
+  }, []);
+
   const fetchLastUpdatedData = useCallback(async () => {
     try {
       const { data, error } = await supabase.from('last_updated').select('*').single();
@@ -196,6 +213,7 @@ export const [DataProvider, useData] = createContextHook(() => {
         fetchWarehouseData(),
         fetchVasData(),
         fetchPoData(),
+        fetchMarketingData(),
         fetchLastUpdatedData(),
       ]);
       console.log('✅ All data loaded successfully');
@@ -213,6 +231,7 @@ export const [DataProvider, useData] = createContextHook(() => {
     fetchWarehouseData,
     fetchVasData,
     fetchPoData,
+    fetchMarketingData,
     fetchLastUpdatedData,
   ]);
 
@@ -294,6 +313,16 @@ export const [DataProvider, useData] = createContextHook(() => {
       .subscribe();
     channels.push(poChannel);
 
+    // Marketing subscription
+    const marketingChannel = supabase
+      .channel('marketing-updates')
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'marketing' }, () => {
+        console.log('🔄 Marketing updated - refetching');
+        fetchMarketingData();
+      })
+      .subscribe();
+    channels.push(marketingChannel);
+
     // Last updated subscription
     const lastUpdatedChannel = supabase
       .channel('last-updated-updates')
@@ -304,7 +333,7 @@ export const [DataProvider, useData] = createContextHook(() => {
       .subscribe();
     channels.push(lastUpdatedChannel);
 
-    console.log('✅ Realtime subscriptions active for all 8 tables');
+    console.log('✅ Realtime subscriptions active for all 9 tables');
 
     // Cleanup on unmount
     return () => {
@@ -321,6 +350,7 @@ export const [DataProvider, useData] = createContextHook(() => {
     fetchWarehouseData,
     fetchVasData,
     fetchPoData,
+    fetchMarketingData,
     fetchLastUpdatedData,
   ]);
 
@@ -403,6 +433,17 @@ export const [DataProvider, useData] = createContextHook(() => {
     }
   }, []);
 
+  const updateMarketingData = useCallback(async (data: MarketingData) => {
+    try {
+      setMarketingData(data);
+      await saveMarketingData(data);
+      console.log('[DataContext] updateMarketingData - saved to Supabase');
+    } catch (error) {
+      console.error('[DataContext] Failed to update marketing data:', error);
+      throw error;
+    }
+  }, []);
+
   const updateLastUpdated = useCallback(async (cardKey: string, value: string) => {
     setLastUpdated(prev => {
       const updated = { ...prev, [cardKey]: value };
@@ -450,6 +491,7 @@ export const [DataProvider, useData] = createContextHook(() => {
       warehouseData,
       vasData,
       poData,
+      marketingData,
       isLoading,
       error,
       updateSalesData,
@@ -459,6 +501,7 @@ export const [DataProvider, useData] = createContextHook(() => {
       updateWarehouseData,
       updateVasData,
       updatePoData,
+      updateMarketingData,
       lastUpdated,
       updateLastUpdated,
       updateCardTimestamp,
@@ -472,6 +515,7 @@ export const [DataProvider, useData] = createContextHook(() => {
       warehouseData,
       vasData,
       poData,
+      marketingData,
       isLoading,
       error,
       updateSalesData,
@@ -481,6 +525,7 @@ export const [DataProvider, useData] = createContextHook(() => {
       updateWarehouseData,
       updateVasData,
       updatePoData,
+      updateMarketingData,
       lastUpdated,
       updateLastUpdated,
       updateCardTimestamp,
