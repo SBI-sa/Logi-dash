@@ -63,6 +63,25 @@ The application supports **exact numeric values** without rounding or limits:
 - Values are stored and displayed exactly as entered using `parseFloat()` without any abbreviation
 - No K/M formatting on input or storage - only on charts where appropriate
 
+### Marketing & Leads Module
+The Marketing module provides comprehensive marketing analytics with year-driven data structure:
+- **Year Selector**: Dynamic dropdown to switch between years (e.g., 2025, 2026) - not hardcoded
+- **7 Marketing Channels**: Website, LinkedIn Organic, LinkedIn Paid, Instagram Organic, Instagram Paid, Facebook Organic, Facebook Paid
+- **KPI Cards**: MTD Leads, YTD Leads, Conversion Rate, Converted Leads, Total Revenue, Avg Revenue/Lead, CPL, Active Campaigns
+- **Visualizations**:
+  - Stacked bar chart showing leads by channel per month
+  - Channel performance table with leads, spend, and CPL
+  - Campaign performance table with status, leads, revenue, CPL, ROAS
+  - Custom Gantt chart timeline for campaign duration visualization
+- **Campaign Management**: 
+  - Full CRUD operations for campaigns (add, edit, delete)
+  - Monthly allocations per campaign (`campaignMonthly`) for accurate CPL/ROAS calculations
+  - Fields: name, type, startMonth, endMonth, budgetSar, status
+- **Data Structure**: Single `marketing` table with JSONB `years` column containing per-year data (monthly metrics + campaigns + campaignMonthly allocations)
+- **Admin Editing**: Edit monthly channel data, add/edit/delete campaigns with confirmation alerts
+- **Tab Access**: Restricted to Full Viewer and Admin users (hasFullAccess check)
+- **Database Migration**: `db/migrations/003_marketing_schema.sql` (run via Supabase SQL Editor)
+
 ### Transportation/Logistics Module Delete Functionality
 The Transportation module supports deletion of editable data entries with confirmation alerts:
 - **Trip Categories**: Delete button available inside edit modal for custom categories in both Total and Monthly tabs. Deleting from Total tab removes category from all months. Auto-calculated "Total Trips" category cannot be deleted.
@@ -72,7 +91,7 @@ The Transportation module supports deletion of editable data entries with confir
 - **Data Flow**: Deletions update local state, persist to Supabase, sync in real-time to all connected clients, and automatically close the edit modal.
 
 ## External Dependencies
-- **Supabase**: Backend services for database (8 tables: `sales`, `risks`, `real_estate`, `logistics`, `warehouse`, `vas`, `po`, `last_updated`), authentication, and real-time subscriptions. Sales table includes JSONB columns: `top_customers_total` for Total tab customers, `top_customers_monthly` for monthly customer data, `revenue_by_segment_monthly` for segment data.
+- **Supabase**: Backend services for database (9 tables: `sales`, `risks`, `real_estate`, `logistics`, `warehouse`, `vas`, `po`, `last_updated`, `marketing`), authentication, and real-time subscriptions. Sales table includes JSONB columns: `top_customers_total` for Total tab customers, `top_customers_monthly` for monthly customer data, `revenue_by_segment_monthly` for segment data. Marketing table uses year-driven JSONB structure for multi-year data.
 - **Expo**: For cross-platform development and build processes.
 - **@tanstack/react-query**: For server state management and data fetching.
 - **Zustand**: For client-side state management.
@@ -94,6 +113,12 @@ Image uploads use cache-busting timestamps to ensure replacements display immedi
 - **Affected Images**: Warehouse allocation map, Real Estate land image, JLH image
 
 ## Recent Changes
+### December 31, 2025
+- **Marketing & Leads Module**: Added comprehensive marketing analytics module with year-driven data structure supporting dynamic year selection. Features 7 marketing channel tracking (website, LinkedIn organic/paid, Instagram organic/paid, Facebook organic/paid), 8 KPI cards, stacked bar chart for leads by channel, channel performance table, campaign management with full CRUD, custom SVG Gantt chart for campaign timelines, and campaignMonthly allocations for accurate CPL/ROAS calculations.
+- **Database Schema**: Added `marketing` table with JSONB `years` column (migration: `db/migrations/003_marketing_schema.sql`)
+- **Real-time Subscriptions**: Extended from 8 to 9 tables with marketing data synchronization
+- **Mock Data**: Complete sample data for 2025 and 2026 with all 7 channels, campaigns, and monthly allocations
+
 ### December 23, 2025
 - **Limited Viewer UI Improvements**: Hidden Home tab for limited viewers (code `2030`) - they now bypass home screen and go directly to PO tab on login. Added logout button in PO page header (top right next to "Last Updated") for limited viewers to easily end sessions. Created new `POHeaderRight.tsx` component that displays last updated info with admin edit capabilities and limited viewer logout functionality.
 - **Navigation Refinement**: Limited viewers now have a seamless experience with only accessible tabs (PO, Transportation, VAS) visible and no redirect delays.
