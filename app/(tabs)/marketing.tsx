@@ -17,6 +17,8 @@ const CHANNEL_LABELS: Record<MarketingChannel, string> = {
   instagramPaid: 'Instagram (Paid)',
   facebookOrganic: 'Facebook (Organic)',
   facebookPaid: 'Facebook (Paid)',
+  email: 'Email',
+  referral: 'Referral',
 };
 
 const CHANNEL_COLORS: Record<MarketingChannel, string> = {
@@ -25,6 +27,8 @@ const CHANNEL_COLORS: Record<MarketingChannel, string> = {
   linkedinPaid: '#004182',
   instagramOrganic: '#E4405F',
   instagramPaid: '#C13584',
+  email: '#FF9800',
+  referral: '#4CAF50',
   facebookOrganic: '#1877F2',
   facebookPaid: '#0D5BB5',
 };

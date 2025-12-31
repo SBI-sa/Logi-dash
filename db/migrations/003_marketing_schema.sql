@@ -69,7 +69,9 @@ CREATE INDEX idx_marketing_updated_at ON marketing(updated_at);
 --           instagramOrganic: number,
 --           instagramPaid: number,
 --           facebookOrganic: number,
---           facebookPaid: number
+--           facebookPaid: number,
+--           email: number,
+--           referral: number
 --         },
 --         spendByChannelSar: {
 --           website: number,
@@ -78,7 +80,9 @@ CREATE INDEX idx_marketing_updated_at ON marketing(updated_at);
 --           instagramOrganic: number,
 --           instagramPaid: number,
 --           facebookOrganic: number,
---           facebookPaid: number
+--           facebookPaid: number,
+--           email: number,
+--           referral: number
 --         },
 --         convertedLeads: number,
 --         attributedRevenueSar: number
