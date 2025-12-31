@@ -73,7 +73,7 @@ export default function HomeScreen() {
         <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
           <View style={styles.quickActions}>
             <View style={styles.actionGrid}>
-              {actions.slice(0, -1).map((action, index) => (
+              {actions.map((action, index) => (
                 <DraggableActionCard
                   key={action.id}
                   action={action}
@@ -86,27 +86,6 @@ export default function HomeScreen() {
                 />
               ))}
             </View>
-          </View>
-          <View style={styles.bigBottomBox}>
-            <TouchableOpacity
-              style={styles.bigActionCard}
-              onPress={() => router.push(actions[actions.length - 1].route as any)}
-              activeOpacity={0.7}
-            >
-              {actions[actions.length - 1].iconUri ? (
-                <Image 
-                  source={{ uri: actions[actions.length - 1].iconUri }}
-                  style={{ width: 32, height: 32, tintColor: actions[actions.length - 1].color }}
-                  resizeMode="contain"
-                />
-              ) : actions[actions.length - 1].icon ? (
-                (() => {
-                  const IconComponent = actions[actions.length - 1].icon;
-                  return <IconComponent size={32} color={actions[actions.length - 1].color} />;
-                })()
-              ) : null}
-              <Text style={styles.bigActionText}>{actions[actions.length - 1].label}</Text>
-            </TouchableOpacity>
           </View>
         </ScrollView>
       </View>
@@ -214,27 +193,6 @@ const styles = StyleSheet.create({
   draggingCard: {
     opacity: 0.7,
     transform: [{ scale: 1.05 }],
-  },
-  bigBottomBox: {
-    marginTop: 24,
-  },
-  bigActionCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.85)',
-    padding: 32,
-    borderRadius: 16,
-    alignItems: 'center',
-    gap: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  bigActionText: {
-    fontSize: 20,
-    fontWeight: '700' as const,
-    color: LogiPointColors.midnight,
-    textAlign: 'center',
   },
 });
 
