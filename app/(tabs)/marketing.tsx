@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { View, StyleSheet, ScrollView, TouchableOpacity, Text, Dimensions } from 'react-native';
+import { View, StyleSheet, ScrollView, TouchableOpacity, Text, Dimensions, Image } from 'react-native';
 import { Edit2, TrendingUp, Users, DollarSign, Target, BarChart3, ChevronDown, Plus, Trash2 } from 'lucide-react-native';
 import { LogiPointColors } from '@/constants/colors';
 import { ChartCard } from '@/components/ChartCard';
@@ -651,10 +651,18 @@ export default function MarketingScreen() {
   };
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-      {renderYearSelector()}
-      
-      <View style={styles.kpiGrid}>
+    <View style={styles.container}>
+      <View style={styles.backgroundLogo}>
+        <Image 
+          source={{ uri: 'https://pub-e001eb4506b145aa938b5d3badbff6a5.r2.dev/attachments/4i9f5ip8s1j9hyoj71h9q' }}
+          style={styles.logoImage}
+          resizeMode="contain"
+        />
+      </View>
+      <ScrollView style={styles.scrollView} contentContainerStyle={styles.contentContainer}>
+        {renderYearSelector()}
+        
+        <View style={styles.kpiGrid}>
         {renderKPICard('MTD Leads', formatNumber(kpis.mtdLeads), MONTHS[currentMonth])}
         {renderKPICard('YTD Leads', formatNumber(kpis.ytdLeads))}
         {renderKPICard('Conversion Rate', `${kpis.conversionRate.toFixed(1)}%`, 'of leads converted')}
@@ -682,14 +690,15 @@ export default function MarketingScreen() {
         {renderGanttChart()}
       </ChartCard>
 
-      <EditModal
-        visible={editModalVisible}
-        onClose={() => setEditModalVisible(false)}
-        onSave={handleSave}
-        title={editField.startsWith('new_') ? 'Add Campaign' : 'Edit'}
-        fields={editFields}
-      />
-    </ScrollView>
+        <EditModal
+          visible={editModalVisible}
+          onClose={() => setEditModalVisible(false)}
+          onSave={handleSave}
+          title={editField.startsWith('new_') ? 'Add Campaign' : 'Edit'}
+          fields={editFields}
+        />
+      </ScrollView>
+    </View>
   );
 }
 
@@ -697,6 +706,24 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: LogiPointColors.gray[50],
+  },
+  backgroundLogo: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: -1,
+  },
+  logoImage: {
+    width: 500,
+    height: 500,
+    opacity: 0.06,
+  },
+  scrollView: {
+    flex: 1,
   },
   contentContainer: {
     padding: 16,
