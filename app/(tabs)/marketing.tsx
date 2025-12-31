@@ -444,7 +444,7 @@ export default function MarketingScreen() {
                 x={x + barWidth / 2}
                 y={height - 10}
                 fontSize={10}
-                fill={LogiPointColors.beige}
+                fill={LogiPointColors.gray[600]}
                 textAnchor="middle"
               >
                 {MONTH_SHORT[monthIdx]}
@@ -459,15 +459,15 @@ export default function MarketingScreen() {
               y1={padding.top + chartHeight * (1 - ratio)}
               x2={width - padding.right}
               y2={padding.top + chartHeight * (1 - ratio)}
-              stroke={LogiPointColors.beige}
+              stroke={LogiPointColors.gray[300]}
               strokeWidth={0.5}
-              opacity={0.3}
+              opacity={0.5}
             />
             <SvgText
               x={padding.left - 5}
               y={padding.top + chartHeight * (1 - ratio) + 4}
               fontSize={10}
-              fill={LogiPointColors.beige}
+              fill={LogiPointColors.gray[600]}
               textAnchor="end"
             >
               {formatNumber(maxTotal * ratio)}
@@ -600,15 +600,15 @@ export default function MarketingScreen() {
                 y1={padding.top - 10}
                 x2={padding.left + (idx / 12) * chartWidth}
                 y2={height - padding.bottom}
-                stroke={LogiPointColors.beige}
+                stroke={LogiPointColors.gray[300]}
                 strokeWidth={0.5}
-                opacity={0.3}
+                opacity={0.5}
               />
               <SvgText
                 x={padding.left + (idx / 12) * chartWidth + chartWidth / 24}
                 y={padding.top - 15}
                 fontSize={10}
-                fill={LogiPointColors.beige}
+                fill={LogiPointColors.gray[600]}
                 textAnchor="middle"
               >
                 {month}
@@ -628,7 +628,7 @@ export default function MarketingScreen() {
                   x={padding.left - 5}
                   y={y + rowHeight / 2 + 4}
                   fontSize={10}
-                  fill={LogiPointColors.white}
+                  fill={LogiPointColors.midnight}
                   textAnchor="end"
                 >
                   {campaign.name.length > 18 ? campaign.name.substring(0, 18) + '...' : campaign.name}
@@ -696,7 +696,7 @@ export default function MarketingScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: LogiPointColors.midnight,
+    backgroundColor: LogiPointColors.gray[50],
   },
   contentContainer: {
     padding: 16,
@@ -725,7 +725,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 44,
     left: 0,
-    backgroundColor: LogiPointColors.gray[800],
+    backgroundColor: LogiPointColors.white,
     borderRadius: 8,
     overflow: 'hidden',
     minWidth: 100,
@@ -743,11 +743,12 @@ const styles = StyleSheet.create({
     backgroundColor: LogiPointColors.primary,
   },
   yearOptionText: {
-    color: LogiPointColors.white,
+    color: LogiPointColors.midnight,
     fontSize: 14,
   },
   yearOptionTextSelected: {
     fontWeight: '600',
+    color: LogiPointColors.white,
   },
   kpiGrid: {
     flexDirection: 'row',
@@ -756,25 +757,30 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   kpiCard: {
-    backgroundColor: LogiPointColors.gray[800],
+    backgroundColor: LogiPointColors.white,
     borderRadius: 12,
     padding: 16,
     minWidth: '47%',
     flex: 1,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
   kpiTitle: {
-    color: LogiPointColors.beige,
+    color: LogiPointColors.gray[600],
     fontSize: 12,
     fontWeight: '500',
     marginBottom: 8,
   },
   kpiValue: {
-    color: LogiPointColors.white,
+    color: LogiPointColors.midnight,
     fontSize: 24,
     fontWeight: '700',
   },
   kpiSubtitle: {
-    color: LogiPointColors.beige,
+    color: LogiPointColors.gray[600],
     fontSize: 11,
     marginTop: 4,
   },
@@ -796,22 +802,24 @@ const styles = StyleSheet.create({
     borderRadius: 3,
   },
   legendText: {
-    color: LogiPointColors.beige,
+    color: LogiPointColors.gray[600],
     fontSize: 11,
   },
   tableContainer: {
-    backgroundColor: LogiPointColors.gray[900],
+    backgroundColor: LogiPointColors.white,
     borderRadius: 8,
     overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: LogiPointColors.gray[200],
   },
   tableHeader: {
     flexDirection: 'row',
-    backgroundColor: LogiPointColors.gray[800],
+    backgroundColor: LogiPointColors.gray[100],
     paddingVertical: 10,
     paddingHorizontal: 12,
   },
   tableHeaderCell: {
-    color: LogiPointColors.beige,
+    color: LogiPointColors.gray[600],
     fontSize: 11,
     fontWeight: '600',
     textTransform: 'uppercase',
@@ -821,14 +829,14 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 12,
     borderBottomWidth: 1,
-    borderBottomColor: LogiPointColors.gray[800],
+    borderBottomColor: LogiPointColors.gray[200],
   },
   tableCell: {
-    color: LogiPointColors.white,
+    color: LogiPointColors.midnight,
     fontSize: 12,
   },
   tableCellText: {
-    color: LogiPointColors.white,
+    color: LogiPointColors.midnight,
     fontSize: 12,
   },
   channelDot: {
